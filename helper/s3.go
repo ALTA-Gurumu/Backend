@@ -5,15 +5,14 @@ import (
 	"errors"
 	"mime/multipart"
 	"path/filepath"
-	"strconv"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
-var ObjectURL string = "https://ecommercegroup7.s3.ap-southeast-1.amazonaws.com/"
+var ObjectURL string = "https://capstonegurumu.s3.ap-southeast-1.amazonaws.com/"
 
-func UploadProfilePhotoS3(file multipart.FileHeader, email string) (string, error) {
+func UploadStudentProfilePhotoS3(file multipart.FileHeader, email string) (string, error) {
 	s3Session := config.S3Config()
 	uploader := s3manager.NewUploader(s3Session)
 	src, err := file.Open()
@@ -24,19 +23,19 @@ func UploadProfilePhotoS3(file multipart.FileHeader, email string) (string, erro
 	ext := filepath.Ext(file.Filename)
 
 	_, err = uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String("ecommercegroup7"),
-		Key:    aws.String("files/user/" + email + "/profile-photo" + ext),
+		Bucket: aws.String("capstonegurumu"),
+		Key:    aws.String("files/students/" + email + "/profile-photo" + ext),
 		Body:   src,
 		ACL:    aws.String("public-read"),
 	})
 	if err != nil {
-		return "", errors.New("problem with upload profile photo")
+		return "", errors.New("problem with upload student's profile photo")
 	}
-	path := ObjectURL + "files/user/" + email + "/profile-photo" + ext
+	path := ObjectURL + "files/students/" + email + "/profile-photo" + ext
 	return path, nil
 }
 
-func UploadProductImageS3(file multipart.FileHeader, userID int) (string, error) {
+func UploadTeacherProfilePhotoS3(file multipart.FileHeader, email string) (string, error) {
 	s3Session := config.S3Config()
 	uploader := s3manager.NewUploader(s3Session)
 	src, err := file.Open()
@@ -44,17 +43,40 @@ func UploadProductImageS3(file multipart.FileHeader, userID int) (string, error)
 		return "", err
 	}
 	defer src.Close()
+	ext := filepath.Ext(file.Filename)
 
-	cnv := strconv.Itoa(userID)
 	_, err = uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String("ecommercegroup7"),
-		Key:    aws.String("files/product/" + cnv + "/" + file.Filename),
+		Bucket: aws.String("capstonegurumu"),
+		Key:    aws.String("files/teachers/" + email + "/profile-photo" + ext),
 		Body:   src,
 		ACL:    aws.String("public-read"),
 	})
 	if err != nil {
-		return "", errors.New("problem with upload product image")
+		return "", errors.New("problem with upload teacher's profile photo")
 	}
-	path := ObjectURL + "files/product/" + cnv + "/" + file.Filename
+	path := ObjectURL + "files/teachers/" + email + "/profile-photo" + ext
+	return path, nil
+}
+
+func UploadTeacherCertificateS3(file multipart.FileHeader, email string) (string, error) {
+	s3Session := config.S3Config()
+	uploader := s3manager.NewUploader(s3Session)
+	src, err := file.Open()
+	if err != nil {
+		return "", err
+	}
+	defer src.Close()
+	ext := filepath.Ext(file.Filename)
+
+	_, err = uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String("capstonegurumu"),
+		Key:    aws.String("files/teachers/" + email + "/certificate" + ext),
+		Body:   src,
+		ACL:    aws.String("public-read"),
+	})
+	if err != nil {
+		return "", errors.New("problem with upload teacher's certificate")
+	}
+	path := ObjectURL + "files/teachers/" + email + "/certificate" + ext
 	return path, nil
 }

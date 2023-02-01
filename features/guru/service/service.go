@@ -2,7 +2,12 @@ package service
 
 import (
 	"Gurumu/features/guru"
+	"Gurumu/helper"
+	"errors"
+	"fmt"
+	"log"
 	"mime/multipart"
+	"strings"
 
 	"github.com/go-playground/validator"
 )
@@ -20,8 +25,33 @@ func New(gd guru.GuruData) guru.GuruService {
 }
 
 // Register implements guru.GuruService
-func (*guruUseCase) Register(newGuru guru.Core) (guru.Core, error) {
-	panic("unimplemented")
+func (guc *guruUseCase) Register(newGuru guru.Core) (guru.Core, error) {
+	hashed, err := helper.GeneratePassword(newGuru.Password)
+	if err != nil {
+		log.Println("bcrypt error ", err.Error())
+		return guru.Core{}, errors.New("password process error")
+	}
+
+	err = guc.vld.Struct(&newGuru)
+	if err != nil {
+		msg := helper.ValidationErrorHandle(err)
+		fmt.Println("msg", msg)
+		return guru.Core{}, errors.New(msg)
+	}
+
+	newGuru.Password = string(hashed)
+	res, err := guc.qry.Register(newGuru)
+	if err != nil {
+		msg := ""
+		if strings.Contains(err.Error(), "duplicated") {
+			msg = "data sudah terdaftar"
+		} else {
+			msg = "terdapat masalah pada server"
+		}
+		return guru.Core{}, errors.New(msg)
+	}
+
+	return res, nil
 }
 
 // Delete implements guru.GuruService

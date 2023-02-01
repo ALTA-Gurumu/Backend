@@ -11,10 +11,10 @@ type Core struct {
 	Email     string `validate:"required,email"`
 	Password  string `validate:"required"`
 	Nama      string `validate:"required"`
+	Telepon   string
 	Deskripsi string
 	Ijazah    string
 	Pelajaran string
-	Telepon   string
 	Alamat    string
 	Avatar    string
 	Role      string

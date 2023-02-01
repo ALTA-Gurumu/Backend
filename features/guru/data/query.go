@@ -20,12 +20,12 @@ func New(db *gorm.DB) guru.GuruData {
 
 func (gq *guruQuery) Register(newGuru guru.Core) (guru.Core, error) {
 	existed := 0
-	gq.db.Raw("SELECT COUNT(*) FROM students WHERE deleted_at IS NULL AND email = ?", newGuru.Email).Scan(&existed)
+	gq.db.Raw("SELECT COUNT(*) FROM gurus WHERE deleted_at IS NULL AND email = ?", newGuru.Email).Scan(&existed)
 	if existed >= 1 {
 		log.Println("guru account already exist (duplicated)")
 		return guru.Core{}, errors.New("guru account already exist (duplicated)")
 	}
-	newGuru.Role = "siswa"
+	newGuru.Role = "guru"
 	cnv := CoreToData(newGuru)
 	if err := gq.db.Create(&cnv).Error; err != nil {
 		log.Println("register query error", err.Error())
@@ -36,11 +36,6 @@ func (gq *guruQuery) Register(newGuru guru.Core) (guru.Core, error) {
 	return ToCore(cnv), nil
 }
 
-// Delete implements guru.GuruData
-func (*guruQuery) Delete(id uint) error {
-	panic("unimplemented")
-}
-
 // Profile implements guru.GuruData
 func (*guruQuery) Profile(id uint) (guru.Core, error) {
 	panic("unimplemented")
@@ -48,5 +43,10 @@ func (*guruQuery) Profile(id uint) (guru.Core, error) {
 
 // Update implements guru.GuruData
 func (*guruQuery) Update(id uint, updateData guru.Core) (guru.Core, error) {
+	panic("unimplemented")
+}
+
+// Delete implements guru.GuruData
+func (*guruQuery) Delete(id uint) error {
 	panic("unimplemented")
 }

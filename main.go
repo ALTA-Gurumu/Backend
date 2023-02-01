@@ -2,6 +2,9 @@ package main
 
 import (
 	"Gurumu/config"
+	_guruData "Gurumu/features/guru/data"
+	_guruHandler "Gurumu/features/guru/handler"
+	_guruService "Gurumu/features/guru/service"
 	"Gurumu/features/siswa/data"
 	"Gurumu/features/siswa/handler"
 	"Gurumu/features/siswa/service"
@@ -17,6 +20,10 @@ func main() {
 	cfg := config.InitConfig()
 	db := config.InitDB(*cfg)
 	migration.Migrate(db)
+
+	guruData := _guruData.New(db)
+	guruSrv := _guruService.New(guruData)
+	guruHdl := _guruHandler.New(guruSrv)
 
 	studentData := data.New(db)
 	studentSrv := service.New(studentData)
@@ -34,6 +41,7 @@ func main() {
 	// e.PUT("/users", userHdl.Update(), middleware.JWT([]byte(config.JWT_KEY)))
 	// e.DELETE("/users", userHdl.Delete(), middleware.JWT([]byte(config.JWT_KEY)))
 
+	e.POST("/guru", guruHdl.Register())
 	if err := e.Start(":8000"); err != nil {
 		log.Println(err.Error())
 	}

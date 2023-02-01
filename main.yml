@@ -1,0 +1,933 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: GuruMu API
+  description: Design API for GuruMu APP by Group 4
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/CapstoneAltaBE14/GuruMu/1.0.0
+  - description: Gurumu service API
+    url: https://devmyproject.site
+tags:
+  - name: Authentication
+  - name: Guru
+  - name: Murid
+  - name: Reservasi
+  
+paths:
+  /login:
+    post:
+      tags:
+        - Authentication
+      summary: untuk login ke akun
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: johndoe@gmail.com
+                password:
+                  type: string
+                  example: pass12345
+      responses: 
+        '200':
+          description: login sukses
+          content:
+            application.json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                          nama:
+                            type: string
+                          email:
+                            type: string 
+                          token:
+                            type: string
+                  message:
+                    type: string
+                example:
+                  data:
+                    nama: Namaku
+                    email: Emailku@gmail.com
+                    token: 12344567890qwertyuiop
+                  message: login sukses
+                      
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'
+  /guru:
+    post:
+      tags:
+      - Guru
+      summary: untuk daftar sebagai guru
+      description: untuk daftar sebagai guru
+      requestBody:
+          content:
+              application/json:
+                  schema:
+                      type: object
+                      properties:
+                          username:
+                              type: string
+                          nama:
+                              type: string
+                          email:
+                              type: string
+                              format: email
+                          password:
+                              type: string
+                  example:
+                      username: budidi
+                      nama: budi didi
+                      email: budi@yahoo.com
+                      password: "budi123"
+      responses:
+          201:
+              description: "berhasil"
+              content:
+                  application/json:
+                      schema:
+                          type: object
+                          properties:
+                              data:
+                                  type: object
+                                  properties:
+                                      username:
+                                          type: string
+                                      email:
+                                          type: string
+                                          format: email
+                              message:
+                                  type: string
+                      example:
+                          data:
+                              username: budi didi
+                              email: budi@yahoo.com
+                          message: "berhasil menambahkan data"
+          400:
+              $ref: "#/components/responses/Response400"
+          500:
+              $ref: "#/components/responses/Response500"
+    put:
+      tags:
+        - Guru
+      summary: untuk update profil guru
+      description: untuk update profil guru
+      security:
+        - jwt_auth: []
+      requestBody:
+        content:
+          multipart/form-data:
+              schema:
+                  type: object
+                  properties:
+                      nama:
+                        type: string
+                      email:
+                        type: string
+                      alamat:
+                        type: string
+                      telefon:
+                        type: integer
+                      deskripsi:
+                        type: integer
+                      ijazah:
+                        type: string
+                      pelajaran:
+                        type: string
+                      avatar:
+                        type: string
+      responses:
+        '200':
+          description: sukses mengganti profil guru
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                message: sukses mengganti profil guru
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'
+    delete:
+      tags:
+        - Guru
+      summary: untuk hapus profil guru
+      security:
+        - jwt_auth: []
+      responses:
+        '200':
+          description: sukses menghapus profil guru
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: sukses menghapus profil guru
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'
+    get:
+        tags:
+            - Guru
+        summary: untuk menampilkan profil guru di beranda
+        description: untuk menampilkan semua profil guru di beranda
+        responses:
+          '200':
+            description: sukses menampilkan semua profil guru
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                          type: object
+                          properties:
+                            guru_id:
+                              type: integer
+                            nama:
+                              type: string
+                            alamat:
+                              type: string
+                            penilaian:
+                              type: number
+                            judul:
+                              type: string
+                            pelajaran:
+                              type: string
+                            avatar:
+                              type: string 
+                example:
+                    data:
+                      - guru_id: 2
+                        nama: Anika
+                        alamat: jl. harupat
+                        penilaian: 4.8
+                        judul: Hi, the name is Bond. Anika Bond. I teach English for everyone
+                        pelajaran: Bahasa Inggris
+                        avatar: anicantik.jpg
+                      - guru_id: 2
+                        nama: Greta
+                        alamat: jl. gagak
+                        penilaian: 4.4
+                        judul: I teach math for everyone
+                        pelajaran: Matematika
+                        avatar: greta.jpg
+                    message:
+                      example: sukses menampilkan semua profil guru
+          '400':
+            $ref: '#/components/responses/Response400'
+          '500':
+            $ref: '#/components/responses/Response500'
+  /guru/sesiku:
+    get:
+      tags:
+        - Guru
+      summary: untuk menampilkan semua riwayat sesi guru
+      description: untuk menampilkan semua riwayat sesi guru
+      security:
+        - jwt_auth: []
+      responses:
+        '200':
+          description: sukses menampilkan semua sesi guru
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        sesi_id:
+                          type: integer
+                        nama_murid:
+                          type: string
+                        pelajaran:
+                          type: string
+                        tanggal:
+                          type: string
+                        avatar_murid:
+                          type: string 
+              example:
+                  data:
+                    - sesi_id: 1
+                      nama_murid: Ani
+                      pelajaran: Bahasa Inggris
+                      tanggal: 12-01-2023
+                      avatar_murid: anicantik.jpg
+                    - sesi_id: 3
+                      nama_murid: Samsul
+                      pelajaran: Bahasa Korea
+                      tanggal: 12-02-2023
+                      avatar_murid: samsulronaldo.jpg
+                  message: sukses menampilkan menampilkan semua sesi guru
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'
+  /guru/{guru_id}:
+    get:
+      tags:
+        - Guru
+      summary: untuk menampilkan detail profil guru
+      description: untuk menampilkan detail profil guru
+      security:
+        - jwt_auth : []
+      parameters:
+            - name: guru_id
+              in: path
+              required: true
+              schema:
+                  type: integer
+      responses:
+        '200':
+          description: sukses menampilkan detail profil guru
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          guru_id:
+                            type: integer
+                            example: 1
+                          nama:
+                            type: string
+                            example: Budi
+                          email:
+                            type: string
+                            example: budi@yahoo.com
+                          alamat:
+                            type: string
+                            example: "Jl. ku tak panjang"
+                          telefon:
+                            type: string
+                            example: 081332494705
+                          deskripsi:
+                            type: string
+                            example: hey, its me your future teacher.
+                          ijazah:
+                            type: string
+                            example: bachelordegree.jpg
+                          pelajaran:
+                            type: string
+                            example: Matematika, Bahasa Inggris
+                          avatar:
+                            type: string 
+                            example : avatar1.jpg    
+                  message:
+                    type: string
+                    example: sukses menampilkan detail profil guru
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'
+    
+  /students:
+    post:
+      tags:
+        - Students
+      summary: register new student account
+      description: used to register a new student account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: johndoe@gmail.com
+                password:
+                  type: string
+                  example: qwert54321
+      responses:
+        '201':
+          description: successfully register student account
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: John Doe
+                      email:
+                        type: string
+                        example: johndoe@gmail.com
+                      
+                  message:
+                    type: string
+                    example: successfully register user
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'
+    
+    get:
+      tags:
+        - Students
+      summary: student's profile
+      description: used to show student's profile
+      responses:
+        '200':
+          description: get student's profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                          id:
+                            type: integer
+                            example: 1
+                          name:
+                            type: string
+                            example: John Doe
+                          email:
+                            type: string
+                            example: johndoe@gmail.com
+                          address:
+                            type: string
+                            example: Surabaya, Jawa Timur
+                          phone:
+                            type: string
+                            example: "08123456789"
+                          avatar:
+                            type: string 
+                            example : https://capstonegurumu.s3.ap-southeast-1.amazonaws.com/files/students/tina123@gmail.com/avatar.jpeg
+                        
+                  message:
+                    type: string
+                    example: successfully get student's profile
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'
+    put:
+      tags:
+        - Students
+      summary: update/edit student's profile
+      description: used to edit student's profile and add several information including address and profile photo
+      security:
+        - jwt_auth: []
+      
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                  name:
+                    type: string
+                    example: John Doe
+                  email:
+                    type: string
+                    example: johndoe@gmail.com
+                  address:
+                    type: string
+                    example: Surabaya, Jawa Timur
+                  phone:
+                    type: string
+                    example: "08123456789"
+                  avatar:
+                    type: string
+                    example : avatar.jpeg
+
+      responses:
+        '200':
+          description: register user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                          id:
+                            type: integer
+                            example: 1
+                          name:
+                            type: string
+                            example: John Doe
+                          email:
+                            type: string
+                            example: johndoe@gmail.com
+                          address:
+                            type: string
+                            example: Surabaya, Jawa Timur
+                          phone:
+                            type: string
+                            example: 08123456789
+                          avatar:
+                            type: string 
+                            example : https://capstonegurumu.s3.ap-southeast-1.amazonaws.com/files/students/tina123@gmail.com/avatar.jpeg
+                  message:
+                    type: string
+                    example: successfully update student's profile
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'
+    delete:
+      tags:
+        - Students
+      summary: delete student's account
+      security:
+        - jwt_auth: []
+      
+      responses:
+        '200':
+          description: success delete
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: successfully delete student's account
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'
+  /students/mysessions:
+    get:
+      tags:
+        - Students
+      summary: student's class history
+      description: used to show student's class history
+      responses:
+        '200':
+          description: success get student's class history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  message:
+                    type: string
+              example:
+                data:
+                  -
+                    id: 1
+                    teacher's_name: Einstein
+                    subject: physics
+                    date: 12-01-2023
+                    status: Finished
+                  -
+                    id: 2
+                    teacher's_name: Socrates
+                    subject: phylosophy
+                    date: 14-01-2023
+                    status: Ongoing
+                message:
+                    example: successfully get student's class history
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'       
+          
+  /reservations:
+    post:
+      tags:
+      - "Reservation"
+      description: to book a teacher
+      summary: to book a teacher
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                teacher_id:
+                  type: integer
+                teacher_name:
+                  type: string
+                rate:
+                  type: number
+                message:
+                  type: string
+                study_method:
+                  type: string
+                date:
+                  type: string
+                address:
+                  type: string
+                phone:
+                  type: string
+      responses:
+        '201':
+          description: successfully reserved a teacher
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                  message:
+                    type: string
+                    example: successfully reserved a session with teacher
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'    
+  /payments/{reservation_id}:
+    post:
+      tags:
+        - "Payment"
+      description: proceed to payment
+      parameters:
+        - name: reservation_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - jwt_auth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                payment_method:
+                  type: string
+                  enum:
+                    - transfer_va_bca
+                    - transfer_va_bri
+                    - transfer_va_bni
+                    - transfer_va_permata
+                    - qris
+            example:
+              data:
+                payment_method: transfer_va_bca
+      responses:
+        '201':  
+          description: successfully placed the payment for reservation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      payment_id:
+                        type: integer
+                      date:
+                        type: string
+                      total: 
+                        type: integer
+                      payment_method:
+                        type: string
+                      transaction_code:
+                        type: string
+                      account:
+                        type: string
+                      receiving_bank:
+                        type: string
+                      qris:
+                        type: string
+                      status:
+                        type: string
+                  message:
+                    type: string
+                    example: successfully placed the payment for reservation
+                    
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'    
+          
+  /reviews/{teacher_id}:
+    post:
+      tags:
+      - Ulasan
+      summary: untuk memberikan ulasan dan penilaian
+      description: untuk memberikan ulasan dan penilaian
+      security:
+        - jwt_auth: []
+      parameters:
+        - name: teacher_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+          content:
+              application/json:
+                  schema:
+                      type: object
+                      properties:
+                          rating:
+                              type: integer
+                          ulasan:
+                              type: string
+                  example:
+                      rating: 4
+                      ulasan: bagus gurunya
+      responses:
+        '201':  
+          description: sukses memberikan ulasan dan penilaian
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: sukses memberikan ulasan dan penilaian
+                    
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500' 
+    get:
+      tags:
+      - Ulasan
+      summary: untuk mendapatkan ulasan dan penilaian
+      description: untuk mendapatkan ulasan dan penilaian
+      parameters:
+        - name: teacher_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':  
+          description: sukses mendapatkan ulasan dan penilaian
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    data:
+                      type: array
+                      items:
+                        type: object
+                        properties:  
+                          review_id:
+                            type: integer
+                          student_name:
+                            type: string
+                          rating:
+                            type: integer
+                          ulasan:
+                            type: string
+                example:
+                    data:
+                    - review_id: 1
+                      student_name: Tomas
+                      rating: 4
+                      ulasan: bagus gurunya
+                    - review_id: 3
+                      student_name: Herdi
+                      rating: 5
+                      ulasan: lydia okelah
+                    - review_id: 5
+                      student_name: Samsul
+                      rating: 4
+                      ulasan: menjelaskan dengan lancar dan enak
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'    
+components:
+  securitySchemes:
+    jwt_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "used JWT token for Auth"
+  responses:
+    Response400:
+      description: bad request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Bad Request
+    Response500:
+      description: server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: server error
+  schemas:
+    UsersUpdateSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Jhony
+        hp:
+          type: number
+          example : 081234567897
+        email:
+          type: string
+          example: user@alta.id
+        address:
+          type: string
+          example: Jl. Merdeka 10, Jakarta
+        image:
+          type: string
+          example: image22.jpg
+        password:
+          type: string
+          example: qwert54321
+    ProductSchema:
+      type: object
+      properties:
+            id:
+              type: integer
+              example: 5
+            name:
+              type: string
+              example: Lenovo Rx25
+            price:
+              type: integer
+              example: 25000
+            qty:
+              type: integer
+              example: 20
+            description:
+              type: string
+            image:
+              type: string
+        
+        
+    ArrayOfProductSchema:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        message:
+          type: string
+      example:
+        data:
+          - id : 1
+            name : Asus Rog 
+            price : 15000000
+            image : product20.jpg
+          - id : 2
+            name : Lenovo X543
+            price : 15000000
+            image : product29.jpg
+        message: successfully get all products
+          
+          
+    CartSchema:
+      type: object
+      required:
+        - product_id
+        - qty
+      properties:
+        product_id:
+          type: integer
+          example: 15
+        qty:
+          type: number
+          example: 2
+    ArrayOfOrderSchema:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        message:
+          type: string
+      example:
+        data:
+          - id : 1
+            qty : 2
+            total_price : 500000
+            product:
+              product_id : 29
+              product_name : asus rog
+              product_image : product29.jpg
+              status: in delivery
+          - id : 2
+            qty : 5
+            total_price : 990000
+            product:
+              product_id : 31
+              product_name : tas laptop
+              product_image : produc31.jpg
+              status: canceled
+        message: successfully get all order
+            
+    OrderSchema:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            cart_id:
+              type: array
+              items:
+                type: integer
+                example: 23
+            address:
+              type: string
+              example: Jl. Merdeka 17, Jakarta
+            Payment:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: "BRI"
+                name:
+                  type: string
+                  example: "Jhonny"
+                number:
+                  type: string
+                  example: "1000-1000-1000-1000"

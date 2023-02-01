@@ -5,6 +5,10 @@ import (
 	_guruData "Gurumu/features/guru/data"
 	_guruHandler "Gurumu/features/guru/handler"
 	_guruService "Gurumu/features/guru/service"
+
+	_autentikasiData "Gurumu/features/autentikasi/data"
+	_autentikasiHandler "Gurumu/features/autentikasi/handler"
+	_autentikasiService "Gurumu/features/autentikasi/service"
 	"Gurumu/features/siswa/data"
 	"Gurumu/features/siswa/handler"
 	"Gurumu/features/siswa/service"
@@ -21,6 +25,10 @@ func main() {
 	db := config.InitDB(*cfg)
 	migration.Migrate(db)
 
+	autentikasiData := _autentikasiData.New(db)
+	autentikasiSrv := _autentikasiService.New(autentikasiData)
+	autentikasiHdl := _autentikasiHandler.New(autentikasiSrv)
+
 	guruData := _guruData.New(db)
 	guruSrv := _guruService.New(guruData)
 	guruHdl := _guruHandler.New(guruSrv)
@@ -34,6 +42,8 @@ func main() {
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "method=${method}, uri=${uri}, status=${status}, error=${error}\n",
 	}))
+
+	e.POST(("/login"), autentikasiHdl.Login())
 
 	e.POST("/siswa", studentHdl.Register())
 	// e.POST("/login", userHdl.Login())

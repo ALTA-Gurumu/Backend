@@ -30,6 +30,7 @@ type Guru struct {
 func SiswaToCore(data Siswa) autentikasi.Core {
 	return autentikasi.Core{
 		ID:       data.ID,
+		Nama:     data.Nama,
 		Email:    data.Email,
 		Password: data.Password,
 		Role:     data.Role,
@@ -39,6 +40,7 @@ func SiswaToCore(data Siswa) autentikasi.Core {
 func GuruToCore(data Guru) autentikasi.Core {
 	return autentikasi.Core{
 		ID:       data.ID,
+		Nama:     data.Nama,
 		Email:    data.Email,
 		Password: data.Password,
 		Role:     data.Role,

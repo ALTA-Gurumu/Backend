@@ -21,7 +21,7 @@ func New(srv guru.GuruService) guru.GuruHandler {
 // Delete implements guru.GuruHandler
 func (gc *guruControl) Delete() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		token := c.Get("guru")
+		token := c.Get("user")
 
 		err := gc.srv.Delete(token)
 		if err != nil {

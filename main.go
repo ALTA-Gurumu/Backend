@@ -42,6 +42,7 @@ func main() {
 	// e.DELETE("/users", userHdl.Delete(), middleware.JWT([]byte(config.JWT_KEY)))
 
 	e.POST("/guru", guruHdl.Register())
+	e.DELETE("/guru", guruHdl.Delete(), middleware.JWT([]byte(config.JWT_KEY)))
 	if err := e.Start(":8000"); err != nil {
 		log.Println(err.Error())
 	}

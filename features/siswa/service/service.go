@@ -55,11 +55,26 @@ func (suc *siswaUseCase) Register(newStudent siswa.Core) (siswa.Core, error) {
 }
 
 func (suc *siswaUseCase) Profile(token interface{}) (siswa.Core, error) {
-	return siswa.Core{}, nil
+	id := helper.ExtractToken(token)
+	if id <= 0 {
+		return siswa.Core{}, errors.New("id tidak valid")
+	}
+
+	res, err := suc.qry.Profile(uint(id))
+	if err != nil {
+		msg := ""
+		if strings.Contains(err.Error(), "not found") {
+			msg = "data not found"
+		} else {
+			msg = "server problem"
+		}
+		return siswa.Core{}, errors.New(msg)
+	}
+	return res, nil
 }
 
-func (suc *siswaUseCase) Update(token interface{}, updateData siswa.Core, avatar *multipart.FileHeader) (siswa.Core, error) {
-	return siswa.Core{}, nil
+func (suc *siswaUseCase) Update(token interface{}, updateData siswa.Core, avatar *multipart.FileHeader) error {
+	return nil
 }
 
 func (suc *siswaUseCase) Delete(token interface{}) error {

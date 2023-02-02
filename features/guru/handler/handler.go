@@ -20,7 +20,16 @@ func New(srv guru.GuruService) guru.GuruHandler {
 
 // Delete implements guru.GuruHandler
 func (gc *guruControl) Delete() echo.HandlerFunc {
-	panic("unimplemented")
+	return func(c echo.Context) error {
+		token := c.Get("guru")
+
+		err := gc.srv.Delete(token)
+		if err != nil {
+			return c.JSON(helper.PrintErrorResponse(err.Error()))
+		}
+
+		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "berhasil delete profil guru", err))
+	}
 }
 
 // Profile implements guru.GuruHandler

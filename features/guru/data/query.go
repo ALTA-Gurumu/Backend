@@ -37,16 +37,30 @@ func (gq *guruQuery) Register(newGuru guru.Core) (guru.Core, error) {
 }
 
 // Profile implements guru.GuruData
-func (*guruQuery) Profile(id uint) (guru.Core, error) {
+func (gq *guruQuery) Profile(id uint) (guru.Core, error) {
 	panic("unimplemented")
 }
 
 // Update implements guru.GuruData
-func (*guruQuery) Update(id uint, updateData guru.Core) (guru.Core, error) {
+func (gq *guruQuery) Update(id uint, updateData guru.Core) (guru.Core, error) {
 	panic("unimplemented")
 }
 
 // Delete implements guru.GuruData
-func (*guruQuery) Delete(id uint) error {
-	panic("unimplemented")
+func (gq *guruQuery) Delete(id uint) error {
+	qry := gq.db.Delete(&Guru{}, id)
+	err := qry.Error
+
+	affrows := qry.RowsAffected
+	if affrows == 0 {
+		log.Println("no rows affected")
+		return errors.New("tidak ada data user yang terhapus")
+	}
+
+	if err != nil {
+		log.Println("delete query error")
+		return errors.New("tidak bisa menghapus data")
+	}
+
+	return nil
 }

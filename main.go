@@ -46,10 +46,7 @@ func main() {
 	e.POST(("/login"), autentikasiHdl.Login())
 
 	e.POST("/siswa", studentHdl.Register())
-	// e.POST("/login", userHdl.Login())
-	// e.GET("/users", userHdl.Profile(), middleware.JWT([]byte(config.JWT_KEY)))
-	// e.PUT("/users", userHdl.Update(), middleware.JWT([]byte(config.JWT_KEY)))
-	// e.DELETE("/users", userHdl.Delete(), middleware.JWT([]byte(config.JWT_KEY)))
+	e.GET("/siswa", studentHdl.Profile(), middleware.JWT([]byte(config.JWT_KEY)))
 
 	e.POST("/guru", guruHdl.Register())
 	if err := e.Start(":8000"); err != nil {

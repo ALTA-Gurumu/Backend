@@ -36,10 +36,16 @@ func (sq *siswaQuery) Register(newStudent siswa.Core) (siswa.Core, error) {
 	return ToCore(cnv), nil
 }
 func (sq *siswaQuery) Profile(id uint) (siswa.Core, error) {
-	return siswa.Core{}, nil
+	res := Siswa{}
+	if err := sq.db.Where("id = ?", id).First(&res).Error; err != nil {
+		log.Println("Get by Id query error", err.Error())
+		return siswa.Core{}, err
+	}
+
+	return ToCore(res), nil
 }
-func (sq *siswaQuery) Update(id uint, updateData siswa.Core) (siswa.Core, error) {
-	return siswa.Core{}, nil
+func (sq *siswaQuery) Update(id uint, updateData siswa.Core) error {
+	return nil
 }
 func (sq *siswaQuery) Delete(id uint) error {
 	return nil

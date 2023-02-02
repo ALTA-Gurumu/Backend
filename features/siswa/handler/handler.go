@@ -35,7 +35,16 @@ func (sc *siswaControl) Register() echo.HandlerFunc {
 }
 
 func (sc *siswaControl) Profile() echo.HandlerFunc {
-	return nil
+	return func(c echo.Context) error {
+		token := c.Get("user")
+
+		res, err := sc.srv.Profile(token)
+		if err != nil {
+			return c.JSON(helper.PrintErrorResponse(err.Error()))
+		}
+		dataResp := ToResponseProfil(res)
+		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "berhasil lihat profil", dataResp))
+	}
 }
 
 func (sc *siswaControl) Delete() echo.HandlerFunc {

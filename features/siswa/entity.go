@@ -27,13 +27,13 @@ type SiswaHandler interface {
 type SiswaService interface {
 	Register(newStudent Core) (Core, error)
 	Profile(token interface{}) (Core, error)
-	Update(token interface{}, updateData Core, avatar *multipart.FileHeader) (Core, error)
+	Update(token interface{}, updateData Core, avatar *multipart.FileHeader) error
 	Delete(token interface{}) error
 }
 
 type SiswaData interface {
 	Register(newStudent Core) (Core, error)
 	Profile(id uint) (Core, error)
-	Update(id uint, updateData Core) (Core, error)
+	Update(id uint, updateData Core) error
 	Delete(id uint) error
 }

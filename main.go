@@ -9,6 +9,11 @@ import (
 	_autentikasiData "Gurumu/features/autentikasi/data"
 	_autentikasiHandler "Gurumu/features/autentikasi/handler"
 	_autentikasiService "Gurumu/features/autentikasi/service"
+
+	_jadwalData "Gurumu/features/jadwal/data"
+	_jadwalHandler "Gurumu/features/jadwal/handler"
+	_jadwalService "Gurumu/features/jadwal/service"
+
 	"Gurumu/features/siswa/data"
 	"Gurumu/features/siswa/handler"
 	"Gurumu/features/siswa/service"
@@ -33,6 +38,10 @@ func main() {
 	guruSrv := _guruService.New(guruData)
 	guruHdl := _guruHandler.New(guruSrv)
 
+	jadwalData := _jadwalData.New(db)
+	jadwalSrv := _jadwalService.New(jadwalData)
+	jadwalHdl := _jadwalHandler.New(jadwalSrv)
+
 	studentData := data.New(db)
 	studentSrv := service.New(studentData)
 	studentHdl := handler.New(studentSrv)
@@ -50,6 +59,9 @@ func main() {
 
 	e.POST("/guru", guruHdl.Register())
 	e.DELETE("/guru", guruHdl.Delete(), middleware.JWT([]byte(config.JWT_KEY)))
+
+	e.POST("/jadwal", jadwalHdl.Add(), middleware.JWT([]byte(config.JWT_KEY)))
+
 	if err := e.Start(":8000"); err != nil {
 		log.Println(err.Error())
 	}

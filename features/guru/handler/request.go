@@ -31,8 +31,8 @@ func ReqToCore(data interface{}) *guru.Core {
 		res.Password = cnv.Password
 	case RegisterRequest:
 		cnv := data.(RegisterRequest)
-		res.Nama = cnv.Nama
 		res.Email = cnv.Email
+		res.Nama = cnv.Nama
 		res.Password = cnv.Password
 	case UpdateRequest:
 		cnv := data.(UpdateRequest)

@@ -78,5 +78,21 @@ func (suc *siswaUseCase) Update(token interface{}, updateData siswa.Core, avatar
 }
 
 func (suc *siswaUseCase) Delete(token interface{}) error {
+	id := helper.ExtractToken(token)
+	if id <= 0 {
+		return errors.New("id tidak valid")
+	}
+
+	err := suc.qry.Delete(uint(id))
+	if err != nil {
+		msg := ""
+		if strings.Contains(err.Error(), "not found") {
+			msg = "data not found"
+		} else {
+			msg = "server problem"
+		}
+		return errors.New(msg)
+	}
+
 	return nil
 }

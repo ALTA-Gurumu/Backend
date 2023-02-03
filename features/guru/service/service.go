@@ -81,6 +81,6 @@ func (*guruUseCase) Profile(token interface{}) (guru.Core, error) {
 }
 
 // Update implements guru.GuruService
-func (*guruUseCase) Update(token interface{}, updateData guru.Core, avatar *multipart.FileHeader) (guru.Core, error) {
+func (*guruUseCase) Update(token interface{}, updateData guru.Core, avatar *multipart.FileHeader) error {
 	panic("unimplemented")
 }

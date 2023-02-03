@@ -74,6 +74,32 @@ func (suc *siswaUseCase) Profile(token interface{}) (siswa.Core, error) {
 }
 
 func (suc *siswaUseCase) Update(token interface{}, updateData siswa.Core, avatar *multipart.FileHeader) error {
+	id := helper.ExtractToken(token)
+	if id <= 0 {
+		return errors.New("id tidak valid")
+	}
+
+	//trouble
+	if avatar != nil {
+		path, _ := helper.UploadStudentProfilePhotoS3(*avatar, updateData.Email)
+		// if err != nil {
+		// 	return err
+		// }
+		updateData.Avatar = path
+	}
+
+	// log.Println(updateData.Avatar)
+	err := suc.qry.Update(uint(id), updateData)
+	if err != nil {
+		msg := ""
+		if strings.Contains(err.Error(), "not found") {
+			msg = "data not found"
+		} else {
+			msg = "server problem"
+		}
+		log.Println("error update query: ", err.Error())
+		return errors.New(msg)
+	}
 	return nil
 }
 

@@ -38,13 +38,16 @@ func (gq *guruQuery) Register(newGuru guru.Core) (guru.Core, error) {
 
 // Profile implements guru.GuruData
 func (gq *guruQuery) Profile(id uint) (guru.Core, error) {
-	panic("unimplemented")
+	
 }
 
 // Update implements guru.GuruData
 func (gq *guruQuery) Update(id uint, updateData guru.Core) (guru.Core, error) {
-	panic("unimplemented")
-}
+	cnv := CoreToData(updateData)
+	tx := gq.db.Model(&Guru{}).Where("id = ? AND deleted_at IS NULL", id).Updates(&cnv)
+	if tx.Error != nil {
+		return tx.Error
+	}
 
 // Delete implements guru.GuruData
 func (gq *guruQuery) Delete(id uint) error {

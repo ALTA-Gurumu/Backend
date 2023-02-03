@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
-var ObjectURL string = "https://capstonegurumu.s3.ap-southeast-1.amazonaws.com/"
+var ObjectURL string = "https://try123ok.s3.ap-southeast-1.amazonaws.com/"
 
 func UploadStudentProfilePhotoS3(file multipart.FileHeader, email string) (string, error) {
 	s3Session := config.S3Config()
@@ -20,18 +20,18 @@ func UploadStudentProfilePhotoS3(file multipart.FileHeader, email string) (strin
 		return "", err
 	}
 	defer src.Close()
-	ext := filepath.Ext(file.Filename)
+	// ext := filepath.Ext(file.Filename)
 
 	_, err = uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String("capstonegurumu"),
-		Key:    aws.String("files/students/" + email + "/profile-photo" + ext),
+		Bucket: aws.String("try123ok"),
+		Key:    aws.String("files/siswa/" + email + "/" + file.Filename),
 		Body:   src,
 		ACL:    aws.String("public-read"),
 	})
 	if err != nil {
-		return "", errors.New("problem with upload student's profile photo")
+		return "", errors.New("problem with upload avatar siswa")
 	}
-	path := ObjectURL + "files/students/" + email + "/profile-photo" + ext
+	path := ObjectURL + "files/siswa/" + email + "/" + file.Filename
 	return path, nil
 }
 
@@ -46,15 +46,15 @@ func UploadTeacherProfilePhotoS3(file multipart.FileHeader, email string) (strin
 	ext := filepath.Ext(file.Filename)
 
 	_, err = uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String("capstonegurumu"),
-		Key:    aws.String("files/teachers/" + email + "/profile-photo" + ext),
+		Bucket: aws.String("try123ok"),
+		Key:    aws.String("files/guru/" + email + "/avatar" + ext),
 		Body:   src,
 		ACL:    aws.String("public-read"),
 	})
 	if err != nil {
-		return "", errors.New("problem with upload teacher's profile photo")
+		return "", errors.New("problem with upload avatar guru")
 	}
-	path := ObjectURL + "files/teachers/" + email + "/profile-photo" + ext
+	path := ObjectURL + "files/guru/" + email + "/avatar" + ext
 	return path, nil
 }
 
@@ -69,14 +69,14 @@ func UploadTeacherCertificateS3(file multipart.FileHeader, email string) (string
 	ext := filepath.Ext(file.Filename)
 
 	_, err = uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String("capstonegurumu"),
-		Key:    aws.String("files/teachers/" + email + "/certificate" + ext),
+		Bucket: aws.String("try123ok"),
+		Key:    aws.String("files/guru/" + email + "/certificate" + ext),
 		Body:   src,
 		ACL:    aws.String("public-read"),
 	})
 	if err != nil {
-		return "", errors.New("problem with upload teacher's certificate")
+		return "", errors.New("problem with upload certificate guru")
 	}
-	path := ObjectURL + "files/teachers/" + email + "/certificate" + ext
+	path := ObjectURL + "files/guru/" + email + "/certificate" + ext
 	return path, nil
 }

@@ -47,10 +47,18 @@ func (sc *siswaControl) Profile() echo.HandlerFunc {
 	}
 }
 
-func (sc *siswaControl) Delete() echo.HandlerFunc {
+func (sc *siswaControl) Update() echo.HandlerFunc {
 	return nil
 }
 
-func (sc *siswaControl) Update() echo.HandlerFunc {
-	return nil
+func (sc *siswaControl) Delete() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		token := c.Get("user")
+
+		err := sc.srv.Delete(token)
+		if err != nil {
+			return c.JSON(helper.PrintErrorResponse(err.Error()))
+		}
+		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "berhasil hapus akun"))
+	}
 }

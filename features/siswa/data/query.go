@@ -48,5 +48,12 @@ func (sq *siswaQuery) Update(id uint, updateData siswa.Core) error {
 	return nil
 }
 func (sq *siswaQuery) Delete(id uint) error {
+	data := Siswa{}
+
+	if err := sq.db.Delete(&data, id).Error; err != nil {
+		log.Println("Delete query error", err.Error())
+		return err
+	}
+
 	return nil
 }

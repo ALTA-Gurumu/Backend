@@ -12,14 +12,14 @@ servers:
 tags:
   - name: Autentifikasi
   - name: Guru
-  - name: Murid
+  - name: Siswa
   - name: Reservasi
   
 paths:
   /login:
     post:
       tags:
-        - Authentication
+        - Autentifikasi
       summary: untuk login ke akun
       requestBody:
         content:
@@ -48,6 +48,8 @@ paths:
                             type: string
                           email:
                             type: string 
+                          role:
+                            type: string
                           token:
                             type: string
                   message:
@@ -56,6 +58,7 @@ paths:
                   data:
                     nama: Namaku
                     email: Emailku@gmail.com
+                    role: guru
                     token: 12344567890qwertyuiop
                   message: login sukses
                       
@@ -75,8 +78,6 @@ paths:
                   schema:
                       type: object
                       properties:
-                          username:
-                              type: string
                           nama:
                               type: string
                           email:
@@ -85,7 +86,6 @@ paths:
                           password:
                               type: string
                   example:
-                      username: budidi
                       nama: budi didi
                       email: budi@yahoo.com
                       password: "budi123"
@@ -100,7 +100,7 @@ paths:
                               data:
                                   type: object
                                   properties:
-                                      username:
+                                      nama:
                                           type: string
                                       email:
                                           type: string
@@ -109,7 +109,7 @@ paths:
                                   type: string
                       example:
                           data:
-                              username: budi didi
+                              nama: budi didi
                               email: budi@yahoo.com
                           message: "berhasil menambahkan data"
           400:
@@ -182,11 +182,11 @@ paths:
     get:
         tags:
             - Guru
-        summary: untuk menampilkan profil guru di beranda
-        description: untuk menampilkan semua profil guru di beranda
+        summary: untuk menampilkan daftar profil guru di beranda
+        description: untuk menampilkan daftar profil guru di beranda
         responses:
           '200':
-            description: sukses menampilkan semua profil guru
+            description: sukses menampilkan daftar profil guru
             content:
               application/json:
                 schema:
@@ -228,22 +228,36 @@ paths:
                         pelajaran: Matematika
                         avatar: greta.jpg
                     message:
-                      example: sukses menampilkan semua profil guru
+                      example: sukses menampilkan daftar profil guru
           '400':
             $ref: '#/components/responses/Response400'
           '500':
             $ref: '#/components/responses/Response500'
-  /guru/sesiku:
+
+  /sesiku:
     get:
       tags:
-        - Guru
-      summary: untuk menampilkan semua riwayat sesi guru
-      description: untuk menampilkan semua riwayat sesi guru
+        - Reservasi
+      summary: untuk menampilkan semua riwayat sesi 
+      description: untuk menampilkan semua riwayat sesi
+      parameters:
+        - in: query
+          name: role
+          schema: 
+            type: string
+        - in: query
+          name: id
+          schema:
+            type: integer
+        - in: query
+          name: status
+          schema:
+            type: string
       security:
         - jwt_auth: []
       responses:
         '200':
-          description: sukses menampilkan semua sesi guru
+          description: sukses menampilkan semua sesi 
           content:
             application/json:
               schema:
@@ -254,7 +268,7 @@ paths:
                     items:
                       type: object
                       properties:
-                        sesi_id:
+                        reservasi_id:
                           type: integer
                         nama_murid:
                           type: string
@@ -276,7 +290,7 @@ paths:
                       pelajaran: Bahasa Korea
                       tanggal: 12-02-2023
                       avatar_murid: samsulronaldo.jpg
-                  message: sukses menampilkan menampilkan semua sesi guru
+                  message: sukses menampilkan menampilkan semua sesi 
         '400':
           $ref: '#/components/responses/Response400'
         '500':
@@ -287,8 +301,6 @@ paths:
         - Guru
       summary: untuk menampilkan detail profil guru
       description: untuk menampilkan detail profil guru
-      security:
-        - jwt_auth : []
       parameters:
             - name: guru_id
               in: path
@@ -306,39 +318,89 @@ paths:
                   data:
                     type: object
                     properties:
-                      user:
-                        type: object
-                        properties:
-                          guru_id:
+                      guru_id:
                             type: integer
                             example: 1
-                          nama:
-                            type: string
-                            example: Budi
-                          email:
-                            type: string
-                            example: budi@yahoo.com
-                          alamat:
-                            type: string
-                            example: "Jl. ku tak panjang"
-                          telefon:
-                            type: string
-                            example: 081332494705
-                          deskripsi:
-                            type: string
-                            example: hey, its me your future teacher.
-                          ijazah:
-                            type: string
-                            example: bachelordegree.jpg
-                          pelajaran:
-                            type: string
-                            example: Matematika, Bahasa Inggris
-                          avatar:
-                            type: string 
-                            example : avatar1.jpg    
+                      nama:
+                          type: string
+                          example: Budi
+                      email:
+                          type: string
+                          example: budi@yahoo.com
+                      alamat:
+                          type: string
+                          example: "Jl. ku tak panjang"
+                      elefon:
+                          type: string
+                          example: 081332494705
+                      deskripsi:
+                          type: string
+                          example: hey, its me your future teacher.
+                      ijazah:
+                          type: string
+                          example: bachelordegree.jpg
+                      pelajaran:
+                          type: string
+                          example: Matematika, Bahasa Inggris
+                      avatar:
+                          type: string 
+                          example : avatar1.jpg    
                   message:
                     type: string
                     example: sukses menampilkan detail profil guru
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'
+  /jadwal:
+    post:
+      tags:
+      - Guru
+      summary: untuk menambahkan jadwal guru
+      description: untuk menambahkan jadwal guru
+      security:
+        - jwt_auth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    tanggal:
+                      type: string
+                      format: date
+                    jam:
+                      type: string
+                      example: "01:00 PM"
+      responses:
+        '200':
+          description: sukses menambahkan jadwal guru
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      guru_id:
+                        type: integer
+                        example: 11
+                      tanggal:
+                        type: string
+                        format: date
+                      jam:
+                        type: string
+                        example: "01:00 PM"
+                  message:
+                    type: string
+                    example: berhasil menambahkan jadwal
         '400':
           $ref: '#/components/responses/Response400'
         '500':
@@ -399,6 +461,8 @@ paths:
         - Siswa
       summary: profil siswa
       description: digunakan untuk menampilkan profil siswa
+      security:
+        - jwt_auth: []
       responses:
         '200':
           description: berhasil menampilkan profil siswa
@@ -474,30 +538,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  data:
-                    type: object
-                    properties:
-                          id:
-                            type: integer
-                            example: 1
-                          nama:
-                            type: string
-                            example: John Doe
-                          email:
-                            type: string
-                            example: johndoe@gmail.com
-                          alamat:
-                            type: string
-                            example: Surabaya, Jawa Timur
-                          telepon:
-                            type: string
-                            example: 08123456789
-                          avatar:
-                            type: string 
-                            example : https://capstonegurumu.s3.ap-southeast-1.amazonaws.com/files/students/tina123@gmail.com/avatar.jpeg
                   message:
                     type: string
-                    example: berhasil mengedit data siswa
+                    example: berhasil mengganti profil siswa
         '400':
           $ref: '#/components/responses/Response400'
         '500':
@@ -524,46 +567,6 @@ paths:
           $ref: '#/components/responses/Response400'
         '500':
           $ref: '#/components/responses/Response500'
-  /siswa/sesiku:
-    get:
-      tags:
-        - Siswa
-      summary: menampilkan semua riwayat sesi siswa
-      description: menampilkan semua riwayat sesi siswa
-      responses:
-        '200':
-          description: berhasil menampilkan riwayat sesi siswa
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                  message:
-                    type: string
-              example:
-                data:
-                  -
-                    id: 1
-                    nama_guru: Einstein
-                    pelajaran: Fisika
-                    tanggal: 12-01-2023
-                    status: Selesai
-                  -
-                    id: 2
-                    nama_guru: Socrates
-                    pelajaran: Filsafat
-                    tanggal: 14-01-2023
-                    status: Sedang berjalan
-                message:
-                    example: berhasil menampilkan riwayat sesi siswa
-        '400':
-          $ref: '#/components/responses/Response400'
-        '500':
-          $ref: '#/components/responses/Response500'       
         
   /reservasi:
     post:
@@ -571,6 +574,8 @@ paths:
       - "Reservasi"
       description: untuk reservasi guru
       summary: reservasi guru
+      security:
+        - jwt_auth: []
       requestBody: 
         content:
           application/json:
@@ -579,20 +584,35 @@ paths:
               properties:
                 guru_id:
                   type: integer
-                nama_guru:
-                  type: string
-                tarif:
-                  type: number
                 pesan:
                   type: string
                 metode_belajar:
                   type: string
                 tanggal:
                   type: string
+                jam:
+                  type: string
                 alamat:
                   type: string
                 telepon:
                   type: string
+                metode_pembayaran:
+                  type: string
+                  enum:
+                    - transfer_va_bca
+                    - transfer_va_bri
+                    - transfer_va_bni
+                    - transfer_va_permata
+                    - qris
+            example:
+              guru_id: 11
+              pesen: Halo saya ingin belajar matematika
+              metode_belajar: online
+              tanggal: Senin, 20 januari 2023
+              jam: 09:00 PM
+              alamat: Sukabumi, Jawa Barat
+              telepon: "081245674452"
+              metode_pembayaran: transfer_va_bca
       responses:
         '201':
           description: sukses reservasi guru
@@ -607,99 +627,77 @@ paths:
                     type: string
               example:
                 data:
-                  guru_id: 1
-                  nama_guru: albert
+                  id: 1
+                  guru_id: 11
+                  nama_guru: Albert
                   tarif: 50000
                   pesan: Halo, Saya ingin belajar matematika
-                  metode_belajar: offline
-                  tanggal: "12-02-2023"
-                  alamat: Jl. Merdeka 17, Jakarta
+                  metode_belajar: online
+                  tanggal: Senin, 20 januari 2023
+                  jam: 09:00 PM
+                  alamat: Sukabumi, Jawa Barat
                   telepon: "081245674452"
-                message: sukses reservasi sesi dengan guru
-        '400':
-          $ref: '#/components/responses/Response400'
-        '500':
-          $ref: '#/components/responses/Response500'    
-  /pembayaran/{reservasi_id}:
-    post:
-      tags:
-        - "Pembayaran"
-      description: proses pembayaran
-      summary: menambahkan pembayaran
-      parameters:
-        - name: reservasi_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - jwt_auth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                metode_pembayaran:
-                  type: string
-                  enum:
-                    - transfer_va_bca
-                    - transfer_va_bri
-                    - transfer_va_bni
-                    - transfer_va_permata
-                    - qris
-            example:
-              data:
-                metode_pembayaran: transfer_va_bca
-      responses:
-        '201':  
-          description: sukses menambahkan pembayaran
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      pembayaran_id:
-                        type: integer
-                      tanggal:
-                        type: string
-                      total_tarif: 
-                        type: integer
-                      metode_pembayaran:
-                        type: string
-                      kode_transaksi:
-                        type: string
-                      nomer_va:
-                        type: string
-                      bank_penerima:
-                        type: string
-                      kode_qris:
-                        type: string
-                      status:
-                        type: string
-                  message:
-                    type: string
-              example: 
-                data:
-                  pembayaran_id: 1
-                  tanggal: "01-02-2023"
-                  total_tarif: 50000
                   metode_pembayaran: transfer_va_bca
-                  kode_transaksi: "1234567"
-                  nomer_va: "9897642345677"
-                  bank_penerima: "bca"
-                  kode_qris: "-"
-                  status: "pending"
-                message: sukses menambahkan pembayaran
-                    
+                  transaksi_id: 10725c0-
+                  nomer_va: "999999999999"
+                  bank_penerima: bca
+                  status_pembayaran: sukses
+                  tautan_gmeet: "https://meet.google.com/zka-jrhg-kho"
+                  status_pembelajaran: belum selesai
+                  
+                message: sukses reservasi guru
         '400':
           $ref: '#/components/responses/Response400'
         '500':
           $ref: '#/components/responses/Response500'    
-          
+  /ulasan:
+    get:
+      tags:
+        - Ulasan
+      summary: untuk mendapatkan ulasan dan penilaian di landing page
+      description: untuk mendapatkan ulasan dan penilaian di landing page
+      responses:
+          '201':  
+            description: sukses mendapatkan ulasan dan penilaian
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:  
+                            ulasan_id:
+                              type: integer
+                            nama_siswa:
+                              type: string
+                            rating:
+                              type: integer
+                            ulasan:
+                              type: string
+                      message: 
+                        type: string
+                example:
+                    data:
+                      - ulasan_id: 1
+                        nama_guru: Bambang
+                        penilaian: 4
+                        ulasan: bagus gurunya
+                      - ulasan_id: 3
+                        nama_guru: Yanto
+                        penilaian: 5
+                        ulasan: lydia okelah
+                      - ulasan_id: 5
+                        nama_guru: Rohman
+                        penilaian: 4
+                        ulasan: menjelaskan dengan lancar dan enak
+                    message: sukses menampilkan ulasan 
+          '400':
+            $ref: '#/components/responses/Response400'
+          '500':
+            $ref: '#/components/responses/Response500'  
   /ulasan/{guru_id}:
     post:
       tags:
@@ -777,17 +775,17 @@ paths:
                             type: string
                 example:
                     data:
-                    - review_id: 1
-                      student_name: Tomas
-                      rating: 4
+                    - ulasan_id: 1
+                      nama_siswa: Tomas
+                      penilaian: 4
                       ulasan: bagus gurunya
-                    - review_id: 3
-                      student_name: Herdi
-                      rating: 5
+                    - ulasan_id: 3
+                      nama_siswa: Herdi
+                      penilain: 5
                       ulasan: lydia okelah
-                    - review_id: 5
-                      student_name: Samsul
-                      rating: 4
+                    - ulasan_id: 5
+                      nama_siswa: Samsul
+                      penilaian: 4
                       ulasan: menjelaskan dengan lancar dan enak
         '400':
           $ref: '#/components/responses/Response400'
@@ -802,7 +800,7 @@ components:
       description: "used JWT token for Auth"
   responses:
     Response400:
-      description: bad request
+      description: "kesalahan input dari sisi user"
       content:
         application/json:
           schema:
@@ -810,9 +808,9 @@ components:
             properties:
               message:
                 type: string
-                example: Bad Request
+                example: "kesalahan input dari sisi user"
     Response500:
-      description: server error
+      description: "kesalahan dari server"
       content:
         application/json:
           schema:
@@ -820,4 +818,4 @@ components:
             properties:
               message:
                 type: string
-                example: server error
+                example: "terjadi kesalahan pada server"

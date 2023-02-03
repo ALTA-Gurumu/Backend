@@ -3,7 +3,10 @@ package handler
 import (
 	"Gurumu/features/siswa"
 	"Gurumu/helper"
+	"log"
+	"mime/multipart"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -48,7 +51,36 @@ func (sc *siswaControl) Profile() echo.HandlerFunc {
 }
 
 func (sc *siswaControl) Update() echo.HandlerFunc {
-	return nil
+	return func(c echo.Context) error {
+		token := c.Get("user")
+		var avatar *multipart.FileHeader
+
+		updateData := UpdateRequest{}
+		err := c.Bind(&updateData)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, "format inputan salah")
+		}
+		file, err := c.FormFile("avatar")
+		if file != nil && err == nil {
+			avatar = file
+		} else if file != nil && err != nil {
+			log.Println("error baca avatar")
+			return c.JSON(http.StatusBadRequest, helper.ErrorResponse("inputan salah"))
+		}
+
+		err2 := sc.srv.Update(token, *ToCore(updateData), avatar)
+		if err2 != nil {
+			if strings.Contains(err.Error(), "not found") {
+				log.Println("data not found: ", err.Error())
+				return c.JSON(http.StatusNotFound, helper.ErrorResponse("user not found"))
+			} else {
+				log.Println("error update service: ", err.Error())
+				return c.JSON(http.StatusInternalServerError, helper.ErrorResponse("server problem"))
+			}
+		}
+
+		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "berhasil mengganti profil siswa"))
+	}
 }
 
 func (sc *siswaControl) Delete() echo.HandlerFunc {

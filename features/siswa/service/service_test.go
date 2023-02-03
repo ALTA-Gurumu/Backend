@@ -5,6 +5,7 @@ import (
 	"Gurumu/helper"
 	"Gurumu/mocks"
 	"errors"
+	"mime/multipart"
 	"testing"
 
 	"github.com/golang-jwt/jwt"
@@ -143,7 +144,7 @@ func TestDelete(t *testing.T) {
 		data.AssertExpectations(t)
 	})
 
-	t.Run("jwt not valid", func(t *testing.T) {
+	t.Run("jwt tidak valid", func(t *testing.T) {
 		srv := New(data)
 
 		_, token := helper.GenerateJWT(1)
@@ -153,7 +154,7 @@ func TestDelete(t *testing.T) {
 		assert.ErrorContains(t, err, "tidak valid")
 	})
 
-	t.Run("data not found", func(t *testing.T) {
+	t.Run("data tidak ditemukan", func(t *testing.T) {
 		data.On("Delete", uint(4)).Return(errors.New("data not found")).Once()
 
 		srv := New(data)
@@ -175,6 +176,71 @@ func TestDelete(t *testing.T) {
 		pToken := token.(*jwt.Token)
 		pToken.Valid = true
 		err := srv.Delete(pToken)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "server")
+		data.AssertExpectations(t)
+	})
+}
+
+func TestUpdate(t *testing.T) {
+	data := mocks.NewSiswaData(t)
+
+	inputData := siswa.Core{
+		Nama:    "putra",
+		Email:   "putra123@gmail.com",
+		Alamat:  "Mojokerto",
+		Telepon: "08123456789",
+		Avatar:  "https://try123ok.s3.ap-southeast-1.amazonaws.com/files/siswa/putra123@gmail.com/avatar.jpeg",
+	}
+
+	var avatar *multipart.FileHeader
+
+	t.Run("update success", func(t *testing.T) {
+		data.On("Update", uint(1), mock.Anything).Return(nil).Once()
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(1)
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+
+		err := srv.Update(pToken, inputData, avatar)
+		assert.Nil(t, err)
+		data.AssertExpectations(t)
+	})
+
+	t.Run("jwt tidak valid", func(t *testing.T) {
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(1)
+
+		err := srv.Update(token, inputData, avatar)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "tidak valid")
+	})
+
+	t.Run("data tidak ditemukan", func(t *testing.T) {
+		data.On("Update", uint(1), inputData).Return(errors.New("data not found")).Once()
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(1)
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+
+		err := srv.Update(pToken, inputData, avatar)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "not found")
+		data.AssertExpectations(t)
+	})
+
+	t.Run("masalah pada server", func(t *testing.T) {
+		data.On("Update", uint(1), inputData).Return(errors.New("server problem")).Once()
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(1)
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+
+		err := srv.Update(pToken, inputData, avatar)
 		assert.NotNil(t, err)
 		assert.ErrorContains(t, err, "server")
 		data.AssertExpectations(t)

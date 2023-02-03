@@ -106,5 +106,41 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 
 		return nil
 	}
+	res, err := guc.qry.GetByID(uint(userID))
+	if err != nil {
+		log.Println(err)
+		msg := ""
+		if strings.Contains(err.Error(), "not found") {
+			msg = "data tidak ditemukan"
+		} else {
+			msg = "terjadi kesalahan pada sistem server"
+		}
+		return errors.New(msg)
+	}
+
+	imageURL, err := helper.UploadTeacherProfilePhotoS3(*avatar, res.Email)
+	if err != nil {
+		log.Println(err)
+		var msg string
+		if strings.Contains(err.Error(), "kesalahan input") {
+			msg = err.Error()
+		} else {
+			msg = "gagal upload gambar karena kesalahan pada sistem server"
+		}
+		return errors.New(msg)
+	}
+	updateData.Avatar = imageURL
+
+	if err := guc.qry.Update(uint(userID), updateData); err != nil {
+		log.Println(err)
+		msg := ""
+		if strings.Contains(err.Error(), "tidak ditemukan") {
+			msg = err.Error()
+		} else {
+			msg = "terjadi kesalahan pada sistem server"
+		}
+		return errors.New(msg)
+	}
+
 	return nil
 }

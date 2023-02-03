@@ -37,7 +37,7 @@ func (gq *guruQuery) Register(newGuru guru.Core) (guru.Core, error) {
 }
 
 // Profile implements guru.GuruData
-func (gq *guruQuery) Profile(id uint) (guru.Core, error) {
+func (gq *guruQuery) GetByID(id uint) (guru.Core, error) {
 	panic("unimplemented")
 }
 

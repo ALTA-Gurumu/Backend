@@ -81,6 +81,30 @@ func (*guruUseCase) Profile(token interface{}) (guru.Core, error) {
 }
 
 // Update implements guru.GuruService
-func (*guruUseCase) Update(token interface{}, updateData guru.Core, avatar *multipart.FileHeader) error {
-	panic("unimplemented")
+func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *multipart.FileHeader) error {
+	userID := helper.ExtractToken(token)
+	if userID <= 0 {
+		return errors.New("token tidak valid")
+	}
+
+	if err := guc.vld.Struct(&updateData); err != nil {
+		log.Println(err)
+		msg := helper.ValidationErrorHandle(err)
+		return errors.New(msg)
+	}
+	if avatar == nil {
+		if err := guc.qry.Update(uint(userID), updateData); err != nil {
+			log.Println(err)
+			msg := ""
+			if strings.Contains(err.Error(), "tidak ditemukan") {
+				msg = err.Error()
+			} else {
+				msg = "terjadi kesalahan pada sistem server"
+			}
+			return errors.New(msg)
+		}
+
+		return nil
+	}
+	return nil
 }

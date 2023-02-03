@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
@@ -37,23 +36,6 @@ func UploadStudentProfilePhotoS3(file multipart.FileHeader, email string) (strin
 }
 
 func UploadTeacherProfilePhotoS3(file multipart.FileHeader, email string) (string, error) {
-	// kalau file kosong = hapus file di S3
-	if file.Filename == "" {
-		s3Session := config.S3Config()
-		s3Client := s3.New(s3Session)
-
-		_, err := s3Client.DeleteObject(&s3.DeleteObjectInput{
-			Bucket: aws.String("try123ok"),
-			Key:    aws.String("files/siswa/" + email + "/" + file.Filename),
-		})
-
-		if err != nil {
-			return "", errors.New("problem deleting the existing image")
-		}
-
-		return "", nil
-	}
-
 	s3Session := config.S3Config()
 	uploader := s3manager.NewUploader(s3Session)
 	src, err := file.Open()

@@ -20,7 +20,7 @@ func New(db *gorm.DB) siswa.SiswaData {
 
 func (sq *siswaQuery) Register(newStudent siswa.Core) (siswa.Core, error) {
 	existed := 0
-	sq.db.Raw("SELECT COUNT(*) FROM students WHERE deleted_at IS NULL AND email = ?", newStudent.Email).Scan(&existed)
+	sq.db.Raw("SELECT COUNT(*) FROM siswas WHERE deleted_at IS NULL AND email = ?", newStudent.Email).Scan(&existed)
 	if existed >= 1 {
 		log.Println("student account already exist (duplicated)")
 		return siswa.Core{}, errors.New("student account already exist (duplicated)")
@@ -45,6 +45,13 @@ func (sq *siswaQuery) Profile(id uint) (siswa.Core, error) {
 	return ToCore(res), nil
 }
 func (sq *siswaQuery) Update(id uint, updateData siswa.Core) error {
+	cnv := CoreToData(updateData)
+	qry := sq.db.Model(&Siswa{}).Where("id = ?", id).Updates(cnv)
+	if err := qry.Error; err != nil {
+		log.Println("Update query error", err.Error())
+		return err
+	}
+
 	return nil
 }
 func (sq *siswaQuery) Delete(id uint) error {

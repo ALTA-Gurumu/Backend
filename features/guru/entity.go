@@ -36,7 +36,7 @@ type GuruService interface {
 
 type GuruData interface {
 	Register(newGuru Core) (Core, error)
-	Profile(id uint) (Core, error)
+	GetByID(id uint) (Core, error)
 	Update(id uint, updateData Core) error
 	Delete(id uint) error
 }

@@ -38,7 +38,14 @@ func (gq *guruQuery) Register(newGuru guru.Core) (guru.Core, error) {
 
 // Profile implements guru.GuruData
 func (gq *guruQuery) GetByID(id uint) (guru.Core, error) {
-	panic("unimplemented")
+	res := Guru{}
+	query := "SELECT gurus.id, gurus.nama, gurus.email, gurus.alamat, gurus.telepon, gurus.deskripsi, gurus.ijazah, gurus.pelajaran, gurus.avatar FROM gurus WHERE gurus.deleted_at IS NULL AND gurus.id = ?"
+	tx := gq.db.Raw(query, id).First(&res)
+	if tx.Error != nil {
+		return guru.Core{}, tx.Error
+	}
+
+	return ToCore(res), nil
 }
 
 // Update implements guru.GuruData

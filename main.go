@@ -61,6 +61,8 @@ func main() {
 
 	e.POST("/guru", guruHdl.Register())
 	e.DELETE("/guru", guruHdl.Delete(), middleware.JWT([]byte(config.JWT_KEY)))
+	e.GET("/guru", guruHdl.Profile(), middleware.JWT([]byte(config.JWT_KEY)))
+	e.PUT("/guru", guruHdl.Update(), middleware.JWT([]byte(config.JWT_KEY)))
 
 	e.POST("/jadwal", jadwalHdl.Add(), middleware.JWT([]byte(config.JWT_KEY)))
 

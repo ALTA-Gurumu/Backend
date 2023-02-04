@@ -76,8 +76,24 @@ func (guc *guruUseCase) Delete(token interface{}) error {
 }
 
 // Profile implements guru.GuruService
-func (*guruUseCase) Profile(token interface{}) (guru.Core, error) {
-	panic("unimplemented")
+func (guc *guruUseCase) Profile(token interface{}) (guru.Core, error) {
+	userID := helper.ExtractToken(token)
+	if userID <= 0 {
+		return guru.Core{}, errors.New("token tidak valid")
+	}
+	res, err := guc.qry.GetByID(uint(userID))
+	if err != nil {
+		log.Println(err)
+		msg := ""
+		if strings.Contains(err.Error(), "not found") {
+			msg = "data tidak ditemukan"
+		} else {
+			msg = "terjadi kesalahan pada sistem server"
+		}
+		return guru.Core{}, errors.New(msg)
+	}
+
+	return res, nil
 }
 
 // Update implements guru.GuruService

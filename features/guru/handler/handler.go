@@ -35,7 +35,17 @@ func (gc *guruControl) Delete() echo.HandlerFunc {
 
 // Profile implements guru.GuruHandler
 func (gc *guruControl) Profile() echo.HandlerFunc {
-	panic("unimplemented")
+	return func(c echo.Context) error {
+		token := c.Get("user")
+
+		res, err := gc.srv.Profile(token)
+		if err != nil {
+			return c.JSON(helper.PrintErrorResponse(err.Error()))
+		}
+
+		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "berhasil lihat profil", res))
+
+	}
 }
 
 // Register implements guru.GuruHandler
@@ -51,7 +61,7 @@ func (gc *guruControl) Register() echo.HandlerFunc {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
 
-		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "berhasil mendaftar", ToResponse(res)))
+		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "berhasil mendaftarkan profil guru", ToResponse(res)))
 	}
 }
 
@@ -75,6 +85,6 @@ func (gc *guruControl) Update() echo.HandlerFunc {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
 
-		return c.JSON(helper.PrintSuccessReponse(200, "sukses update data produk"))
+		return c.JSON(helper.PrintSuccessReponse(200, "sukses update data guru"))
 	}
 }

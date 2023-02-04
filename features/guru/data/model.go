@@ -18,6 +18,8 @@ type Guru struct {
 	Alamat    string
 	Avatar    string
 	Role      string
+	Latitude  string
+	Longitude string
 }
 
 func ToCore(data Guru) guru.Core {
@@ -33,6 +35,8 @@ func ToCore(data Guru) guru.Core {
 		Alamat:    data.Alamat,
 		Avatar:    data.Avatar,
 		Role:      data.Role,
+		Latitude:  data.Latitude,
+		Longitude: data.Longitude,
 	}
 }
 
@@ -49,5 +53,7 @@ func CoreToData(core guru.Core) Guru {
 		Alamat:    core.Alamat,
 		Avatar:    core.Avatar,
 		Role:      core.Role,
+		Latitude:  core.Latitude,
+		Longitude: core.Longitude,
 	}
 }

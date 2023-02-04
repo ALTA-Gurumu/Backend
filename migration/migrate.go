@@ -2,9 +2,10 @@ package migration
 
 import (
 	_guruData "Gurumu/features/guru/data"
-	_jadwaldata "Gurumu/features/jadwal/data"
+	_jadwalData "Gurumu/features/jadwal/data"
+	_reservasiData "Gurumu/features/reservasi/data"
 	"Gurumu/features/siswa/data"
-	_ulasandata "Gurumu/features/ulasan/data"
+	_ulasanData "Gurumu/features/ulasan/data"
 
 	"gorm.io/gorm"
 )
@@ -12,6 +13,8 @@ import (
 func Migrate(db *gorm.DB) {
 	db.AutoMigrate(data.Siswa{})
 	db.AutoMigrate(_guruData.Guru{})
-	db.AutoMigrate(_jadwaldata.Jadwal{})
-	db.AutoMigrate(_ulasandata.Ulasan{})
+	db.AutoMigrate(_jadwalData.Jadwal{})
+	db.AutoMigrate(_reservasiData.Reservasi{})
+	db.AutoMigrate(_ulasanData.Ulasan{})
+
 }

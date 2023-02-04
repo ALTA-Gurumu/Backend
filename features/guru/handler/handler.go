@@ -43,7 +43,7 @@ func (gc *guruControl) Profile() echo.HandlerFunc {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
 
-		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "berhasil lihat profil", res))
+		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "berhasil lihat profil guru", res))
 
 	}
 }

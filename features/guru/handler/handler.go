@@ -66,11 +66,12 @@ func (gc *guruControl) Update() echo.HandlerFunc {
 		}
 
 		avatar, _ := c.FormFile("avatar")
+		ijazah, _ := c.FormFile("ijazah")
 
 		guruCore := guru.Core{}
 		copier.Copy(&guruCore, &updateGuru)
 
-		if err := gc.srv.Update(token, guruCore, avatar); err != nil {
+		if err := gc.srv.Update(token, guruCore, avatar, ijazah); err != nil {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
 

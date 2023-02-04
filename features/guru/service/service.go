@@ -84,62 +84,68 @@ func (*guruUseCase) Profile(token interface{}) (guru.Core, error) {
 func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *multipart.FileHeader, ijazah *multipart.FileHeader) error {
 	userID := helper.ExtractToken(token)
 	if userID <= 0 {
-		return errors.New("token tidak valid")
+		return fmt.Errorf("token is not valid")
 	}
 
 	if err := guc.vld.Struct(&updateData); err != nil {
 		log.Println(err)
-		msg := helper.ValidationErrorHandle(err)
-		return errors.New(msg)
+		return fmt.Errorf("validation error: %s", helper.ValidationErrorHandle(err))
 	}
-	if avatar == nil {
-		if err := guc.qry.Update(uint(userID), updateData); err != nil {
+
+	var avatarURL, ijazahURL string
+	if avatar != nil {
+		res, err := guc.qry.GetByID(uint(userID))
+		if err != nil {
 			log.Println(err)
-			msg := ""
-			if strings.Contains(err.Error(), "tidak ditemukan") {
-				msg = err.Error()
-			} else {
-				msg = "terjadi kesalahan pada sistem server"
+			if strings.Contains(err.Error(), "not found") {
+				return fmt.Errorf("teacher data not found")
 			}
-			return errors.New(msg)
+			return fmt.Errorf("failed to retrieve teacher data: %s", err)
 		}
 
-		return nil
-	}
-	res, err := guc.qry.GetByID(uint(userID))
-	if err != nil {
-		log.Println(err)
-		msg := ""
-		if strings.Contains(err.Error(), "not found") {
-			msg = "data tidak ditemukan"
-		} else {
-			msg = "terjadi kesalahan pada sistem server"
+		avatarURL, err = helper.UploadTeacherProfilePhotoS3(*avatar, res.Email)
+		if err != nil {
+			log.Println(err)
+			if strings.Contains(err.Error(), "kesalahan input") {
+				return fmt.Errorf("failed to upload avatar: %s", err)
+			}
+			return fmt.Errorf("failed to upload avatar: system server error")
 		}
-		return errors.New(msg)
 	}
 
-	imageURL, err := helper.UploadTeacherProfilePhotoS3(*avatar, res.Email)
-	if err != nil {
-		log.Println(err)
-		var msg string
-		if strings.Contains(err.Error(), "kesalahan input") {
-			msg = err.Error()
-		} else {
-			msg = "gagal upload gambar karena kesalahan pada sistem server"
+	if ijazah != nil {
+		res, err := guc.qry.GetByID(uint(userID))
+		if err != nil {
+			log.Println(err)
+			if strings.Contains(err.Error(), "not found") {
+				return fmt.Errorf("teacher data not found")
+			}
+			return fmt.Errorf("failed to retrieve teacher data: %s", err)
 		}
-		return errors.New(msg)
+
+		ijazahURL, err = helper.UploadTeacherCertificateS3(*ijazah, res.Email)
+		if err != nil {
+			log.Println(err)
+			if strings.Contains(err.Error(), "kesalahan input") {
+				return fmt.Errorf("failed to upload certificate: %s", err)
+			}
+			return fmt.Errorf("failed to upload certificate: system server error")
+		}
 	}
-	updateData.Avatar = imageURL
+
+	if avatarURL != "" {
+		updateData.Avatar = avatarURL
+	}
+	if ijazahURL != "" {
+		updateData.Ijazah = ijazahURL
+	}
 
 	if err := guc.qry.Update(uint(userID), updateData); err != nil {
 		log.Println(err)
-		msg := ""
 		if strings.Contains(err.Error(), "tidak ditemukan") {
-			msg = err.Error()
-		} else {
-			msg = "terjadi kesalahan pada sistem server"
+			return fmt.Errorf("teacher data not found")
 		}
-		return errors.New(msg)
+		return fmt.Errorf("failed to update teacher data: %s", err)
 	}
 
 	return nil

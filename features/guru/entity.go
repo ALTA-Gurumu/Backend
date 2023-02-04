@@ -18,6 +18,8 @@ type Core struct {
 	Alamat    string
 	Avatar    string
 	Role      string
+	Latitude  string
+	Longitude string
 }
 
 type GuruHandler interface {

@@ -45,6 +45,10 @@ func ReqToCore(data interface{}) *guru.Core {
 		res.Email = cnv.Email
 		res.Alamat = cnv.Alamat
 		res.Telepon = cnv.Telepon
+		res.Avatar = cnv.Avatar
+		res.Ijazah = cnv.Ijazah
+		res.Latitude = cnv.Latitude
+		res.Longitude = cnv.Longitude
 	default:
 		return nil
 	}

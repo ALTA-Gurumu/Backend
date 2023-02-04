@@ -13,14 +13,16 @@ type RegisterRequest struct {
 	Password string `json:"password" form:"password"`
 }
 type UpdateRequest struct {
-	Nama     string `json:"nama" form:"nama"`
-	Password string `json:"password" form:"password"`
-	Email    string `json:"email" form:"email"`
-	City     string `json:"city" form:"city"`
-	Alamat   string `json:"alamat" form:"alamat"`
-	Telepon  string `json:"telepon" form:"telepon"`
-	Avatar   string `json:"avatar" form:"avatar"`
-	Ijazah   string `json:"ijazah" form:"ijazah"`
+	Nama      string `json:"nama" form:"nama"`
+	Password  string `json:"password" form:"password"`
+	Email     string `json:"email" form:"email"`
+	City      string `json:"city" form:"city"`
+	Alamat    string `json:"alamat" form:"alamat"`
+	Telepon   string `json:"telepon" form:"telepon"`
+	Avatar    string `json:"avatar" form:"avatar"`
+	Ijazah    string `json:"ijazah" form:"ijazah"`
+	Latitude  string `json:"latitude" form:"latitude"`
+	Longitude string `json:"longitude" form:"longitude"`
 }
 
 func ReqToCore(data interface{}) *guru.Core {

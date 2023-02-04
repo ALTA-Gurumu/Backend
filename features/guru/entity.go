@@ -30,7 +30,7 @@ type GuruHandler interface {
 type GuruService interface {
 	Register(newGuru Core) (Core, error)
 	Profile(token interface{}) (Core, error)
-	Update(token interface{}, updateData Core, avatar *multipart.FileHeader) error
+	Update(token interface{}, updateData Core, avatar *multipart.FileHeader, ijazah *multipart.FileHeader) error
 	Delete(token interface{}) error
 }
 

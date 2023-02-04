@@ -30,29 +30,26 @@ type UpdateRequest struct {
 func ReqToCore(data interface{}) *guru.Core {
 	res := guru.Core{}
 
-	switch data.(type) {
+	switch v := data.(type) {
 	case LoginRequest:
-		cnv := data.(LoginRequest)
-		res.Nama = cnv.Nama
-		res.Password = cnv.Password
+		res.Nama = v.Nama
+		res.Password = v.Password
 	case RegisterRequest:
-		cnv := data.(RegisterRequest)
-		res.Email = cnv.Email
-		res.Nama = cnv.Nama
-		res.Password = cnv.Password
+		res.Email = v.Email
+		res.Nama = v.Nama
+		res.Password = v.Password
 	case UpdateRequest:
-		cnv := data.(UpdateRequest)
-		res.Nama = cnv.Nama
-		res.Email = cnv.Email
-		res.Password = cnv.Password
-		res.Telepon = cnv.Telepon
-		res.Deskripsi = cnv.Deskripsi
-		res.Pelajaran = cnv.Pelajaran
-		res.Alamat = cnv.Alamat
-		res.Avatar = cnv.Avatar
-		res.Ijazah = cnv.Ijazah
-		res.Latitude = cnv.Latitude
-		res.Longitude = cnv.Longitude
+		res.Nama = v.Nama
+		res.Email = v.Email
+		res.Password = v.Password
+		res.Telepon = v.Telepon
+		res.Deskripsi = v.Deskripsi
+		res.Pelajaran = v.Pelajaran
+		res.Alamat = v.Alamat
+		res.Avatar = v.Avatar
+		res.Ijazah = v.Ijazah
+		res.Latitude = v.Latitude
+		res.Longitude = v.Longitude
 	default:
 		return nil
 	}

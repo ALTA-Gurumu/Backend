@@ -14,6 +14,10 @@ import (
 	_jadwalHandler "Gurumu/features/jadwal/handler"
 	_jadwalService "Gurumu/features/jadwal/service"
 
+	_reservasiData "Gurumu/features/reservasi/data"
+	_reservasiHandler "Gurumu/features/reservasi/handler"
+	_reservasiService "Gurumu/features/reservasi/service"
+
 	"Gurumu/features/siswa/data"
 	"Gurumu/features/siswa/handler"
 	"Gurumu/features/siswa/service"
@@ -45,6 +49,10 @@ func main() {
 	jadwalData := _jadwalData.New(db)
 	jadwalSrv := _jadwalService.New(jadwalData)
 	jadwalHdl := _jadwalHandler.New(jadwalSrv)
+
+	reservasiData := _reservasiData.New(db)
+	reservasiSrv := _reservasiService.New(reservasiData)
+	reservasiHdl := _reservasiHandler.New(reservasiSrv)
 
 	studentData := data.New(db)
 	studentSrv := service.New(studentData)
@@ -78,6 +86,8 @@ func main() {
 	e.POST("/ulasan/:guruid", ulasanHdl.Add(), middleware.JWT([]byte(config.JWT_KEY)))
 	e.GET("/ulasan", ulasanHdl.GetAll())
 	e.GET("/ulasan/:guruid", ulasanHdl.GetById())
+
+	e.POST("/reservasi", reservasiHdl.Add(), middleware.JWT([]byte(config.JWT_KEY)))
 
 	if err := e.Start(":8000"); err != nil {
 		log.Println(err.Error())

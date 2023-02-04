@@ -14,13 +14,15 @@ type RegisterRequest struct {
 }
 type UpdateRequest struct {
 	Nama      string `json:"nama" form:"nama"`
-	Password  string `json:"password" form:"password"`
 	Email     string `json:"email" form:"email"`
-	City      string `json:"city" form:"city"`
-	Alamat    string `json:"alamat" form:"alamat"`
+	Password  string `json:"password" form:"password"`
 	Telepon   string `json:"telepon" form:"telepon"`
+	Deskripsi string `json:"deskripsi" form:"deskripsi"`
+	Pelajaran string `json:"pelajaran" form:"pelajaran"`
+	Alamat    string `json:"alamat" form:"alamat"`
 	Avatar    string `json:"avatar" form:"avatar"`
 	Ijazah    string `json:"ijazah" form:"ijazah"`
+	Role      string
 	Latitude  string `json:"latitude" form:"latitude"`
 	Longitude string `json:"longitude" form:"longitude"`
 }
@@ -41,10 +43,12 @@ func ReqToCore(data interface{}) *guru.Core {
 	case UpdateRequest:
 		cnv := data.(UpdateRequest)
 		res.Nama = cnv.Nama
-		res.Password = cnv.Password
 		res.Email = cnv.Email
-		res.Alamat = cnv.Alamat
+		res.Password = cnv.Password
 		res.Telepon = cnv.Telepon
+		res.Deskripsi = cnv.Deskripsi
+		res.Pelajaran = cnv.Pelajaran
+		res.Alamat = cnv.Alamat
 		res.Avatar = cnv.Avatar
 		res.Ijazah = cnv.Ijazah
 		res.Latitude = cnv.Latitude

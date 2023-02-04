@@ -84,7 +84,7 @@ func (*guruUseCase) Profile(token interface{}) (guru.Core, error) {
 func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *multipart.FileHeader, ijazah *multipart.FileHeader) error {
 	userID := helper.ExtractToken(token)
 	if userID <= 0 {
-		return fmt.Errorf("token is not valid")
+		return fmt.Errorf("token tidak valid")
 	}
 
 	if err := guc.vld.Struct(&updateData); err != nil {
@@ -98,18 +98,18 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 		if err != nil {
 			log.Println(err)
 			if strings.Contains(err.Error(), "not found") {
-				return fmt.Errorf("teacher data not found")
+				return fmt.Errorf("data guru tidak ditemukan")
 			}
-			return fmt.Errorf("failed to retrieve teacher data: %s", err)
+			return fmt.Errorf("gagal mendapatkan data guru: %s", err)
 		}
 
 		avatarURL, err = helper.UploadTeacherProfilePhotoS3(*avatar, res.Email)
 		if err != nil {
 			log.Println(err)
 			if strings.Contains(err.Error(), "kesalahan input") {
-				return fmt.Errorf("failed to upload avatar: %s", err)
+				return fmt.Errorf("gagal upload avatar: %s", err)
 			}
-			return fmt.Errorf("failed to upload avatar: system server error")
+			return fmt.Errorf("gagal upload avatar: system server error")
 		}
 	}
 
@@ -118,18 +118,18 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 		if err != nil {
 			log.Println(err)
 			if strings.Contains(err.Error(), "not found") {
-				return fmt.Errorf("teacher data not found")
+				return fmt.Errorf("data guru tidak ditemukan")
 			}
-			return fmt.Errorf("failed to retrieve teacher data: %s", err)
+			return fmt.Errorf("gagal mendapatkan data guru: %s", err)
 		}
 
 		ijazahURL, err = helper.UploadTeacherCertificateS3(*ijazah, res.Email)
 		if err != nil {
 			log.Println(err)
 			if strings.Contains(err.Error(), "kesalahan input") {
-				return fmt.Errorf("failed to upload certificate: %s", err)
+				return fmt.Errorf("gagal upload ijazah: %s", err)
 			}
-			return fmt.Errorf("failed to upload certificate: system server error")
+			return fmt.Errorf("gagal upload ijazah: system server error")
 		}
 	}
 
@@ -143,9 +143,9 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 	if err := guc.qry.Update(uint(userID), updateData); err != nil {
 		log.Println(err)
 		if strings.Contains(err.Error(), "tidak ditemukan") {
-			return fmt.Errorf("teacher data not found")
+			return fmt.Errorf("data guru tidak ditemukan")
 		}
-		return fmt.Errorf("failed to update teacher data: %s", err)
+		return fmt.Errorf("gagal update data guru: %s", err)
 	}
 
 	return nil

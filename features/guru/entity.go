@@ -8,15 +8,15 @@ import (
 
 type Core struct {
 	ID        uint
+	Nama      string `validate:"required"`
 	Email     string `validate:"required,email"`
 	Password  string `validate:"required"`
-	Nama      string `validate:"required"`
 	Telepon   string
 	Deskripsi string
-	Ijazah    string
 	Pelajaran string
 	Alamat    string
 	Avatar    string
+	Ijazah    string
 	Role      string
 	Latitude  string
 	Longitude string

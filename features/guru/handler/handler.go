@@ -5,6 +5,7 @@ import (
 	"Gurumu/helper"
 	"net/http"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 )
 
@@ -56,5 +57,23 @@ func (gc *guruControl) Register() echo.HandlerFunc {
 
 // Update implements guru.GuruHandler
 func (gc *guruControl) Update() echo.HandlerFunc {
-	panic("unimplemented")
+	return func(c echo.Context) error {
+		token := c.Get("user")
+
+		pr := UpdateRequest{}
+		if err := c.Bind(&pr); err != nil {
+			return c.JSON(helper.ErrorResponse(err.Error()))
+		}
+
+		fileHeader, _ := c.FormFile("image")
+
+		pc := product.Core{}
+		copier.Copy(&pc, &pr)
+
+		if err := ph.srv.Update(token, uint(productID), pc, fileHeader); err != nil {
+			return c.JSON(helper.ErrorResponse(err.Error()))
+		}
+
+		return c.JSON(helper.SuccessResponse(200, "sukses update data produk"))
+	}
 }

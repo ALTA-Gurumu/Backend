@@ -19,6 +19,8 @@ type UpdateRequest struct {
 	City     string `json:"city" form:"city"`
 	Alamat   string `json:"alamat" form:"alamat"`
 	Telepon  string `json:"telepon" form:"telepon"`
+	Avatar   string `json:"avatar" form:"avatar"`
+	Ijazah   string `json:"ijazah" form:"ijazah"`
 }
 
 func ReqToCore(data interface{}) *guru.Core {

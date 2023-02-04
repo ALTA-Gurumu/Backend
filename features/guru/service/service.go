@@ -81,7 +81,7 @@ func (*guruUseCase) Profile(token interface{}) (guru.Core, error) {
 }
 
 // Update implements guru.GuruService
-func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *multipart.FileHeader) error {
+func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *multipart.FileHeader, ijazah *multipart.FileHeader) error {
 	userID := helper.ExtractToken(token)
 	if userID <= 0 {
 		return errors.New("token tidak valid")

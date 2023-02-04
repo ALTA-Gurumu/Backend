@@ -60,20 +60,20 @@ func (gc *guruControl) Update() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		token := c.Get("user")
 
-		pr := UpdateRequest{}
-		if err := c.Bind(&pr); err != nil {
-			return c.JSON(helper.ErrorResponse(err.Error()))
+		updateGuru := UpdateRequest{}
+		if err := c.Bind(&updateGuru); err != nil {
+			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
 
-		fileHeader, _ := c.FormFile("image")
+		avatar, _ := c.FormFile("avatar")
 
-		pc := product.Core{}
-		copier.Copy(&pc, &pr)
+		guruCore := guru.Core{}
+		copier.Copy(&guruCore, &updateGuru)
 
-		if err := ph.srv.Update(token, uint(productID), pc, fileHeader); err != nil {
-			return c.JSON(helper.ErrorResponse(err.Error()))
+		if err := gc.srv.Update(token, guruCore, avatar); err != nil {
+			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
 
-		return c.JSON(helper.SuccessResponse(200, "sukses update data produk"))
+		return c.JSON(helper.PrintSuccessReponse(200, "sukses update data produk"))
 	}
 }

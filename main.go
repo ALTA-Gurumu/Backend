@@ -17,6 +17,10 @@ import (
 	"Gurumu/features/siswa/data"
 	"Gurumu/features/siswa/handler"
 	"Gurumu/features/siswa/service"
+
+	_ulasanData "Gurumu/features/ulasan/data"
+	_ulasanHandler "Gurumu/features/ulasan/handler"
+	_ulasanService "Gurumu/features/ulasan/service"
 	"Gurumu/migration"
 	"log"
 
@@ -46,6 +50,10 @@ func main() {
 	studentSrv := service.New(studentData)
 	studentHdl := handler.New(studentSrv)
 
+	ulasanData := _ulasanData.New(db)
+	ulasanSrv := _ulasanService.New(ulasanData)
+	ulasanHdl := _ulasanHandler.New(ulasanSrv)
+
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.CORS())
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
@@ -61,11 +69,12 @@ func main() {
 
 	e.POST("/guru", guruHdl.Register())
 	e.DELETE("/guru", guruHdl.Delete(), middleware.JWT([]byte(config.JWT_KEY)))
-	e.GET("/guru", guruHdl.Profile())
-	e.GET("/guru/:guru_id", guruHdl.Profile())
-	e.PUT("/guru", guruHdl.Update(), middleware.JWT([]byte(config.JWT_KEY)))
 
 	e.POST("/jadwal", jadwalHdl.Add(), middleware.JWT([]byte(config.JWT_KEY)))
+
+	e.POST("/ulasan/:guruid", ulasanHdl.Add(), middleware.JWT([]byte(config.JWT_KEY)))
+	e.GET("/ulasan", ulasanHdl.GetAll())
+	e.GET("/ulasan/:guruid", ulasanHdl.GetById())
 
 	if err := e.Start(":8000"); err != nil {
 		log.Println(err.Error())

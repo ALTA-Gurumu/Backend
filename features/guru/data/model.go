@@ -2,6 +2,7 @@ package data
 
 import (
 	"Gurumu/features/guru"
+	"Gurumu/features/jadwal"
 
 	"gorm.io/gorm"
 )
@@ -27,6 +28,43 @@ type Guru struct {
 	Role        string
 	Latitude    string
 	Longitude   string
+	Jadwal      []Jadwal `gorm:"foreignKey:GuruID;references:ID"`
+}
+
+type Jadwal struct {
+	gorm.Model
+	GuruID  uint
+	Tanggal string
+	Jam     string
+	Status  string
+}
+
+func JadwalToCore(data Jadwal) jadwal.Core {
+	return jadwal.Core{
+		ID:      data.ID,
+		GuruID:  data.GuruID,
+		Tanggal: data.Tanggal,
+		Jam:     data.Jam,
+		Status:  data.Status,
+	}
+}
+
+func CoreToJadwal(data jadwal.Core) Jadwal {
+	return Jadwal{
+		Model:   gorm.Model{ID: data.ID},
+		GuruID:  data.GuruID,
+		Tanggal: data.Tanggal,
+		Jam:     data.Jam,
+	}
+}
+
+func ListToCore(data []Jadwal) []jadwal.Core {
+	listJadwal := []jadwal.Core{}
+	for _, jadwal := range data {
+		listJadwal = append(listJadwal, JadwalToCore(jadwal))
+	}
+
+	return listJadwal
 }
 
 func ToCore(data Guru) guru.Core {

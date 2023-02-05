@@ -39,7 +39,7 @@ func (gq *guruQuery) Register(newGuru guru.Core) (guru.Core, error) {
 // Profile implements guru.GuruData
 func (gq *guruQuery) GetByID(id uint) (guru.Core, error) {
 	res := Guru{}
-	query := "SELECT gurus.id, gurus.nama, gurus.email, gurus.alamat, gurus.telepon, gurus.deskripsi, gurus.ijazah, gurus.pelajaran, gurus.avatar FROM gurus WHERE gurus.deleted_at IS NULL AND gurus.id = ?"
+	query := "SELECT gurus.id, gurus.nama, gurus.email, gurus.telepon, gurus.linkedIn, gurus.gelar, gurus.tentangSaya, gurus.pengalaman, gurus.lokasiAsal, gurus.offline, gurus.online, gurus.tarif, gurus.pelajaran, gurus.pendidikan, gurus.avatar, gurus.ijazah, gurus.latitude, gurus.longitude FROM gurus WHERE gurus.deleted_at IS NULL AND gurus.id = ?"
 	tx := gq.db.Raw(query, id).First(&res)
 	if tx.Error != nil {
 		return guru.Core{}, tx.Error

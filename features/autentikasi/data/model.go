@@ -18,13 +18,14 @@ type Siswa struct {
 }
 type Guru struct {
 	gorm.Model
-	Email    string
-	Password string
-	Nama     string
-	Telepon  string
-	Alamat   string
-	Avatar   string
-	Role     string
+	Email      string
+	Password   string
+	Nama       string
+	Telepon    string
+	Alamat     string
+	Avatar     string
+	Role       string
+	Verifikasi bool
 }
 
 func SiswaToCore(data Siswa) autentikasi.Core {
@@ -39,10 +40,11 @@ func SiswaToCore(data Siswa) autentikasi.Core {
 
 func GuruToCore(data Guru) autentikasi.Core {
 	return autentikasi.Core{
-		ID:       data.ID,
-		Nama:     data.Nama,
-		Email:    data.Email,
-		Password: data.Password,
-		Role:     data.Role,
+		ID:         data.ID,
+		Nama:       data.Nama,
+		Email:      data.Email,
+		Password:   data.Password,
+		Role:       data.Role,
+		Verifikasi: data.Verifikasi,
 	}
 }

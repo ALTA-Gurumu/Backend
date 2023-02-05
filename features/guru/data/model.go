@@ -26,6 +26,7 @@ type Guru struct {
 	Avatar      string
 	Ijazah      string
 	Role        string
+	Verifikasi  bool
 	Latitude    string
 	Longitude   string
 	Jadwal      []data.Jadwal `gorm:"foreignKey:GuruID;references:ID"`
@@ -89,6 +90,7 @@ func ToCore(data Guru) guru.Core {
 		Avatar:      data.Avatar,
 		Ijazah:      data.Ijazah,
 		Role:        data.Role,
+		Verifikasi:  data.Verifikasi,
 		Latitude:    data.Latitude,
 		Longitude:   data.Longitude,
 	}
@@ -114,6 +116,7 @@ func CoreToData(core guru.Core) Guru {
 		Avatar:      core.Avatar,
 		Ijazah:      core.Ijazah,
 		Role:        core.Role,
+		Verifikasi:  core.Verifikasi,
 		Latitude:    core.Latitude,
 		Longitude:   core.Longitude,
 	}

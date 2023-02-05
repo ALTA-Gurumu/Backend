@@ -29,7 +29,13 @@ func (ac *autentikasiControll) Login() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
-		dataResp := ToResponses(res)
+
+		if res.Role == "siswa" {
+			dataResp := SiswaToResponses(res)
+			return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "login sukses", dataResp, token))
+		}
+
+		dataResp := GuruToResponses(res)
 		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "login sukses", dataResp, token))
 	}
 

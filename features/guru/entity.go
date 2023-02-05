@@ -26,6 +26,7 @@ type Core struct {
 	Avatar      string
 	Ijazah      string
 	Role        string
+	Verifikasi  bool
 	Latitude    string
 	Longitude   string
 	Jadwal      []data.JadwalNG
@@ -54,4 +55,5 @@ type GuruData interface {
 	GetBeranda() ([]Core, error)
 	Update(id uint, updateData Core) error
 	Delete(id uint) error
+	Verifikasi(cekdata Core) bool
 }

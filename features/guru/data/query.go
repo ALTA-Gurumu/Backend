@@ -27,6 +27,7 @@ func (gq *guruQuery) Register(newGuru guru.Core) (guru.Core, error) {
 		return guru.Core{}, errors.New("guru account already exist (duplicated)")
 	}
 	newGuru.Role = "guru"
+	newGuru.Verifikasi = false
 	cnv := CoreToData(newGuru)
 	if err := gq.db.Create(&cnv).Error; err != nil {
 		log.Println("register query error", err.Error())
@@ -115,9 +116,18 @@ func (gq *guruQuery) GetBeranda() ([]guru.Core, error) {
 	return ListRatingToCore(guruData), nil
 }
 
+func (gq *guruQuery) Verifikasi(cekData guru.Core) bool {
+	if cekData.LokasiAsal != "" || cekData.Telepon != "" || cekData.Pendidikan != "" || cekData.TentangSaya != "" || cekData.Avatar != "" || cekData.LinkedIn != "" || cekData.Ijazah != "" {
+		return true
+	}
+	return false
+}
+
 // Update implements guru.GuruData
 func (gq *guruQuery) Update(id uint, updateData guru.Core) error {
 	cnv := CoreToData(updateData)
+	cnv.Verifikasi = gq.Verifikasi(updateData)
+
 	tx := gq.db.Model(&Guru{}).Where("id = ? AND deleted_at IS NULL", id).Updates(&cnv)
 	if tx.Error != nil {
 		return tx.Error

@@ -2,6 +2,7 @@ package data
 
 import (
 	"Gurumu/features/guru"
+	"Gurumu/features/jadwal/data"
 	"errors"
 	"log"
 
@@ -37,15 +38,59 @@ func (gq *guruQuery) Register(newGuru guru.Core) (guru.Core, error) {
 }
 
 // Profile implements guru.GuruData
-func (gq *guruQuery) GetByID(id uint) (guru.Core, error) {
+func (gq *guruQuery) GetByID(id uint) (interface{}, error) {
 	res := Guru{}
-	query := "SELECT gurus.id, gurus.nama, gurus.email, gurus.telepon, gurus.linkedIn, gurus.gelar, gurus.tentangSaya, gurus.pengalaman, gurus.lokasiAsal, gurus.offline, gurus.online, gurus.tarif, gurus.pelajaran, gurus.pendidikan, gurus.avatar, gurus.ijazah, gurus.latitude, gurus.longitude FROM gurus WHERE gurus.deleted_at IS NULL AND gurus.id = ?"
-	tx := gq.db.Raw(query, id).First(&res)
-	if tx.Error != nil {
-		return guru.Core{}, tx.Error
+	// query := "SELECT gurus.id, gurus.nama, gurus.email, gurus.telepon, gurus.linked_in, gurus.gelar, gurus.tentang_saya, gurus.pengalaman, gurus.lokasi_asal, gurus.offline, gurus.online, gurus.tarif, gurus.pelajaran, gurus.pendidikan, gurus.avatar, gurus.ijazah, gurus.latitude, gurus.longitude FROM gurus	WHERE gurus.deleted_at IS NULL AND gurus.id = ?"
+	// tx := gq.db.Raw(query, id).First(&res)
+	// if tx.Error != nil {
+	// 	return nil, tx.Error
+	// }
+	if err := gq.db.Preload("Jadwal").Where("id = ?", id).Find(&res).Error; err != nil {
+		log.Println("Get By ID query error", err.Error())
+		return nil, err
+	}
+	resJadwal := Jadwal{}
+	if err := gq.db.Where("id = ?", res.ID).Find(&resJadwal).Error; err != nil {
+		log.Println("Get by ID query error", err.Error())
+		return nil, err
 	}
 
-	return ToCore(res), nil
+	result := guru.Core{
+		Nama:        res.Nama,
+		Email:       res.Email,
+		Telepon:     res.Telepon,
+		LinkedIn:    res.LinkedIn,
+		Gelar:       res.Gelar,
+		TentangSaya: res.TentangSaya,
+		Pengalaman:  res.Pengalaman,
+		LokasiAsal:  res.LokasiAsal,
+		Tarif:       res.Tarif,
+		Pelajaran:   res.Pelajaran,
+		Pendidikan:  res.Pendidikan,
+		Avatar:      res.Avatar,
+		Ijazah:      res.Ijazah,
+		Latitude:    res.Latitude,
+		Longitude:   res.Longitude,
+	}
+
+	for _, v := range res.Jadwal {
+		guru := Guru{}
+		if err := gq.db.Where("id = ?", v.ID).Find(&guru).Error; err != nil {
+			log.Println("Get by ID query error", err.Error())
+			return nil, err
+		}
+
+		jadwal := data.JadwalNG{
+			ID:      v.ID,
+			Tanggal: v.Tanggal,
+			Jam:     v.Jam,
+			Status:  v.Status,
+		}
+
+		result.Jadwal = append(result.Jadwal, jadwal)
+	}
+	log.Println(resJadwal)
+	return result, nil
 }
 
 // Update implements guru.GuruData

@@ -28,6 +28,20 @@ type Jadwal struct {
 	Status  string
 }
 
+type JadwalNG struct {
+	ID      uint
+	Tanggal string
+	Jam     string
+	Status  string
+}
+
+type GuruJadwal struct {
+	ID      uint
+	Tanggal string
+	Jam     string
+	Status  string
+}
+
 func ToCore(data Jadwal) jadwal.Core {
 	return jadwal.Core{
 		ID:      data.ID,
@@ -47,10 +61,19 @@ func CoreToData(data jadwal.Core) Jadwal {
 	}
 }
 
-func ListToCore(data []Jadwal) []jadwal.Core {
+func GuruToCore(gj GuruJadwal) jadwal.Core {
+	return jadwal.Core{
+		ID:      gj.ID,
+		Tanggal: gj.Tanggal,
+		Jam:     gj.Jam,
+		Status:  gj.Status,
+	}
+}
+
+func ListToCore(data []GuruJadwal) []jadwal.Core {
 	listJadwal := []jadwal.Core{}
 	for _, jadwal := range data {
-		listJadwal = append(listJadwal, ToCore(jadwal))
+		listJadwal = append(listJadwal, GuruToCore(jadwal))
 	}
 
 	return listJadwal

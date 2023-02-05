@@ -1,6 +1,7 @@
 package guru
 
 import (
+	"Gurumu/features/jadwal/data"
 	"mime/multipart"
 
 	"github.com/labstack/echo/v4"
@@ -27,6 +28,7 @@ type Core struct {
 	Role        string
 	Latitude    string
 	Longitude   string
+	Jadwal      []data.JadwalNG
 }
 
 type GuruHandler interface {
@@ -38,14 +40,14 @@ type GuruHandler interface {
 
 type GuruService interface {
 	Register(newGuru Core) (Core, error)
-	Profile(token interface{}) (Core, error)
+	Profile(id uint) (interface{}, error)
 	Update(token interface{}, updateData Core, avatar *multipart.FileHeader, ijazah *multipart.FileHeader) error
 	Delete(token interface{}) error
 }
 
 type GuruData interface {
 	Register(newGuru Core) (Core, error)
-	GetByID(id uint) (Core, error)
+	GetByID(id uint) (interface{}, error)
 	Update(id uint, updateData Core) error
 	Delete(id uint) error
 }

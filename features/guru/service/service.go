@@ -76,8 +76,8 @@ func (guc *guruUseCase) Delete(token interface{}) error {
 }
 
 // Profile implements guru.GuruService
-func (guc *guruUseCase) Profile(token interface{}) (guru.Core, error) {
-	userID := helper.ExtractToken(token)
+func (guc *guruUseCase) Profile(id uint) (interface{}, error) {
+	userID := id
 	if userID <= 0 {
 		return guru.Core{}, errors.New("token tidak valid")
 	}
@@ -110,7 +110,7 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 
 	var avatarURL, ijazahURL string
 	if avatar != nil {
-		res, err := guc.qry.GetByID(uint(userID))
+		_, err := guc.qry.GetByID(uint(userID))
 		if err != nil {
 			log.Println(err)
 			if strings.Contains(err.Error(), "not found") {
@@ -119,7 +119,7 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 			return fmt.Errorf("gagal mendapatkan data guru: %s", err)
 		}
 
-		avatarURL, err = helper.UploadTeacherProfilePhotoS3(*avatar, res.Email)
+		avatarURL, err = helper.UploadTeacherProfilePhotoS3(*avatar, err.Error())
 		if err != nil {
 			log.Println(err)
 			if strings.Contains(err.Error(), "kesalahan input") {
@@ -130,7 +130,7 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 	}
 
 	if ijazah != nil {
-		res, err := guc.qry.GetByID(uint(userID))
+		_, err := guc.qry.GetByID(uint(userID))
 		if err != nil {
 			log.Println(err)
 			if strings.Contains(err.Error(), "not found") {
@@ -139,7 +139,7 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 			return fmt.Errorf("gagal mendapatkan data guru: %s", err)
 		}
 
-		ijazahURL, err = helper.UploadTeacherCertificateS3(*ijazah, res.Email)
+		ijazahURL, err = helper.UploadTeacherCertificateS3(*ijazah, err.Error())
 		if err != nil {
 			log.Println(err)
 			if strings.Contains(err.Error(), "kesalahan input") {

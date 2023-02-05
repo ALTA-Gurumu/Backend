@@ -66,7 +66,7 @@ type ProfileHomeResp struct {
 	TentangSaya string
 	Pelajaran   string
 	Avatar      string
-	Penilaian   string
+	Penilaian   float32
 }
 
 func ProfileToResponse(data guru.Core) ProfileHomeResp {
@@ -77,7 +77,7 @@ func ProfileToResponse(data guru.Core) ProfileHomeResp {
 		TentangSaya: data.TentangSaya,
 		Pelajaran:   data.Pelajaran,
 		Avatar:      data.Avatar,
-		// Penilaian:   data.,
+		Penilaian:   data.Penilaian,
 	}
 }
 

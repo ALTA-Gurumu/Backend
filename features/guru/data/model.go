@@ -29,7 +29,36 @@ type Guru struct {
 	Latitude    string
 	Longitude   string
 	Jadwal      []data.Jadwal `gorm:"foreignKey:GuruID;references:ID"`
+}
+
+type GuruRatingBeranda struct {
+	ID          uint
+	Nama        string
+	LokasiAsal  string
+	TentangSaya string
+	Pelajaran   string
+	Avatar      string
 	Penilaian   float32
+}
+
+func RatingToCore(data GuruRatingBeranda) guru.Core {
+	return guru.Core{
+		ID:          data.ID,
+		Nama:        data.Nama,
+		TentangSaya: data.TentangSaya,
+		LokasiAsal:  data.LokasiAsal,
+		Pelajaran:   data.Pelajaran,
+		Avatar:      data.Avatar,
+		Penilaian:   data.Penilaian,
+	}
+}
+
+func ListRatingToCore(data []GuruRatingBeranda) []guru.Core {
+	listGuru := []guru.Core{}
+	for _, v := range data {
+		listGuru = append(listGuru, RatingToCore(v))
+	}
+	return listGuru
 }
 
 type Jadwal struct {

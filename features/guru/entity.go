@@ -7,19 +7,26 @@ import (
 )
 
 type Core struct {
-	ID        uint
-	Nama      string
-	Email     string
-	Password  string
-	Telepon   string
-	Deskripsi string
-	Pelajaran string
-	Alamat    string
-	Avatar    string
-	Ijazah    string
-	Role      string
-	Latitude  string
-	Longitude string
+	ID          uint
+	Nama        string
+	Email       string
+	Password    string
+	Telepon     string
+	LinkedIn    string
+	Gelar       string
+	TentangSaya string
+	Pengalaman  string
+	LokasiAsal  string
+	Offline     bool
+	Online      bool
+	Tarif       string
+	Pelajaran   string
+	Pendidikan  string
+	Avatar      string
+	Ijazah      string
+	Role        string
+	Latitude    string
+	Longitude   string
 }
 
 type GuruHandler interface {

@@ -29,6 +29,7 @@ type Guru struct {
 	Latitude    string
 	Longitude   string
 	Jadwal      []data.Jadwal `gorm:"foreignKey:GuruID;references:ID"`
+	Penilaian   float32
 }
 
 type Jadwal struct {

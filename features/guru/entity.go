@@ -29,11 +29,13 @@ type Core struct {
 	Latitude    string
 	Longitude   string
 	Jadwal      []data.JadwalNG
+	Penilaian   float32
 }
 
 type GuruHandler interface {
 	Register() echo.HandlerFunc
 	Profile() echo.HandlerFunc
+	ProfileBeranda() echo.HandlerFunc
 	Delete() echo.HandlerFunc
 	Update() echo.HandlerFunc
 }
@@ -41,6 +43,7 @@ type GuruHandler interface {
 type GuruService interface {
 	Register(newGuru Core) (Core, error)
 	Profile(id uint) (interface{}, error)
+	ProfileBeranda() ([]Core, error)
 	Update(token interface{}, updateData Core, avatar *multipart.FileHeader, ijazah *multipart.FileHeader) error
 	Delete(token interface{}) error
 }
@@ -48,6 +51,7 @@ type GuruService interface {
 type GuruData interface {
 	Register(newGuru Core) (Core, error)
 	GetByID(id uint) (interface{}, error)
+	GetBeranda() ([]Core, error)
 	Update(id uint, updateData Core) error
 	Delete(id uint) error
 }

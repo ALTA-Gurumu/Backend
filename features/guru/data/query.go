@@ -93,19 +93,26 @@ func (gq *guruQuery) GetByID(id uint) (interface{}, error) {
 }
 
 func (gq *guruQuery) GetBeranda() ([]guru.Core, error) {
-	var guruData []Guru
-	var result []guru.Core
+	var guruData []GuruRatingBeranda
 
-	err := gq.db.Where("deleted_at IS NULL").Find(&guruData).Error
+	rows, err := gq.db.Raw("SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, AVG(ulasans.penilaian) AS avg_rating FROM gurus JOIN ulasans ON gurus.id = ulasans.guru_id GROUP BY gurus.id").Rows()
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
-	for _, data := range guruData {
-		result = append(result, ToCore(data))
+	for rows.Next() {
+		var guru GuruRatingBeranda
+		var avgRating float64
+		err = rows.Scan(&guru.ID, &guru.Nama, &guru.LokasiAsal, &guru.TentangSaya, &guru.Pelajaran, &guru.Avatar, &avgRating)
+		if err != nil {
+			return nil, err
+		}
+		guru.Penilaian = float32(avgRating)
+		guruData = append(guruData, guru)
 	}
 
-	return result, nil
+	return ListRatingToCore(guruData), nil
 }
 
 // Update implements guru.GuruData

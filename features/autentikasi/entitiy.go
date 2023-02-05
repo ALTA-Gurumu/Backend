@@ -3,11 +3,12 @@ package autentikasi
 import "github.com/labstack/echo/v4"
 
 type Core struct {
-	ID       uint
-	Nama     string
-	Email    string `validate:"required,email"`
-	Password string `validate:"required"`
-	Role     string `validate:"required"`
+	ID         uint
+	Nama       string
+	Email      string `validate:"required,email"`
+	Password   string `validate:"required"`
+	Role       string `validate:"required"`
+	Verifikasi bool
 }
 
 type AutentikasiHandler interface {

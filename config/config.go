@@ -9,8 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/joho/godotenv"
-	"github.com/midtrans/midtrans-go"
-	"github.com/midtrans/midtrans-go/snap"
 )
 
 var (
@@ -121,10 +119,4 @@ func S3Config() *session.Session {
 	}
 	s3Session, _ := session.NewSession(s3Config)
 	return s3Session
-}
-
-func MidtransSnapClient() snap.Client {
-	s := snap.Client{}
-	s.New(MIDTRANSSERVERKEY, midtrans.Sandbox)
-	return s
 }

@@ -31,7 +31,6 @@ type UpdateRequest struct {
 	Ijazah      string `json:"ijazah" form:"ijazah"`
 	Latitude    string `json:"latitude" form:"latitude"`
 	Longitude   string `json:"longitude" form:"longitude"`
-	Role        string
 }
 
 func ReqToCore(data interface{}) *guru.Core {

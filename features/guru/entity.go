@@ -1,23 +1,34 @@
 package guru
 
 import (
+	"Gurumu/features/jadwal/data"
 	"mime/multipart"
 
 	"github.com/labstack/echo/v4"
 )
 
 type Core struct {
-	ID        uint
-	Email     string `validate:"required,email"`
-	Password  string `validate:"required"`
-	Nama      string `validate:"required"`
-	Telepon   string
-	Deskripsi string
-	Ijazah    string
-	Pelajaran string
-	Alamat    string
-	Avatar    string
-	Role      string
+	ID          uint
+	Nama        string
+	Email       string
+	Password    string
+	Telepon     string
+	LinkedIn    string
+	Gelar       string
+	TentangSaya string
+	Pengalaman  string
+	LokasiAsal  string
+	Offline     bool
+	Online      bool
+	Tarif       string
+	Pelajaran   string
+	Pendidikan  string
+	Avatar      string
+	Ijazah      string
+	Role        string
+	Latitude    string
+	Longitude   string
+	Jadwal      []data.JadwalNG
 }
 
 type GuruHandler interface {
@@ -29,14 +40,14 @@ type GuruHandler interface {
 
 type GuruService interface {
 	Register(newGuru Core) (Core, error)
-	Profile(token interface{}) (Core, error)
-	Update(token interface{}, updateData Core, avatar *multipart.FileHeader) (Core, error)
+	Profile(id uint) (interface{}, error)
+	Update(token interface{}, updateData Core, avatar *multipart.FileHeader, ijazah *multipart.FileHeader) error
 	Delete(token interface{}) error
 }
 
 type GuruData interface {
 	Register(newGuru Core) (Core, error)
-	Profile(id uint) (Core, error)
-	Update(id uint, updateData Core) (Core, error)
+	GetByID(id uint) (interface{}, error)
+	Update(id uint, updateData Core) error
 	Delete(id uint) error
 }

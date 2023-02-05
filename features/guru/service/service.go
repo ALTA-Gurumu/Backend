@@ -76,11 +76,55 @@ func (guc *guruUseCase) Delete(token interface{}) error {
 }
 
 // Profile implements guru.GuruService
-func (*guruUseCase) Profile(token interface{}) (guru.Core, error) {
-	panic("unimplemented")
+func (guc *guruUseCase) Profile(id uint) (interface{}, error) {
+	userID := id
+	if userID <= 0 {
+		return guru.Core{}, errors.New("token tidak valid")
+	}
+	res, err := guc.qry.GetByID(uint(userID))
+	if err != nil {
+		log.Println(err)
+		msg := ""
+		if strings.Contains(err.Error(), "not found") {
+			msg = "data tidak ditemukan"
+		} else {
+			msg = "terjadi kesalahan pada sistem server"
+		}
+		return guru.Core{}, errors.New(msg)
+	}
+
+	return res, nil
 }
 
 // Update implements guru.GuruService
-func (*guruUseCase) Update(token interface{}, updateData guru.Core, avatar *multipart.FileHeader) (guru.Core, error) {
-	panic("unimplemented")
+func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *multipart.FileHeader, ijazah *multipart.FileHeader) error {
+	userID := helper.ExtractToken(token)
+	if userID <= 0 {
+		return fmt.Errorf("token tidak valid")
+	}
+
+	if err := guc.vld.Struct(&updateData); err != nil {
+		log.Println(err)
+		return fmt.Errorf("validation error: %s", helper.ValidationErrorHandle(err))
+	}
+
+	if avatar != nil {
+		path, _ := helper.UploadTeacherProfilePhotoS3(*avatar, updateData.Email)
+		updateData.Avatar = path
+	}
+
+	if ijazah != nil {
+		path, _ := helper.UploadTeacherProfilePhotoS3(*ijazah, updateData.Email)
+		updateData.Ijazah = path
+	}
+
+	if err := guc.qry.Update(uint(userID), updateData); err != nil {
+		log.Println(err)
+		if strings.Contains(err.Error(), "tidak ditemukan") {
+			return fmt.Errorf("data guru tidak ditemukan")
+		}
+		return fmt.Errorf("gagal update data guru: %s", err)
+	}
+
+	return nil
 }

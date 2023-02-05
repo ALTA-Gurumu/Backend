@@ -4,7 +4,9 @@ import (
 	"Gurumu/features/guru"
 	"Gurumu/helper"
 	"net/http"
+	"strconv"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 )
 
@@ -34,7 +36,18 @@ func (gc *guruControl) Delete() echo.HandlerFunc {
 
 // Profile implements guru.GuruHandler
 func (gc *guruControl) Profile() echo.HandlerFunc {
-	panic("unimplemented")
+	return func(c echo.Context) error {
+		str := c.Param("guru_id")
+		guruID, _ := strconv.Atoi(str)
+
+		res, err := gc.srv.Profile(uint(guruID))
+		if err != nil {
+			return c.JSON(helper.PrintErrorResponse(err.Error()))
+		}
+
+		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "berhasil lihat profil guru", GuruByID(res.(guru.Core))))
+
+	}
 }
 
 // Register implements guru.GuruHandler
@@ -50,11 +63,30 @@ func (gc *guruControl) Register() echo.HandlerFunc {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
 
-		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "berhasil mendaftar", ToResponse(res)))
+		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "berhasil mendaftarkan profil guru", ToResponse(res)))
 	}
 }
 
 // Update implements guru.GuruHandler
 func (gc *guruControl) Update() echo.HandlerFunc {
-	panic("unimplemented")
+	return func(c echo.Context) error {
+		token := c.Get("user")
+
+		updateGuru := UpdateRequest{}
+		if err := c.Bind(&updateGuru); err != nil {
+			return c.JSON(helper.PrintErrorResponse(err.Error()))
+		}
+
+		avatar, _ := c.FormFile("avatar")
+		ijazah, _ := c.FormFile("ijazah")
+
+		guruCore := guru.Core{}
+		copier.Copy(&guruCore, &updateGuru)
+
+		if err := gc.srv.Update(token, guruCore, avatar, ijazah); err != nil {
+			return c.JSON(helper.PrintErrorResponse(err.Error()))
+		}
+
+		return c.JSON(helper.PrintSuccessReponse(200, "sukses update data guru"))
+	}
 }

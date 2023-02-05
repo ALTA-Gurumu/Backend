@@ -2,6 +2,7 @@ package data
 
 import (
 	"Gurumu/features/guru"
+	"Gurumu/features/jadwal/data"
 	"errors"
 	"log"
 
@@ -20,7 +21,7 @@ func New(db *gorm.DB) guru.GuruData {
 
 func (gq *guruQuery) Register(newGuru guru.Core) (guru.Core, error) {
 	existed := 0
-	gq.db.Raw("SELECT COUNT(*) FROM gurus WHERE deleted_at IS NULL AND email = ?", newGuru.Email).Scan(&existed)
+	gq.db.Raw("SELECT COUNT(*) FROM gurus, siswas WHERE deleted_at IS NULL AND email = ?", newGuru.Email).Scan(&existed)
 	if existed >= 1 {
 		log.Println("guru account already exist (duplicated)")
 		return guru.Core{}, errors.New("guru account already exist (duplicated)")
@@ -37,13 +38,72 @@ func (gq *guruQuery) Register(newGuru guru.Core) (guru.Core, error) {
 }
 
 // Profile implements guru.GuruData
-func (gq *guruQuery) Profile(id uint) (guru.Core, error) {
-	panic("unimplemented")
+func (gq *guruQuery) GetByID(id uint) (interface{}, error) {
+	res := Guru{}
+	// query := "SELECT gurus.id, gurus.nama, gurus.email, gurus.telepon, gurus.linked_in, gurus.gelar, gurus.tentang_saya, gurus.pengalaman, gurus.lokasi_asal, gurus.offline, gurus.online, gurus.tarif, gurus.pelajaran, gurus.pendidikan, gurus.avatar, gurus.ijazah, gurus.latitude, gurus.longitude FROM gurus	WHERE gurus.deleted_at IS NULL AND gurus.id = ?"
+	// tx := gq.db.Raw(query, id).First(&res)
+	// if tx.Error != nil {
+	// 	return nil, tx.Error
+	// }
+	if err := gq.db.Preload("Jadwal").Where("id = ?", id).Find(&res).Error; err != nil {
+		log.Println("Get By ID query error", err.Error())
+		return nil, err
+	}
+	resJadwal := Jadwal{}
+	if err := gq.db.Where("id = ?", res.ID).Find(&resJadwal).Error; err != nil {
+		log.Println("Get by ID query error", err.Error())
+		return nil, err
+	}
+
+	result := guru.Core{
+		Nama:        res.Nama,
+		Email:       res.Email,
+		Telepon:     res.Telepon,
+		LinkedIn:    res.LinkedIn,
+		Gelar:       res.Gelar,
+		TentangSaya: res.TentangSaya,
+		Pengalaman:  res.Pengalaman,
+		LokasiAsal:  res.LokasiAsal,
+		Tarif:       res.Tarif,
+		Pelajaran:   res.Pelajaran,
+		Pendidikan:  res.Pendidikan,
+		Avatar:      res.Avatar,
+		Ijazah:      res.Ijazah,
+		Latitude:    res.Latitude,
+		Longitude:   res.Longitude,
+	}
+
+	for _, v := range res.Jadwal {
+		guru := Guru{}
+		if err := gq.db.Where("id = ?", v.ID).Find(&guru).Error; err != nil {
+			log.Println("Get by ID query error", err.Error())
+			return nil, err
+		}
+
+		jadwal := data.JadwalNG{
+			ID:      v.ID,
+			Tanggal: v.Tanggal,
+			Jam:     v.Jam,
+			Status:  v.Status,
+		}
+
+		result.Jadwal = append(result.Jadwal, jadwal)
+	}
+	return result, nil
 }
 
 // Update implements guru.GuruData
-func (gq *guruQuery) Update(id uint, updateData guru.Core) (guru.Core, error) {
-	panic("unimplemented")
+func (gq *guruQuery) Update(id uint, updateData guru.Core) error {
+	cnv := CoreToData(updateData)
+	tx := gq.db.Model(&Guru{}).Where("id = ? AND deleted_at IS NULL", id).Updates(&cnv)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected <= 0 {
+		return errors.New("terjadi kesalahan pada server karena data user atau product tidak ditemukan")
+	}
+
+	return nil
 }
 
 // Delete implements guru.GuruData

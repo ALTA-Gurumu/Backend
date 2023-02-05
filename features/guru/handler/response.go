@@ -58,3 +58,33 @@ func GuruByID(data guru.Core) GuruByIDResp {
 		Jadwal:      data.Jadwal,
 	}
 }
+
+type ProfileHomeResp struct {
+	ID          uint
+	Nama        string
+	LokasiAsal  string
+	TentangSaya string
+	Pelajaran   string
+	Avatar      string
+	Penilaian   string
+}
+
+func ProfileToResponse(data guru.Core) ProfileHomeResp {
+	return ProfileHomeResp{
+		ID:          data.ID,
+		Nama:        data.Nama,
+		LokasiAsal:  data.LokasiAsal,
+		TentangSaya: data.TentangSaya,
+		Pelajaran:   data.Pelajaran,
+		Avatar:      data.Avatar,
+		// Penilaian:   data.,
+	}
+}
+
+func GetProfileHomeResponse(data []guru.Core) []ProfileHomeResp {
+	res := []ProfileHomeResp{}
+	for _, v := range data {
+		res = append(res, ProfileToResponse(v))
+	}
+	return res
+}

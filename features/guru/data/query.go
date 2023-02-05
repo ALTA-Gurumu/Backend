@@ -92,6 +92,22 @@ func (gq *guruQuery) GetByID(id uint) (interface{}, error) {
 	return result, nil
 }
 
+func (gq *guruQuery) GetBeranda() ([]guru.Core, error) {
+	var guruData []Guru
+	var result []guru.Core
+
+	err := gq.db.Where("deleted_at IS NULL").Find(&guruData).Error
+	if err != nil {
+		return nil, err
+	}
+
+	for _, data := range guruData {
+		result = append(result, ToCore(data))
+	}
+
+	return result, nil
+}
+
 // Update implements guru.GuruData
 func (gq *guruQuery) Update(id uint, updateData guru.Core) error {
 	cnv := CoreToData(updateData)

@@ -3,6 +3,7 @@ package handler
 import (
 	"Gurumu/features/guru"
 	"Gurumu/helper"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -88,5 +89,18 @@ func (gc *guruControl) Update() echo.HandlerFunc {
 		}
 
 		return c.JSON(helper.PrintSuccessReponse(200, "sukses update data guru"))
+	}
+}
+
+// ProfileBeranda implements guru.GuruHandler
+func (gc *guruControl) ProfileBeranda() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		res, err := gc.srv.ProfileBeranda()
+		if err != nil {
+			log.Println("no content found ", err.Error())
+			return c.JSON(helper.PrintErrorResponse(err.Error()))
+		}
+
+		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "sukses melihat content", GetProfileHomeResponse(res)))
 	}
 }

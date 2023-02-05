@@ -32,3 +32,15 @@ func (jq *jadwalQuery) Add(guruID uint, newJadwal jadwal.Core) (jadwal.Core, err
 
 	return newJadwal, nil
 }
+
+func (jq *jadwalQuery) GetJadwal(guruID uint) ([]jadwal.Core, error) {
+	listJadwal := []Jadwal{}
+
+	err := jq.db.Where("guru_id = ?", guruID).Find(&listJadwal).Error
+	if err != nil {
+		log.Println("list jadwal query error", err.Error())
+		return []jadwal.Core{}, err
+	}
+
+	return ListToCore(listJadwal), nil
+}

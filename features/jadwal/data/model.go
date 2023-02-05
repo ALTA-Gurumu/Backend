@@ -70,10 +70,10 @@ func GuruToCore(gj GuruJadwal) jadwal.Core {
 	}
 }
 
-func ListToCore(data []GuruJadwal) []jadwal.Core {
+func ListToCore(data []Jadwal) []jadwal.Core {
 	listJadwal := []jadwal.Core{}
 	for _, jadwal := range data {
-		listJadwal = append(listJadwal, GuruToCore(jadwal))
+		listJadwal = append(listJadwal, ToCore(jadwal))
 	}
 
 	return listJadwal

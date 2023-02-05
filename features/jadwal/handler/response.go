@@ -17,3 +17,11 @@ func ToResponse(data jadwal.Core) JadwalResponse {
 		Jam:     data.Jam,
 	}
 }
+
+func GetJadwalResponse(data []jadwal.Core) []JadwalResponse {
+	listResp := []JadwalResponse{}
+	for _, jadwal := range data {
+		listResp = append(listResp, ToResponse(jadwal))
+	}
+	return listResp
+}

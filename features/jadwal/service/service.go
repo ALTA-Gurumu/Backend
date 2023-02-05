@@ -41,3 +41,25 @@ func (js *jadwalService) Add(token interface{}, newJadwal jadwal.Core) (jadwal.C
 
 	return res, nil
 }
+
+func (js *jadwalService) GetJadwal(token interface{}) ([]jadwal.Core, error) {
+	guruID := helper.ExtractToken(token)
+	if guruID <= 0 {
+		log.Println("error extract token")
+		return []jadwal.Core{}, errors.New("data tidak ditemukan")
+	}
+
+	res, err := js.qry.GetJadwal(uint(guruID))
+
+	if err != nil {
+		msg := ""
+		if strings.Contains(err.Error(), "not found") {
+			msg = "data tidak ditemukan"
+		} else {
+			msg = "terdapat masalah pada server"
+		}
+		log.Println("error jadwal history service: ", err.Error())
+		return []jadwal.Core{}, errors.New(msg)
+	}
+	return res, nil
+}

@@ -5,6 +5,7 @@ import (
 	"Gurumu/helper"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -34,6 +35,26 @@ func (jh *jadwalHandler) Add() echo.HandlerFunc {
 		return c.JSON(http.StatusCreated, map[string]interface{}{
 			"data":    ToResponse(res),
 			"message": "berhasil menambahkan jadwal",
+		})
+	}
+}
+
+func (jh *jadwalHandler) GetJadwal() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		token := c.Get("user")
+
+		res, err := jh.srv.GetJadwal(token)
+		if err != nil {
+			if strings.Contains(err.Error(), "not found") {
+				return c.JSON(http.StatusBadRequest, helper.ErrorResponse("data tidak ditemukan"))
+			} else {
+				return c.JSON(http.StatusInternalServerError, helper.ErrorResponse("terdapat masalah pada server"))
+			}
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"data":    GetJadwalResponse(res),
+			"message": "sukses menampilkan daftar jadwal",
 		})
 	}
 }

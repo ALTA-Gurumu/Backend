@@ -82,6 +82,7 @@ func main() {
 	e.PUT("/guru", guruHdl.Update(), middleware.JWT([]byte(config.JWT_KEY)))
 
 	e.POST("/jadwal", jadwalHdl.Add(), middleware.JWT([]byte(config.JWT_KEY)))
+	e.GET("/jadwal", jadwalHdl.GetJadwal(), middleware.JWT([]byte(config.JWT_KEY)))
 
 	e.POST("/ulasan/:guruid", ulasanHdl.Add(), middleware.JWT([]byte(config.JWT_KEY)))
 	e.GET("/ulasan", ulasanHdl.GetAll())

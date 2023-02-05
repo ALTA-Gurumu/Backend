@@ -89,7 +89,6 @@ func (gq *guruQuery) GetByID(id uint) (interface{}, error) {
 
 		result.Jadwal = append(result.Jadwal, jadwal)
 	}
-	log.Println(resJadwal)
 	return result, nil
 }
 

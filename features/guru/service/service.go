@@ -108,52 +108,14 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 		return fmt.Errorf("validation error: %s", helper.ValidationErrorHandle(err))
 	}
 
-	var avatarURL, ijazahURL string
 	if avatar != nil {
-		_, err := guc.qry.GetByID(uint(userID))
-		if err != nil {
-			log.Println(err)
-			if strings.Contains(err.Error(), "not found") {
-				return fmt.Errorf("data guru tidak ditemukan")
-			}
-			return fmt.Errorf("gagal mendapatkan data guru: %s", err)
-		}
-
-		avatarURL, err = helper.UploadTeacherProfilePhotoS3(*avatar, err.Error())
-		if err != nil {
-			log.Println(err)
-			if strings.Contains(err.Error(), "kesalahan input") {
-				return fmt.Errorf("gagal upload avatar: %s", err)
-			}
-			return fmt.Errorf("gagal upload avatar: system server error")
-		}
+		path, _ := helper.UploadTeacherProfilePhotoS3(*avatar, updateData.Email)
+		updateData.Avatar = path
 	}
 
 	if ijazah != nil {
-		_, err := guc.qry.GetByID(uint(userID))
-		if err != nil {
-			log.Println(err)
-			if strings.Contains(err.Error(), "not found") {
-				return fmt.Errorf("data guru tidak ditemukan")
-			}
-			return fmt.Errorf("gagal mendapatkan data guru: %s", err)
-		}
-
-		ijazahURL, err = helper.UploadTeacherCertificateS3(*ijazah, err.Error())
-		if err != nil {
-			log.Println(err)
-			if strings.Contains(err.Error(), "kesalahan input") {
-				return fmt.Errorf("gagal upload ijazah: %s", err)
-			}
-			return fmt.Errorf("gagal upload ijazah: system server error")
-		}
-	}
-
-	if avatarURL != "" {
-		updateData.Avatar = avatarURL
-	}
-	if ijazahURL != "" {
-		updateData.Ijazah = ijazahURL
+		path, _ := helper.UploadTeacherProfilePhotoS3(*ijazah, updateData.Email)
+		updateData.Ijazah = path
 	}
 
 	if err := guc.qry.Update(uint(userID), updateData); err != nil {

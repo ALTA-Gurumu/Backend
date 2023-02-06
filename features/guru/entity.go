@@ -20,7 +20,7 @@ type Core struct {
 	LokasiAsal  string
 	Offline     bool
 	Online      bool
-	Tarif       string
+	Tarif       int
 	Pelajaran   string
 	Pendidikan  string
 	Avatar      string

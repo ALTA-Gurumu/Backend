@@ -41,4 +41,4 @@ jobs:
             docker rm ${{ secrets.DOCKER_CONTAINER }}
             docker rmi ${{ secrets.DOCKER_USER }}/${{ secrets.DOCKER_IMAGE }}:latest
             docker pull ${{ secrets.DOCKER_USER }}/${{ secrets.DOCKER_IMAGE }}:latest
-            docker run --name ${{ secrets.DOCKER_CONTAINER }} -d -e DBUSER=${{ secrets.DBUSER }} -e DBPASS=${{ secrets.DBPASS }} -e DBHOST=${{ secrets.DBHOST }} -e DBPORT=${{ secrets.DBPORT }} -e DBNAME=${{ secrets.DBNAME }} -e JWT_KEY="${{ secrets.JWTKEY }}" -e KEYID=${{ secrets.AWS_S3_KEYID }} -e ACCESSKEY=${{ secrets.AWS_S3_ACCESSKEY }} -p 80:8000 ${{ secrets.DOCKER_USER }}/${{ secrets.DOCKER_IMAGE }}
+            docker run --name ${{ secrets.DOCKER_CONTAINER }} -d -e DBUSER=${{ secrets.DBUSER }} -e DBPASS=${{ secrets.DBPASS }} -e DBHOST=${{ secrets.DBHOST }} -e DBPORT=${{ secrets.DBPORT }} -e DBNAME=${{ secrets.DBNAME }} -e JWT_KEY="${{ secrets.JWTKEY }}" -e KEYID=${{ secrets.AWS_S3_KEYID }} -e ACCESSKEY=${{ secrets.AWS_S3_ACCESSKEY }} -e MIDTRANSSERVERKEY=${{ secrets.MIDTRANSSERVERKEY }} -p 80:8000 ${{ secrets.DOCKER_USER }}/${{ secrets.DOCKER_IMAGE }}

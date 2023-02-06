@@ -5,11 +5,13 @@ import (
 )
 
 type SiswaAutentikasiResponse struct {
+	ID    uint   `json:"siswa_id"`
 	Nama  string `json:"nama"`
 	Email string `json:"email"`
 	Role  string `json:"role"`
 }
 type GuruAutentikasiResponse struct {
+	ID         uint   `json:"guru_id"`
 	Nama       string `json:"nama"`
 	Email      string `json:"email"`
 	Role       string `json:"role"`
@@ -18,6 +20,7 @@ type GuruAutentikasiResponse struct {
 
 func GuruToResponses(data autentikasi.Core) GuruAutentikasiResponse {
 	return GuruAutentikasiResponse{
+		ID:         data.ID,
 		Nama:       data.Nama,
 		Email:      data.Email,
 		Role:       data.Role,
@@ -28,6 +31,7 @@ func GuruToResponses(data autentikasi.Core) GuruAutentikasiResponse {
 
 func SiswaToResponses(data autentikasi.Core) SiswaAutentikasiResponse {
 	return SiswaAutentikasiResponse{
+		ID:    data.ID,
 		Nama:  data.Nama,
 		Email: data.Email,
 		Role:  data.Role,

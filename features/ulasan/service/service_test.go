@@ -135,3 +135,57 @@ func TestGetAll(t *testing.T) {
 		data.AssertExpectations(t)
 	})
 }
+
+func TestGetById(t *testing.T) {
+	data := mocks.NewUlasanData(t)
+
+	expectedData := []ulasan.Core{
+		{
+			ID:        1,
+			NamaSiswa: "John Doe",
+			Penilaian: 5,
+			Ulasan:    "cara menerangkannya sangat jelas",
+		}, {
+			ID:        2,
+			NamaSiswa: "Andrew",
+			Penilaian: 4,
+			Ulasan:    "gurunya punya banyak cara jitu",
+		},
+	}
+	guruId := uint(1)
+
+	t.Run("success get by id", func(t *testing.T) {
+		data.On("GetById", guruId).Return(expectedData, nil).Once()
+
+		srv := New(data)
+
+		res, err := srv.GetById(guruId)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res)
+		data.AssertExpectations(t)
+	})
+
+	t.Run("data not found", func(t *testing.T) {
+		data.On("GetById", guruId).Return([]ulasan.Core{}, errors.New("data not found")).Once()
+
+		srv := New(data)
+
+		res, err := srv.GetById(guruId)
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		assert.ErrorContains(t, err, "not found")
+		data.AssertExpectations(t)
+	})
+
+	t.Run("server problem", func(t *testing.T) {
+		data.On("GetById", guruId).Return([]ulasan.Core{}, errors.New("server problem")).Once()
+
+		srv := New(data)
+
+		res, err := srv.GetById(guruId)
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		assert.ErrorContains(t, err, "server")
+		data.AssertExpectations(t)
+	})
+}

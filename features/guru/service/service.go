@@ -130,8 +130,8 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 }
 
 // ProfileBeranda implements guru.GuruService
-func (guc *guruUseCase) ProfileBeranda() ([]guru.Core, error) {
-	res, err := guc.qry.GetBeranda()
+func (guc *guruUseCase) ProfileBeranda(loc string, subj string) ([]guru.Core, error) {
+	res, err := guc.qry.GetBeranda(loc, subj)
 	if err != nil {
 		log.Println("no result or server error")
 		return []guru.Core{}, errors.New("no result or server error")

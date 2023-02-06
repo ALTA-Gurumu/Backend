@@ -94,24 +94,26 @@ func (gq *guruQuery) GetByID(id uint) (interface{}, error) {
 
 func (gq *guruQuery) GetBeranda(loc string, subj string) ([]guru.Core, error) {
 	var guruData []GuruRatingBeranda
-	var queryString string
+	query := "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, AVG(ulasans.penilaian) AS avg_rating FROM gurus JOIN ulasans ON gurus.id = ulasans.guru_id"
+
 	var args []interface{}
 
-	if loc != "" && subj != "" {
-		queryString = "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, AVG(ulasans.penilaian) AS avg_rating FROM gurus JOIN ulasans ON gurus.id = ulasans.guru_id WHERE gurus.lokasi_asal = ? AND gurus.pelajaran = ? GROUP BY gurus.id"
-		args = []interface{}{loc, subj}
-	} else if loc != "" {
-		queryString = "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, AVG(ulasans.penilaian) AS avg_rating FROM gurus JOIN ulasans ON gurus.id = ulasans.guru_id WHERE gurus.lokasi_asal = ? GROUP BY gurus.id"
-		args = []interface{}{loc}
-	} else if subj != "" {
-		queryString = "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, AVG(ulasans.penilaian) AS avg_rating FROM gurus JOIN ulasans ON gurus.id = ulasans.guru_id WHERE gurus.pelajaran = ? GROUP BY gurus.id"
-		args = []interface{}{subj}
-	} else {
-		queryString = "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, AVG(ulasans.penilaian) AS avg_rating FROM gurus JOIN ulasans ON gurus.id = ulasans.guru_id GROUP BY gurus.id"
-		args = []interface{}{}
+	if loc != "" {
+		query = query + " WHERE gurus.lokasi_asal = ?"
+		args = append(args, loc)
 	}
+	if subj != "" {
+		if loc == "" {
+			query = query + " WHERE gurus.pelajaran = ?"
+			args = append(args, subj)
+		} else {
+			query = query + " AND gurus.pelajaran = ?"
+			args = append(args, subj)
+		}
+	}
+	query = query + " GROUP BY gurus.id"
 
-	rows, err := gq.db.Raw(queryString, args...).Rows()
+	rows, err := gq.db.Raw(query, args...).Rows()
 	if err != nil {
 		return nil, err
 	}

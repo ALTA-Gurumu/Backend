@@ -95,7 +95,7 @@ func (gc *guruControl) Update() echo.HandlerFunc {
 // ProfileBeranda implements guru.GuruHandler
 func (gc *guruControl) ProfileBeranda() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		loc := c.QueryParam("location")
+		loc := c.QueryParam("lokasi")
 		subj := c.QueryParam("pelajaran")
 		res, err := gc.srv.ProfileBeranda(loc, subj)
 

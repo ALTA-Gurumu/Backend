@@ -20,7 +20,7 @@ type Guru struct {
 	LokasiAsal  string
 	Offline     bool
 	Online      bool
-	Tarif       string
+	Tarif       int
 	Pelajaran   string
 	Pendidikan  string
 	Avatar      string
@@ -39,6 +39,7 @@ type GuruRatingBeranda struct {
 	TentangSaya string
 	Pelajaran   string
 	Avatar      string
+	Tarif       int
 	Penilaian   float32
 }
 
@@ -50,6 +51,7 @@ func RatingToCore(data GuruRatingBeranda) guru.Core {
 		LokasiAsal:  data.LokasiAsal,
 		Pelajaran:   data.Pelajaran,
 		Avatar:      data.Avatar,
+		Tarif:       data.Tarif,
 		Penilaian:   data.Penilaian,
 	}
 }

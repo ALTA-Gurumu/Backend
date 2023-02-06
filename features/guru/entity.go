@@ -20,7 +20,7 @@ type Core struct {
 	LokasiAsal  string
 	Offline     bool
 	Online      bool
-	Tarif       string
+	Tarif       int
 	Pelajaran   string
 	Pendidikan  string
 	Avatar      string
@@ -44,7 +44,7 @@ type GuruHandler interface {
 type GuruService interface {
 	Register(newGuru Core) (Core, error)
 	Profile(id uint) (interface{}, error)
-	ProfileBeranda() ([]Core, error)
+	ProfileBeranda(loc string, subj string) ([]Core, error)
 	Update(token interface{}, updateData Core, avatar *multipart.FileHeader, ijazah *multipart.FileHeader) error
 	Delete(token interface{}) error
 }
@@ -52,7 +52,7 @@ type GuruService interface {
 type GuruData interface {
 	Register(newGuru Core) (Core, error)
 	GetByID(id uint) (interface{}, error)
-	GetBeranda() ([]Core, error)
+	GetBeranda(loc string, subj string) ([]Core, error)
 	Update(id uint, updateData Core) error
 	Delete(id uint) error
 	Verifikasi(cekdata Core) bool

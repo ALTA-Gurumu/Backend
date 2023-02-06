@@ -24,7 +24,7 @@ type UpdateRequest struct {
 	LokasiAsal  string `json:"lokasiasal" form:"lokasiasal"`
 	Offline     bool   `json:"offline"`
 	Online      bool   `json:"online"`
-	Tarif       string `json:"tarif" form:"tarif"`
+	Tarif       int    `json:"tarif" form:"tarif"`
 	Pelajaran   string `json:"pelajaran" form:"pelajaran"`
 	Pendidikan  string `json:"pendidikan" form:"pendidikan"`
 	Avatar      string `json:"avatar" form:"avatar"`

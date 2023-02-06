@@ -28,7 +28,7 @@ type GuruByIDResp struct {
 	LokasiAsal  string
 	Offline     string
 	Online      string
-	Tarif       string
+	Tarif       int
 	Pelajaran   string
 	Pendidikan  string
 	Avatar      string
@@ -60,13 +60,14 @@ func GuruByID(data guru.Core) GuruByIDResp {
 }
 
 type ProfileHomeResp struct {
-	ID          uint
-	Nama        string
-	LokasiAsal  string
-	TentangSaya string
-	Pelajaran   string
-	Avatar      string
-	Penilaian   float32
+	ID          uint    `json:"guru_id"`
+	Nama        string  `json:"nama"`
+	LokasiAsal  string  `json:"alamat"`
+	TentangSaya string  `json:"judul"`
+	Pelajaran   string  `json:"pelajaran"`
+	Avatar      string  `json:"avatar"`
+	Tarif       int     `json:"tarif"`
+	Penilaian   float32 `json:"penilaian"`
 }
 
 func ProfileToResponse(data guru.Core) ProfileHomeResp {
@@ -77,6 +78,7 @@ func ProfileToResponse(data guru.Core) ProfileHomeResp {
 		TentangSaya: data.TentangSaya,
 		Pelajaran:   data.Pelajaran,
 		Avatar:      data.Avatar,
+		Tarif:       data.Tarif,
 		Penilaian:   data.Penilaian,
 	}
 }

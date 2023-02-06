@@ -34,6 +34,29 @@ func (_m *JadwalService) Add(token interface{}, newJadwal jadwal.Core) (jadwal.C
 	return r0, r1
 }
 
+// GetJadwal provides a mock function with given fields: token
+func (_m *JadwalService) GetJadwal(token interface{}) ([]jadwal.Core, error) {
+	ret := _m.Called(token)
+
+	var r0 []jadwal.Core
+	if rf, ok := ret.Get(0).(func(interface{}) []jadwal.Core); ok {
+		r0 = rf(token)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]jadwal.Core)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(interface{}) error); ok {
+		r1 = rf(token)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 type mockConstructorTestingTNewJadwalService interface {
 	mock.TestingT
 	Cleanup(func())

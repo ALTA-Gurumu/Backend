@@ -27,15 +27,40 @@ func (_m *GuruData) Delete(id uint) error {
 	return r0
 }
 
-// Profile provides a mock function with given fields: id
-func (_m *GuruData) Profile(id uint) (guru.Core, error) {
+// GetBeranda provides a mock function with given fields: loc, subj
+func (_m *GuruData) GetBeranda(loc string, subj string) ([]guru.Core, error) {
+	ret := _m.Called(loc, subj)
+
+	var r0 []guru.Core
+	if rf, ok := ret.Get(0).(func(string, string) []guru.Core); ok {
+		r0 = rf(loc, subj)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]guru.Core)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(loc, subj)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetByID provides a mock function with given fields: id
+func (_m *GuruData) GetByID(id uint) (interface{}, error) {
 	ret := _m.Called(id)
 
-	var r0 guru.Core
-	if rf, ok := ret.Get(0).(func(uint) guru.Core); ok {
+	var r0 interface{}
+	if rf, ok := ret.Get(0).(func(uint) interface{}); ok {
 		r0 = rf(id)
 	} else {
-		r0 = ret.Get(0).(guru.Core)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(interface{})
+		}
 	}
 
 	var r1 error
@@ -70,24 +95,31 @@ func (_m *GuruData) Register(newGuru guru.Core) (guru.Core, error) {
 }
 
 // Update provides a mock function with given fields: id, updateData
-func (_m *GuruData) Update(id uint, updateData guru.Core) (guru.Core, error) {
+func (_m *GuruData) Update(id uint, updateData guru.Core) error {
 	ret := _m.Called(id, updateData)
 
-	var r0 guru.Core
-	if rf, ok := ret.Get(0).(func(uint, guru.Core) guru.Core); ok {
+	var r0 error
+	if rf, ok := ret.Get(0).(func(uint, guru.Core) error); ok {
 		r0 = rf(id, updateData)
 	} else {
-		r0 = ret.Get(0).(guru.Core)
+		r0 = ret.Error(0)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(uint, guru.Core) error); ok {
-		r1 = rf(id, updateData)
+	return r0
+}
+
+// Verifikasi provides a mock function with given fields: cekdata
+func (_m *GuruData) Verifikasi(cekdata guru.Core) bool {
+	ret := _m.Called(cekdata)
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func(guru.Core) bool); ok {
+		r0 = rf(cekdata)
 	} else {
-		r1 = ret.Error(1)
+		r0 = ret.Get(0).(bool)
 	}
 
-	return r0, r1
+	return r0
 }
 
 type mockConstructorTestingTNewGuruData interface {

@@ -29,20 +29,45 @@ func (_m *GuruService) Delete(token interface{}) error {
 	return r0
 }
 
-// Profile provides a mock function with given fields: token
-func (_m *GuruService) Profile(token interface{}) (guru.Core, error) {
-	ret := _m.Called(token)
+// Profile provides a mock function with given fields: id
+func (_m *GuruService) Profile(id uint) (interface{}, error) {
+	ret := _m.Called(id)
 
-	var r0 guru.Core
-	if rf, ok := ret.Get(0).(func(interface{}) guru.Core); ok {
-		r0 = rf(token)
+	var r0 interface{}
+	if rf, ok := ret.Get(0).(func(uint) interface{}); ok {
+		r0 = rf(id)
 	} else {
-		r0 = ret.Get(0).(guru.Core)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(interface{})
+		}
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(interface{}) error); ok {
-		r1 = rf(token)
+	if rf, ok := ret.Get(1).(func(uint) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ProfileBeranda provides a mock function with given fields: loc, subj
+func (_m *GuruService) ProfileBeranda(loc string, subj string) ([]guru.Core, error) {
+	ret := _m.Called(loc, subj)
+
+	var r0 []guru.Core
+	if rf, ok := ret.Get(0).(func(string, string) []guru.Core); ok {
+		r0 = rf(loc, subj)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]guru.Core)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(loc, subj)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -71,25 +96,18 @@ func (_m *GuruService) Register(newGuru guru.Core) (guru.Core, error) {
 	return r0, r1
 }
 
-// Update provides a mock function with given fields: token, updateData, avatar
-func (_m *GuruService) Update(token interface{}, updateData guru.Core, avatar *multipart.FileHeader) (guru.Core, error) {
-	ret := _m.Called(token, updateData, avatar)
+// Update provides a mock function with given fields: token, updateData, avatar, ijazah
+func (_m *GuruService) Update(token interface{}, updateData guru.Core, avatar *multipart.FileHeader, ijazah *multipart.FileHeader) error {
+	ret := _m.Called(token, updateData, avatar, ijazah)
 
-	var r0 guru.Core
-	if rf, ok := ret.Get(0).(func(interface{}, guru.Core, *multipart.FileHeader) guru.Core); ok {
-		r0 = rf(token, updateData, avatar)
+	var r0 error
+	if rf, ok := ret.Get(0).(func(interface{}, guru.Core, *multipart.FileHeader, *multipart.FileHeader) error); ok {
+		r0 = rf(token, updateData, avatar, ijazah)
 	} else {
-		r0 = ret.Get(0).(guru.Core)
+		r0 = ret.Error(0)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(interface{}, guru.Core, *multipart.FileHeader) error); ok {
-		r1 = rf(token, updateData, avatar)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 type mockConstructorTestingTNewGuruService interface {

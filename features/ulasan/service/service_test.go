@@ -85,3 +85,53 @@ func TestAdd(t *testing.T) {
 		assert.ErrorContains(t, err, "tidak valid")
 	})
 }
+
+func TestGetAll(t *testing.T) {
+	data := mocks.NewUlasanData(t)
+
+	expectedData := []ulasan.Core{
+		{
+			ID:        1,
+			NamaGuru:  "Beni",
+			Penilaian: 5,
+			Ulasan:    "cara menerangkannya sangat jelas",
+		}, {
+			ID:        2,
+			NamaGuru:  "Bejo",
+			Penilaian: 4,
+			Ulasan:    "gurunya punya banyak cara jitu",
+		},
+	}
+
+	t.Run("success get all", func(t *testing.T) {
+		data.On("GetAll").Return(expectedData, nil).Once()
+
+		srv := New(data)
+
+		_, err := srv.GetAll()
+		assert.Nil(t, err)
+		data.AssertExpectations(t)
+	})
+
+	t.Run("data not found", func(t *testing.T) {
+		data.On("GetAll").Return([]ulasan.Core{}, errors.New("data not found")).Once()
+
+		srv := New(data)
+
+		_, err := srv.GetAll()
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "not found")
+		data.AssertExpectations(t)
+	})
+
+	t.Run("server problem", func(t *testing.T) {
+		data.On("GetAll").Return([]ulasan.Core{}, errors.New("server problem")).Once()
+
+		srv := New(data)
+
+		_, err := srv.GetAll()
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "server")
+		data.AssertExpectations(t)
+	})
+}

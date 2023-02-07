@@ -120,7 +120,7 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 	}
 
 	if ijazah != nil {
-		path, _ := helper.UploadTeacherProfilePhotoS3(*ijazah, updateData.Email)
+		path, _ := helper.UploadTeacherCertificateS3(*ijazah, updateData.Email)
 		updateData.Ijazah = path
 	}
 

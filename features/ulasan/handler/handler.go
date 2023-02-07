@@ -54,7 +54,7 @@ func (uc *ulasanControl) GetAll() echo.HandlerFunc {
 
 		allUlasan := ListAllUlasanToResponse(res)
 
-		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses menampilkan ulasan", allUlasan))
+		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "sukses menampilkan ulasan", allUlasan))
 	}
 }
 func (uc *ulasanControl) GetById() echo.HandlerFunc {
@@ -74,6 +74,6 @@ func (uc *ulasanControl) GetById() echo.HandlerFunc {
 
 		ulasanGuru := ListUlasanGuruToResponse(res)
 
-		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses mendapatkan ulasan dan penilaian", ulasanGuru))
+		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "sukses mendapatkan ulasan dan penilaian", ulasanGuru))
 	}
 }

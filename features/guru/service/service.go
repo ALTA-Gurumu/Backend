@@ -108,6 +108,12 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 		return fmt.Errorf("validation error: %s", helper.ValidationErrorHandle(err))
 	}
 
+	if updateData.Email == "" {
+		res, _ := guc.qry.GetByID(uint(userID))
+
+		updateData.Email = res.(guru.Core).Email
+	}
+
 	if avatar != nil {
 		path, _ := helper.UploadTeacherProfilePhotoS3(*avatar, updateData.Email)
 		updateData.Avatar = path

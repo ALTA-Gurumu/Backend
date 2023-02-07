@@ -26,8 +26,7 @@ type GuruByIDResp struct {
 	TentangSaya string
 	Pengalaman  string
 	LokasiAsal  string
-	Offline     string
-	Online      string
+	MetodeBljr  string
 	Tarif       int
 	Pelajaran   string
 	Pendidikan  string
@@ -48,6 +47,7 @@ func GuruByID(data guru.Core) GuruByIDResp {
 		TentangSaya: data.TentangSaya,
 		Pengalaman:  data.Pengalaman,
 		LokasiAsal:  data.LokasiAsal,
+		MetodeBljr:  data.MetodeBljr,
 		Tarif:       data.Tarif,
 		Pelajaran:   data.Pelajaran,
 		Pendidikan:  data.Pendidikan,

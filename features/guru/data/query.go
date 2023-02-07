@@ -66,6 +66,7 @@ func (gq *guruQuery) GetByID(id uint) (interface{}, error) {
 		TentangSaya: res.TentangSaya,
 		Pengalaman:  res.Pengalaman,
 		LokasiAsal:  res.LokasiAsal,
+		MetodeBljr:  res.MetodeBljr,
 		Tarif:       res.Tarif,
 		Pelajaran:   res.Pelajaran,
 		Pendidikan:  res.Pendidikan,
@@ -113,7 +114,7 @@ func (gq *guruQuery) GetBeranda(loc string, subj string) ([]guru.Core, error) {
 	// 	args = []interface{}{}
 	// }
 	var guruData []GuruRatingBeranda
-	query := "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, gurus.tarif, COALESCE(AVG(ulasans.penilaian), 0) AS avg_rating FROM gurus LEFT JOIN ulasans ON gurus.id = ulasans.guru_id"
+	query := "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, gurus.tarif, COALESCE(AVG(ulasans.penilaian), 0) AS avg_rating FROM gurus LEFT JOIN ulasans ON gurus.id = ulasans.guru_id WHERE gurus.verifikasi = 1"
 
 	var rows *sql.Rows
 	var err error

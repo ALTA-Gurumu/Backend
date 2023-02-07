@@ -79,12 +79,14 @@ func (suc *siswaUseCase) Update(token interface{}, updateData siswa.Core, avatar
 		return errors.New("id tidak valid")
 	}
 
-	//trouble
+	if updateData.Email == "" {
+		res, _ := suc.qry.Profile(uint(id))
+
+		updateData.Email = res.Email
+	}
+
 	if avatar != nil {
 		path, _ := helper.UploadStudentProfilePhotoS3(*avatar, updateData.Email)
-		// if err != nil {
-		// 	return err
-		// }
 		updateData.Avatar = path
 	}
 

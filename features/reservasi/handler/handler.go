@@ -34,3 +34,21 @@ func (rh *reservasiHandler) Add() echo.HandlerFunc {
 		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses reservasi guru", ToAddReservasiResponse(res)))
 	}
 }
+
+func (rh *reservasiHandler) Mysession() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		token := c.Get("user")
+		role := c.QueryParam("role")
+		reservasiStatus := c.QueryParam("status")
+
+		res, err := rh.srv.Mysession(token, role, reservasiStatus)
+
+		if err != nil {
+			return c.JSON(helper.PrintErrorResponse(err.Error()))
+		}
+		if role == "siswa" {
+			return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses menampilkan sesi siswa", ToListSesikuSiswaResponse(res)))
+		}
+		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses menampilkan sesi guru", ToListSesikuGuruResponse(res)))
+	}
+}

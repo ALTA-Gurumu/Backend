@@ -4,9 +4,11 @@ import "github.com/labstack/echo/v4"
 
 type Core struct {
 	ID               uint
+	Role             string
 	GuruID           uint
 	NamaGuru         string
 	SiswaID          uint
+	NamaSiswa        string
 	AlamatSiswa      string
 	TeleponSiswa     string
 	JadwalID         uint
@@ -28,12 +30,15 @@ type Core struct {
 
 type ReservasiHandler interface {
 	Add() echo.HandlerFunc
+	Mysession() echo.HandlerFunc
 }
 
 type ReservasiService interface {
 	Add(token interface{}, newReservasi Core) (Core, error)
+	Mysession(token interface{}, role, reservasiStatus string) ([]Core, error)
 }
 
 type ReservasiData interface {
 	Add(siswaID uint, newReservasi Core) (Core, error)
+	Mysession(userID uint, role, reservasiStatus string) ([]Core, error)
 }

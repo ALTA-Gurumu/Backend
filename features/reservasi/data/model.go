@@ -46,6 +46,23 @@ type Jadwal struct {
 	Status  string
 }
 
+type SesiSiswa struct {
+	ID         uint
+	NamaGuru   string
+	Tanggal    string
+	Jam        string
+	TautanGmet string
+	Status     string
+}
+type SesiGuru struct {
+	ID         uint
+	NamaSiswa  string
+	Tanggal    string
+	Jam        string
+	TautanGmet string
+	Status     string
+}
+
 func ToCore(data Reservasi) reservasi.Core {
 	return reservasi.Core{
 		ID:               data.ID,
@@ -83,4 +100,43 @@ func CoreToData(data reservasi.Core) Reservasi {
 		TautanGmet:       data.TautanGmet,
 		Status:           data.Status,
 	}
+}
+
+func ToCoreSesikuGuru(data SesiGuru) reservasi.Core {
+	return reservasi.Core{
+		ID:         data.ID,
+		NamaSiswa:  data.NamaSiswa,
+		Tanggal:    data.Tanggal,
+		Jam:        data.Jam,
+		TautanGmet: data.TautanGmet,
+		Status:     data.Status,
+	}
+}
+func ToCoreSesikuSiswa(data SesiSiswa) reservasi.Core {
+	return reservasi.Core{
+		ID:         data.ID,
+		NamaGuru:   data.NamaGuru,
+		Tanggal:    data.Tanggal,
+		Jam:        data.Jam,
+		TautanGmet: data.TautanGmet,
+		Status:     data.Status,
+	}
+}
+
+func ToListSesikuGuru(data []SesiGuru) []reservasi.Core {
+	var listSesiGuru = []reservasi.Core{}
+	for _, sesiGuru := range data {
+		listSesiGuru = append(listSesiGuru, ToCoreSesikuGuru(sesiGuru))
+	}
+
+	return listSesiGuru
+}
+
+func ToListSesikuSiswa(data []SesiSiswa) []reservasi.Core {
+	var listSesiSiswa = []reservasi.Core{}
+	for _, sesiSiswa := range data {
+		listSesiSiswa = append(listSesiSiswa, ToCoreSesikuSiswa(sesiSiswa))
+	}
+
+	return listSesiSiswa
 }

@@ -36,3 +36,19 @@ func (rs *reservasiService) Add(token interface{}, newReservasi reservasi.Core) 
 	return res, nil
 
 }
+
+func (rs *reservasiService) Mysession(token interface{}, role, reservasiStatus string) ([]reservasi.Core, error) {
+	userID := helper.ExtractToken(token)
+	res, err := rs.qry.Mysession(uint(userID), role, reservasiStatus)
+	if err != nil {
+		msg := ""
+		if strings.Contains(err.Error(), "not found") {
+			msg = "data tidak ditemukan"
+		} else {
+			msg = "internal server error"
+		}
+		return []reservasi.Core{}, errors.New(msg)
+	}
+	return res, nil
+
+}

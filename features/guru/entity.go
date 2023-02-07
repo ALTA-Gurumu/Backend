@@ -18,8 +18,7 @@ type Core struct {
 	TentangSaya string
 	Pengalaman  string
 	LokasiAsal  string
-	Offline     bool
-	Online      bool
+	MetodeBljr  string
 	Tarif       int
 	Pelajaran   string
 	Pendidikan  string

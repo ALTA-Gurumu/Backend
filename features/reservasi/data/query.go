@@ -58,14 +58,14 @@ func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core) (reserva
 
 	data.Status = "Belum melakukan Pembayaran"
 
-	tautanGmet, err := helper.Calendar(detailGuru.Email, newReservasi.Tanggal, newReservasi.AlamatSiswa)
-	if err != nil {
-		fmt.Println("gagal menambahkan ke kalender")
-		return reservasi.Core{}, errors.New("gagal menambahkan ke kalender")
-	}
+	// tautanGmet, err := helper.Calendar(detailGuru.Email, newReservasi.Tanggal, newReservasi.AlamatSiswa)
+	// if err != nil {
+	// 	fmt.Println("gagal menambahkan ke kalender")
+	// 	return reservasi.Core{}, errors.New("gagal menambahkan ke kalender")
+	// }
 
-	fmt.Println(tautanGmet)
-	data.TautanGmet = tautanGmet
+	// fmt.Println(tautanGmet)
+	// data.TautanGmet = tautanGmet
 	err = rd.db.Create(&data).Error
 	if err != nil {
 		log.Println("add reservasi query error")

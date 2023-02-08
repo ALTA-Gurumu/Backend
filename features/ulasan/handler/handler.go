@@ -28,13 +28,17 @@ func (uc *ulasanControl) Add() echo.HandlerFunc {
 		cnv, err := strconv.Atoi(guruID)
 		if err != nil {
 			log.Println("add ulasan param error")
-			return c.JSON(http.StatusBadRequest, "ID guru salah")
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "ID guru salah",
+			})
 		}
 
 		input := UlasanRegisterRequest{}
 
 		if err := c.Bind(&input); err != nil {
-			return c.JSON(http.StatusBadRequest, "format inputan salah")
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "format inputan salah",
+			})
 		}
 
 		err2 := uc.srv.Add(token, uint(cnv), *ToCore(input))
@@ -63,7 +67,9 @@ func (uc *ulasanControl) GetById() echo.HandlerFunc {
 		cnv, err := strconv.Atoi(guruId)
 		if err != nil {
 			log.Println("get ulasan by id param error")
-			return c.JSON(http.StatusBadRequest, "ID guru salah")
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "ID guru salah",
+			})
 		}
 
 		res, err := uc.srv.GetById(uint(cnv))

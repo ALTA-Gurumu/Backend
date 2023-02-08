@@ -6,8 +6,8 @@ type Core struct {
 	ID        uint
 	GuruId    uint
 	SiswaId   uint
-	Ulasan    string
-	Penilaian float32
+	Ulasan    string  `validate:"required"`
+	Penilaian float32 `validate:"required"`
 	NamaSiswa string
 	NamaGuru  string
 }

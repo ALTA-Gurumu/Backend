@@ -4,16 +4,21 @@ import (
 	"Gurumu/features/ulasan"
 	"Gurumu/helper"
 	"errors"
+	"fmt"
 	"strings"
+
+	"github.com/go-playground/validator"
 )
 
 type ulasanUseCase struct {
 	qry ulasan.UlasanData
+	vld *validator.Validate
 }
 
 func New(ud ulasan.UlasanData) ulasan.UlasanService {
 	return &ulasanUseCase{
 		qry: ud,
+		vld: validator.New(),
 	}
 }
 
@@ -21,6 +26,13 @@ func (uuc *ulasanUseCase) Add(token interface{}, guruId uint, newUlasan ulasan.C
 	siswaId := helper.ExtractToken(token)
 	if siswaId <= 0 {
 		return errors.New("id tidak valid")
+	}
+
+	err1 := uuc.vld.Struct(newUlasan)
+	if err1 != nil {
+		msg := helper.ValidationErrorHandle(err1)
+		fmt.Println("msg", msg)
+		return errors.New(msg)
 	}
 
 	err := uuc.qry.Add(uint(siswaId), guruId, newUlasan)

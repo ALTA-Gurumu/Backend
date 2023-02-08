@@ -2,6 +2,7 @@ package data
 
 import (
 	"Gurumu/features/ulasan"
+	"errors"
 	"log"
 
 	"gorm.io/gorm"
@@ -41,7 +42,12 @@ func (uq *ulasanQuery) GetAll() ([]ulasan.Core, error) {
 
 func (uq *ulasanQuery) GetById(guruId uint) ([]ulasan.Core, error) {
 	res := []UlasanGuru{}
-	err := uq.db.Raw("SELECT ulasans.id, siswas.nama as nama_siswa, ulasans.penilaian, ulasans.ulasan FROM ulasans JOIN siswas ON ulasans.siswa_id = siswas.id WHERE ulasans.deleted_at is NULL AND ulasans.guru_id = ?", guruId).Find(&res).Error
+	qry := uq.db.Raw("SELECT ulasans.id, siswas.nama as nama_siswa, ulasans.penilaian, ulasans.ulasan FROM ulasans JOIN siswas ON ulasans.siswa_id = siswas.id WHERE ulasans.deleted_at is NULL AND ulasans.guru_id = ?", guruId).Find(&res)
+	if affrows := qry.RowsAffected; affrows <= 0 {
+		return []ulasan.Core{}, errors.New("guru doesn't exist")
+	}
+
+	err := qry.Error
 	if err != nil {
 		log.Println("get ulasan by id guru query error")
 		return []ulasan.Core{}, err

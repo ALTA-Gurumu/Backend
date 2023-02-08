@@ -3,9 +3,14 @@ package handler
 import (
 	"Gurumu/features/reservasi"
 	"Gurumu/helper"
+	"context"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/calendar/v3"
 )
 
 type reservasiHandler struct {
@@ -32,5 +37,26 @@ func (rh *reservasiHandler) Add() echo.HandlerFunc {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
 		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses reservasi guru", ToAddReservasiResponse(res)))
+	}
+}
+
+func (rh *reservasiHandler) Callback() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		b, _ := os.ReadFile("features/reservasi/credentials/credentials.json")
+		config, err := google.ConfigFromJSON(b, calendar.CalendarEventsScope)
+		if err != nil {
+			log.Fatalf("Unable to parse client secret file to config: %v", err)
+		}
+
+		code := c.Param("code")
+		// state := c.Param("state")
+
+		token, err := config.Exchange(context.Background(), code)
+		if err != nil {
+			return c.JSON(helper.PrintErrorResponse(err.Error()))
+		}
+
+		helper.SaveToken("features/reservasi/credentials/token.json", token)
+		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses kembalikan token"))
 	}
 }

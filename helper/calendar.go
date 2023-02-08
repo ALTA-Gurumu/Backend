@@ -24,7 +24,7 @@ func getClient(config *oauth2.Config) *http.Client {
 	tok, err := tokenFromFile(tokFile)
 	if err != nil {
 		tok = getTokenFromWeb(config)
-		saveToken(tokFile, tok)
+		SaveToken(tokFile, tok)
 	}
 	return config.Client(context.Background(), tok)
 }
@@ -60,7 +60,7 @@ func tokenFromFile(file string) (*oauth2.Token, error) {
 }
 
 // Saves a token to a file path.
-func saveToken(path string, token *oauth2.Token) {
+func SaveToken(path string, token *oauth2.Token) {
 	fmt.Printf("Saving credential file to: %s\n", path)
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
@@ -107,4 +107,47 @@ func main() {
 			fmt.Printf("%v (%v)\n", item.Summary, date)
 		}
 	}
+}
+
+func CreateEvent(event *calendar.Event) {
+	// Baca token JSON
+	ctx := context.Background()
+	b, err := os.ReadFile("credentials.json")
+	if err != nil {
+		log.Fatalf("Unable to read client secret file: %v", err)
+	}
+
+	// If modifying these scopes, delete your previously saved token.json.
+	config, err := google.ConfigFromJSON(b, calendar.CalendarEventsScope, calendar.CalendarScope, calendar.CalendarReadonlyScope)
+	if err != nil {
+		log.Fatalf("Unable to parse client secret file to config: %v", err)
+	}
+	client := getClient(config)
+
+	srv, err := calendar.NewService(ctx, option.WithHTTPClient(client))
+	if err != nil {
+		log.Fatalf("Unable to retrieve Calendar client: %v", err)
+	}
+
+	// event := &calendar.Event{
+	// 	Summary:     "Test Event",
+	// 	Location:    "Somewhere",
+	// 	Description: "This is a test event.",
+	// 	Start: &calendar.EventDateTime{
+	// 		DateTime: time.Now().Format(time.RFC3339),
+	// 		TimeZone: "Asia/Jakarta",
+	// 	},
+	// 	End: &calendar.EventDateTime{
+	// 		DateTime: time.Now().Add(time.Hour * 2).Format(time.RFC3339),
+	// 		TimeZone: "Asia/Jakarta",
+	// 	},
+	// }
+
+	calendarId := "primary"
+	event, err = srv.Events.Insert(calendarId, event).Do()
+	if err != nil {
+		log.Fatalf("Unable to create event. %v\n", err)
+	}
+	fmt.Printf("Event created: %s\n", event.HtmlLink)
+
 }

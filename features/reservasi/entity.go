@@ -28,6 +28,7 @@ type Core struct {
 
 type ReservasiHandler interface {
 	Add() echo.HandlerFunc
+	Callback() echo.HandlerFunc
 }
 
 type ReservasiService interface {

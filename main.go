@@ -89,7 +89,7 @@ func main() {
 	e.GET("/ulasan/:guruid", ulasanHdl.GetById())
 
 	e.POST("/reservasi", reservasiHdl.Add(), middleware.JWT([]byte(config.JWT_KEY)))
-
+	e.GET("/reservasi", reservasiHdl.Callback())
 	if err := e.Start(":8000"); err != nil {
 		log.Println(err.Error())
 	}

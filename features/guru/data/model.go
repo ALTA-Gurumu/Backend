@@ -18,8 +18,7 @@ type Guru struct {
 	TentangSaya string
 	Pengalaman  string
 	LokasiAsal  string
-	Offline     bool
-	Online      bool
+	MetodeBljr  string
 	Tarif       int
 	Pelajaran   string
 	Pendidikan  string
@@ -84,8 +83,7 @@ func ToCore(data Guru) guru.Core {
 		TentangSaya: data.TentangSaya,
 		Pengalaman:  data.Pengalaman,
 		LokasiAsal:  data.LokasiAsal,
-		Offline:     false,
-		Online:      false,
+		MetodeBljr:  data.MetodeBljr,
 		Tarif:       data.Tarif,
 		Pelajaran:   data.Pelajaran,
 		Pendidikan:  data.Pendidikan,
@@ -110,8 +108,7 @@ func CoreToData(core guru.Core) Guru {
 		TentangSaya: core.TentangSaya,
 		Pengalaman:  core.Pengalaman,
 		LokasiAsal:  core.LokasiAsal,
-		Offline:     false,
-		Online:      false,
+		MetodeBljr:  core.MetodeBljr,
 		Tarif:       core.Tarif,
 		Pelajaran:   core.Pelajaran,
 		Pendidikan:  core.Pendidikan,

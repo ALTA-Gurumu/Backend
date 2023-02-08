@@ -10,7 +10,7 @@ import (
 type Core struct {
 	ID          uint
 	Nama        string
-	Email       string
+	Email       string `validate:"omitempty,email"`
 	Password    string
 	Telepon     string
 	LinkedIn    string
@@ -18,8 +18,7 @@ type Core struct {
 	TentangSaya string
 	Pengalaman  string
 	LokasiAsal  string
-	Offline     bool
-	Online      bool
+	MetodeBljr  string
 	Tarif       int
 	Pelajaran   string
 	Pendidikan  string

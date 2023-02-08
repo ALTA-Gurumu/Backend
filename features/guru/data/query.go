@@ -168,7 +168,7 @@ func (gq *guruQuery) GetBeranda(loc string, subj string) ([]guru.Core, error) {
 }
 
 func (gq *guruQuery) Verifikasi(cekData guru.Core) bool {
-	if cekData.LokasiAsal != "" || cekData.Telepon != "" || cekData.Pendidikan != "" || cekData.TentangSaya != "" || cekData.Avatar != "" || cekData.LinkedIn != "" || cekData.Ijazah != "" {
+	if cekData.LokasiAsal != "" && cekData.Telepon != "" && cekData.Pendidikan != "" && cekData.TentangSaya != "" && cekData.Avatar != "" && cekData.LinkedIn != "" && cekData.Ijazah != "" {
 		return true
 	}
 	return false

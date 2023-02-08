@@ -10,7 +10,7 @@ import (
 type Core struct {
 	ID          uint
 	Nama        string
-	Email       string
+	Email       string `validate:"omitempty,email"`
 	Password    string
 	Telepon     string
 	LinkedIn    string

@@ -5,6 +5,7 @@ import (
 	"Gurumu/helper"
 	"Gurumu/mocks"
 	"errors"
+	"mime/multipart"
 	"testing"
 
 	"github.com/golang-jwt/jwt"
@@ -181,5 +182,86 @@ func TestProfilBeranda(t *testing.T) {
 		assert.NotNil(t, err)
 		assert.Empty(t, res)
 		data.AssertExpectations(t)
+	})
+}
+
+func TestUpdate(t *testing.T) {
+	data := mocks.NewGuruData(t)
+
+	inputData := guru.Core{
+		Nama:        "Putra",
+		Email:       "putra123@gmail.com",
+		Password:    "putra123",
+		Telepon:     "08111",
+		LinkedIn:    "ekacahyaputra",
+		Gelar:       "S.T",
+		TentangSaya: "Ahli di bidang Fisika",
+		Pengalaman:  "3 tahun mengajar",
+		LokasiAsal:  "Mojokerto",
+		MetodeBljr:  "offline",
+		Tarif:       75000,
+		Pelajaran:   "Fisika",
+		Pendidikan:  "Teknik Geofisika",
+		Avatar:      "try123ok.s3.aws.amazon.com/avatar.jpg",
+		Ijazah:      "try123ok.s3.aws.amazon.com/certificate.jpg",
+		Latitude:    "-7.12334",
+		Longitude:   "120.9384",
+	}
+
+	guruID := uint(1)
+
+	var avatar, ijazah *multipart.FileHeader
+	t.Run("success update", func(t *testing.T) {
+		data.On("Update", guruID, inputData).Return(nil).Once()
+
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(1)
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+
+		err := srv.Update(pToken, inputData, avatar, ijazah)
+		assert.Nil(t, err)
+		data.AssertExpectations(t)
+	})
+
+	t.Run("gagal update", func(t *testing.T) {
+		data.On("Update", guruID, inputData).Return(errors.New("data tidak ditemukan")).Once()
+
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(1)
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+
+		err := srv.Update(pToken, inputData, avatar, ijazah)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "ditemukan")
+		data.AssertExpectations(t)
+	})
+
+	t.Run("gagal update", func(t *testing.T) {
+		data.On("Update", guruID, inputData).Return(errors.New("masalah pada server")).Once()
+
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(1)
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+
+		err := srv.Update(pToken, inputData, avatar, ijazah)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "server")
+		data.AssertExpectations(t)
+	})
+
+	t.Run("token tidak valid", func(t *testing.T) {
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(1)
+
+		err := srv.Update(token, inputData, avatar, ijazah)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "tidak valid")
 	})
 }

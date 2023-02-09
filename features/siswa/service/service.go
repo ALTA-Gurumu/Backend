@@ -44,9 +44,9 @@ func (suc *siswaUseCase) Register(newStudent siswa.Core) (siswa.Core, error) {
 	if err != nil {
 		msg := ""
 		if strings.Contains(err.Error(), "duplicated") {
-			msg = "data already exist"
+			msg = "data sudah terdaftar"
 		} else {
-			msg = "server problem"
+			msg = "masalah pada server"
 		}
 		return siswa.Core{}, errors.New(msg)
 	}

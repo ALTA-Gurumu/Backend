@@ -37,6 +37,8 @@ func PrintErrorResponse(msg string) (int, interface{}) {
 		code = http.StatusBadRequest
 	} else if strings.Contains(msg, "not found") {
 		code = http.StatusNotFound
+	} else if strings.Contains(msg, "terdaftar") {
+		code = http.StatusBadRequest
 	}
 
 	return code, resp

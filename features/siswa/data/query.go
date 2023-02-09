@@ -21,10 +21,12 @@ func New(db *gorm.DB) siswa.SiswaData {
 func (sq *siswaQuery) Register(newStudent siswa.Core) (siswa.Core, error) {
 	existed := 0
 	sq.db.Raw("SELECT COUNT(*) FROM siswas WHERE deleted_at IS NULL AND email = ?", newStudent.Email).Scan(&existed)
+	sq.db.Raw("SELECT COUNT(*) FROM gurus WHERE deleted_at IS NULL AND email = ?", newStudent.Email).Scan(&existed)
 	if existed >= 1 {
 		log.Println("student account already exist (duplicated)")
 		return siswa.Core{}, errors.New("student account already exist (duplicated)")
 	}
+
 	newStudent.Role = "siswa"
 	cnv := CoreToData(newStudent)
 	if err := sq.db.Create(&cnv).Error; err != nil {

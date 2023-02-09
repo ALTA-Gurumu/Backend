@@ -2,10 +2,12 @@ package service
 
 import (
 	"Gurumu/features/guru"
+	"Gurumu/helper"
 	"Gurumu/mocks"
 	"errors"
 	"testing"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -51,6 +53,61 @@ func TestRegister(t *testing.T) {
 		assert.NotNil(t, err)
 		assert.ErrorContains(t, err, "server")
 		assert.Equal(t, res.Nama, "")
+		data.AssertExpectations(t)
+	})
+}
+
+func TestDelete(t *testing.T) {
+	data := mocks.NewGuruData(t)
+
+	t.Run("success delete", func(t *testing.T) {
+		data.On("Delete", uint(1)).Return(nil).Once()
+
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(1)
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+
+		err := srv.Delete(pToken)
+		assert.Nil(t, err)
+		data.AssertExpectations(t)
+	})
+
+	t.Run("jwt tidak valid", func(t *testing.T) {
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(1)
+
+		err := srv.Delete(token)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "not found")
+	})
+
+	t.Run("data tidak ditemukan", func(t *testing.T) {
+		data.On("Delete", uint(4)).Return(errors.New("data not found")).Once()
+
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(4)
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+		err := srv.Delete(pToken)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "tidak ditemukan")
+		data.AssertExpectations(t)
+	})
+
+	t.Run("masalah di server", func(t *testing.T) {
+		data.On("Delete", mock.Anything).Return(errors.New("terdapat masalah pada server")).Once()
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(1)
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+		err := srv.Delete(pToken)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "server")
 		data.AssertExpectations(t)
 	})
 }

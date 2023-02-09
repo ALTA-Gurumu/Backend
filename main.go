@@ -38,6 +38,9 @@ func main() {
 	db := config.InitDB(*cfg)
 	migration.Migrate(db)
 
+	middleware.ErrJWTMissing.Code = 401
+	middleware.ErrJWTMissing.Message = "Unauthorized"
+
 	autentikasiData := _autentikasiData.New(db)
 	autentikasiSrv := _autentikasiService.New(autentikasiData)
 	autentikasiHdl := _autentikasiHandler.New(autentikasiSrv)

@@ -43,6 +43,8 @@ func PrintErrorResponse(msg string) (int, interface{}) {
 		code = http.StatusConflict
 	} else if strings.Contains(msg, "input invalid") {
 		code = http.StatusBadRequest
+	} else if strings.Contains(msg, "required") {
+		code = http.StatusBadRequest
 	} else if strings.Contains(msg, "input value") {
 		code = http.StatusBadRequest
 	} else if strings.Contains(msg, "validation") {

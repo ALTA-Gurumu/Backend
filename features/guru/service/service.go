@@ -32,10 +32,9 @@ func (guc *guruUseCase) Register(newGuru guru.Core) (guru.Core, error) {
 		return guru.Core{}, errors.New("password process error")
 	}
 
-	err = guc.vld.Struct(&newGuru)
+	err = guc.vld.Struct(newGuru)
 	if err != nil {
 		msg := helper.ValidationErrorHandle(err)
-		fmt.Println("msg", msg)
 		return guru.Core{}, errors.New(msg)
 	}
 

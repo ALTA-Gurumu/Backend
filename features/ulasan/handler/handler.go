@@ -67,7 +67,7 @@ func (uc *ulasanControl) GetById() echo.HandlerFunc {
 		cnv, err := strconv.Atoi(guruId)
 		if err != nil {
 			log.Println("get ulasan by id param error")
-			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
 				"message": "ID guru salah",
 			})
 		}

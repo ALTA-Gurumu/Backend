@@ -32,9 +32,9 @@ func (guc *guruUseCase) Register(newGuru guru.Core) (guru.Core, error) {
 		return guru.Core{}, errors.New("password process error")
 	}
 
-	err = guc.vld.Struct(newGuru)
+	err = helper.ValidateRegisterRequest(newGuru.Nama, newGuru.Email, newGuru.Password)
 	if err != nil {
-		msg := helper.ValidationErrorHandle(err)
+		msg := "input invalid"
 		return guru.Core{}, errors.New(msg)
 	}
 
@@ -80,6 +80,7 @@ func (guc *guruUseCase) Profile(id uint) (interface{}, error) {
 	if userID <= 0 {
 		return guru.Core{}, errors.New("token tidak valid")
 	}
+
 	res, err := guc.qry.GetByID(uint(userID))
 	if err != nil {
 		log.Println(err)

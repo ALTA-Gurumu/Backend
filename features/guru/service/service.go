@@ -85,7 +85,7 @@ func (guc *guruUseCase) Profile(id uint) (interface{}, error) {
 		log.Println(err)
 		msg := ""
 		if strings.Contains(err.Error(), "not found") {
-			msg = "data tidak ditemukan"
+			msg = "data not found"
 		} else {
 			msg = "terjadi kesalahan pada sistem server"
 		}

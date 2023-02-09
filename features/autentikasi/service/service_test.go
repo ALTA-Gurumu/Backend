@@ -66,12 +66,12 @@ func TestLogin(t *testing.T) {
 
 	t.Run("Belum Register", func(t *testing.T) {
 		inputEmail := "Jhony@gmail.com"
-		data.On("Login", inputEmail).Return(autentikasi.Core{}, errors.New("data tidak ditemukan")).Once()
+		data.On("Login", inputEmail).Return(autentikasi.Core{}, errors.New("record not found")).Once()
 
 		token, res, err := srv.Login(inputEmail, "jhonny123")
-		assert.Nil(t, err)
-		assert.ErrorContains(t, err, "tidak ditemukan")
-		assert.NotEmpty(t, token)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "not found")
+		assert.Empty(t, token)
 		assert.Equal(t, uint(0), res.ID)
 		data.AssertExpectations(t)
 	})

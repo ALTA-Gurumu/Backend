@@ -25,7 +25,6 @@ func New(srv guru.GuruService) guru.GuruHandler {
 func (gc *guruControl) Delete() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		token := c.Get("user")
-
 		err := gc.srv.Delete(token)
 		if err != nil {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
@@ -76,6 +75,7 @@ func (gc *guruControl) Update() echo.HandlerFunc {
 		updateGuru := UpdateRequest{}
 		if err := c.Bind(&updateGuru); err != nil {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
+
 		}
 
 		avatar, _ := c.FormFile("avatar")
@@ -83,7 +83,6 @@ func (gc *guruControl) Update() echo.HandlerFunc {
 
 		guruCore := guru.Core{}
 		copier.Copy(&guruCore, &updateGuru)
-
 		if err := gc.srv.Update(token, guruCore, avatar, ijazah); err != nil {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}

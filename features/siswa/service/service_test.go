@@ -43,7 +43,7 @@ func TestRegister(t *testing.T) {
 		srv := New(data)
 		res, err := srv.Register(inputData)
 		assert.NotNil(t, err)
-		assert.ErrorContains(t, err, "already exist")
+		assert.ErrorContains(t, err, "terdaftar")
 		assert.Equal(t, res.Nama, "")
 		data.AssertExpectations(t)
 	})

@@ -44,7 +44,7 @@ func (uq *ulasanQuery) GetById(guruId uint) ([]ulasan.Core, error) {
 	res := []UlasanGuru{}
 	qry := uq.db.Raw("SELECT ulasans.id, siswas.nama as nama_siswa, ulasans.penilaian, ulasans.ulasan FROM ulasans JOIN siswas ON ulasans.siswa_id = siswas.id WHERE ulasans.deleted_at is NULL AND ulasans.guru_id = ?", guruId).Find(&res)
 	if affrows := qry.RowsAffected; affrows <= 0 {
-		return []ulasan.Core{}, errors.New("guru doesn't exist")
+		return []ulasan.Core{}, errors.New("data not found")
 	}
 
 	err := qry.Error

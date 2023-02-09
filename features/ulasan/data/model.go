@@ -98,6 +98,7 @@ func ListModelsToCore(dataModels []UlasanGuru) []ulasan.Core {
 // Untuk Semua ulasan
 type AllUlasan struct {
 	ID        uint
+	GuruId    uint
 	NamaGuru  string
 	Penilaian float32
 	Ulasan    string
@@ -106,6 +107,7 @@ type AllUlasan struct {
 func (dataModel *AllUlasan) AllModelsToCore() ulasan.Core {
 	return ulasan.Core{
 		ID:        dataModel.ID,
+		GuruId:    dataModel.GuruId,
 		NamaGuru:  dataModel.NamaGuru,
 		Penilaian: dataModel.Penilaian,
 		Ulasan:    dataModel.Ulasan,

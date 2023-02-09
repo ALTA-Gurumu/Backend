@@ -111,3 +111,75 @@ func TestDelete(t *testing.T) {
 		data.AssertExpectations(t)
 	})
 }
+
+// func TestProfile(t *testing.T) {
+// 	data := mocks.NewGuruData(t)
+
+// 	expectedData := guru.Core{
+// 		Nama: "Putra",
+// 		Email: "putra123@gmail.com",
+// 		Telepon: "08111",
+// 		LinkedIn: "ekacahyaputra",
+// 		Gelar: "S.T",
+// 		TentangSaya: "Ahli di bidang fisika",
+// 		Pengalaman: "3 tahun mengajar",
+// 		LokasiAsal: "Mojokerto",
+// 		MetodeBljr: "offline",
+// 		Tarif: 75000,
+// 		Pelajaran: "Fisika",
+// 		Pendidikan: "Teknik Geofisika",
+// 		Avatar: "try123ok.s3.aws.amazon.com/avatar.jpg",
+// 		Ijazah: "try123ok.s3.aws.amazon.com/certificate.jpg",
+// 		Latitude: "-7.1234",
+// 		Longitude: "120.2345",
+// 		Jadwal: ,
+// 	}
+// }
+
+func TestProfilBeranda(t *testing.T) {
+	data := mocks.NewGuruData(t)
+
+	expectedData := []guru.Core{
+		{
+			ID:          1,
+			Nama:        "Putra",
+			LokasiAsal:  "Mojokerto",
+			TentangSaya: "berpengalaman mengajar 3 tahun",
+			Pelajaran:   "Fisika",
+			Avatar:      "try123ok.s3.aws.amazon.com/avatar.jpg",
+			Tarif:       75000,
+			Penilaian:   5,
+		}, {
+			ID:          2,
+			Nama:        "Bejo",
+			LokasiAsal:  "Mojokerto",
+			TentangSaya: "berpengalaman mengajar 5 tahun",
+			Pelajaran:   "Fisika",
+			Avatar:      "try123ok.s3.aws.amazon.com/avatar.jpg",
+			Tarif:       100000,
+			Penilaian:   5,
+		},
+	}
+
+	t.Run("success get profile beranda", func(t *testing.T) {
+		data.On("GetBeranda", "Mojokerto", "Fisika").Return(expectedData, nil).Once()
+
+		srv := New(data)
+
+		res, err := srv.ProfileBeranda("Mojokerto", "Fisika")
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res)
+		data.AssertExpectations(t)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		data.On("GetBeranda", "Mojokerto", "Fisika").Return([]guru.Core{}, errors.New("not found")).Once()
+
+		srv := New(data)
+
+		res, err := srv.ProfileBeranda("Mojokerto", "Fisika")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		data.AssertExpectations(t)
+	})
+}

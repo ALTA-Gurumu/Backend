@@ -26,7 +26,7 @@ func (aq *autentikasiQuery) Login(email string) (autentikasi.Core, error) {
 		var cekData = Guru{}
 		if err := aq.db.Where("email = ?", email).First(&cekData).Error; err != nil {
 			log.Println("login query error", err.Error())
-			return autentikasi.Core{}, errors.New("data tidak ditemukan")
+			return autentikasi.Core{}, errors.New("record not found")
 		}
 		return GuruToCore(cekData), nil
 

@@ -37,8 +37,26 @@ func PrintErrorResponse(msg string) (int, interface{}) {
 		code = http.StatusBadRequest
 	} else if strings.Contains(msg, "not found") {
 		code = http.StatusNotFound
-	} else if strings.Contains(msg, "terdaftar") {
+	} else if strings.Contains(msg, "conflict") {
+		code = http.StatusConflict
+	} else if strings.Contains(msg, "duplicated") {
+		code = http.StatusConflict
+	} else if strings.Contains(msg, "input invalid") {
 		code = http.StatusBadRequest
+	} else if strings.Contains(msg, "input value") {
+		code = http.StatusBadRequest
+	} else if strings.Contains(msg, "validation") {
+		code = http.StatusBadRequest
+	} else if strings.Contains(msg, "unmarshal") {
+		resp["message"] = "failed to unmarshal json"
+		code = http.StatusBadRequest
+	} else if strings.Contains(msg, "upload") {
+		code = http.StatusInternalServerError
+	} else if strings.Contains(msg, "denied") {
+		code = http.StatusUnauthorized
+	} else if strings.Contains(msg, "jwt") {
+		msg = "access is denied due to invalid credential"
+		code = http.StatusUnauthorized
 	}
 
 	return code, resp

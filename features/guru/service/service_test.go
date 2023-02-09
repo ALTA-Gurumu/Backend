@@ -113,29 +113,65 @@ func TestDelete(t *testing.T) {
 	})
 }
 
-// func TestProfile(t *testing.T) {
-// 	data := mocks.NewGuruData(t)
+func TestProfile(t *testing.T) {
+	data := mocks.NewGuruData(t)
 
-// 	expectedData := guru.Core{
-// 		Nama: "Putra",
-// 		Email: "putra123@gmail.com",
-// 		Telepon: "08111",
-// 		LinkedIn: "ekacahyaputra",
-// 		Gelar: "S.T",
-// 		TentangSaya: "Ahli di bidang fisika",
-// 		Pengalaman: "3 tahun mengajar",
-// 		LokasiAsal: "Mojokerto",
-// 		MetodeBljr: "offline",
-// 		Tarif: 75000,
-// 		Pelajaran: "Fisika",
-// 		Pendidikan: "Teknik Geofisika",
-// 		Avatar: "try123ok.s3.aws.amazon.com/avatar.jpg",
-// 		Ijazah: "try123ok.s3.aws.amazon.com/certificate.jpg",
-// 		Latitude: "-7.1234",
-// 		Longitude: "120.2345",
-// 		Jadwal: ,
-// 	}
-// }
+	expectedData := guru.Core{
+		Nama:        "Putra",
+		Email:       "putra123@gmail.com",
+		Telepon:     "08111",
+		LinkedIn:    "ekacahyaputra",
+		Gelar:       "S.T",
+		TentangSaya: "Ahli di bidang fisika",
+		Pengalaman:  "3 tahun mengajar",
+		LokasiAsal:  "Mojokerto",
+		MetodeBljr:  "offline",
+		Tarif:       75000,
+		Pelajaran:   "Fisika",
+		Pendidikan:  "Teknik Geofisika",
+		Avatar:      "try123ok.s3.aws.amazon.com/avatar.jpg",
+		Ijazah:      "try123ok.s3.aws.amazon.com/certificate.jpg",
+		Latitude:    "-7.1234",
+		Longitude:   "120.2345",
+		Jadwal:      nil,
+	}
+
+	guruID := uint(1)
+	t.Run("success", func(t *testing.T) {
+		data.On("GetByID", guruID).Return(expectedData, nil).Once()
+
+		srv := New(data)
+
+		res, err := srv.Profile(guruID)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res)
+		data.AssertExpectations(t)
+	})
+
+	t.Run("data tidak ditemukan", func(t *testing.T) {
+		data.On("GetByID", guruID).Return(guru.Core{}, errors.New("data not found")).Once()
+
+		srv := New(data)
+
+		res, err := srv.Profile(guruID)
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		assert.ErrorContains(t, err, "ditemukan")
+		data.AssertExpectations(t)
+	})
+
+	t.Run("masalah di server", func(t *testing.T) {
+		data.On("GetByID", guruID).Return(guru.Core{}, errors.New("server problem")).Once()
+
+		srv := New(data)
+
+		res, err := srv.Profile(guruID)
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		assert.ErrorContains(t, err, "server")
+		data.AssertExpectations(t)
+	})
+}
 
 func TestProfilBeranda(t *testing.T) {
 	data := mocks.NewGuruData(t)

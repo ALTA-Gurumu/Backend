@@ -11,6 +11,7 @@ type UlasanGuruResponse struct {
 
 type AllUlasanResponse struct {
 	ID        uint    `json:"id"`
+	GuruId    uint    `json:"id_guru"`
 	NamaGuru  string  `json:"nama_guru"`
 	Penilaian float32 `json:"penilaian"`
 	Ulasan    string  `json:"ulasan"`
@@ -38,6 +39,7 @@ func ListUlasanGuruToResponse(dataCore []ulasan.Core) []UlasanGuruResponse {
 func AllUlasanToResponse(dataCore ulasan.Core) AllUlasanResponse {
 	return AllUlasanResponse{
 		ID:        dataCore.ID,
+		GuruId:    dataCore.GuruId,
 		NamaGuru:  dataCore.NamaGuru,
 		Penilaian: dataCore.Penilaian,
 		Ulasan:    dataCore.Ulasan,

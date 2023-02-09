@@ -22,7 +22,7 @@ func New(db *gorm.DB) guru.GuruData {
 
 func (gq *guruQuery) Register(newGuru guru.Core) (guru.Core, error) {
 	existed := 0
-	gq.db.Raw("SELECT COUNT(*) FROM gurus, siswas WHERE deleted_at IS NULL AND email = ?", newGuru.Email).Scan(&existed)
+	gq.db.Raw("SELECT COUNT(*) FROM gurus WHERE deleted_at IS NULL AND email = ?", newGuru.Email).Scan(&existed)
 	if existed >= 1 {
 		log.Println("guru account already exist (duplicated)")
 		return guru.Core{}, errors.New("guru account already exist (duplicated)")

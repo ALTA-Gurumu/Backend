@@ -34,6 +34,29 @@ func (_m *ReservasiService) Add(token interface{}, newReservasi reservasi.Core) 
 	return r0, r1
 }
 
+// Mysession provides a mock function with given fields: token, role, reservasiStatus
+func (_m *ReservasiService) Mysession(token interface{}, role string, reservasiStatus string) ([]reservasi.Core, error) {
+	ret := _m.Called(token, role, reservasiStatus)
+
+	var r0 []reservasi.Core
+	if rf, ok := ret.Get(0).(func(interface{}, string, string) []reservasi.Core); ok {
+		r0 = rf(token, role, reservasiStatus)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]reservasi.Core)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(interface{}, string, string) error); ok {
+		r1 = rf(token, role, reservasiStatus)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 type mockConstructorTestingTNewReservasiService interface {
 	mock.TestingT
 	Cleanup(func())

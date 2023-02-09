@@ -2,8 +2,6 @@ package handler
 
 import (
 	"Gurumu/features/guru"
-
-	"github.com/go-playground/validator"
 )
 
 type LoginRequest struct {
@@ -17,11 +15,6 @@ type RegisterRequest struct {
 	Password string `json:"password" form:"password"`
 }
 
-func (r RegisterRequest) Validate() error {
-	validate := validator.New()
-	return validate.Struct(r)
-}
-
 type UpdateRequest struct {
 	Nama        string `json:"nama" form:"nama"`
 	Email       string `json:"email" form:"email"`
@@ -29,10 +22,10 @@ type UpdateRequest struct {
 	Telepon     string `json:"telepon" form:"telepon"`
 	LinkedIn    string `json:"linkedin" form:"linkedin"`
 	Gelar       string `json:"gelar" form:"gelar"`
-	TentangSaya string `json:"tentangsaya" form:"tentang_saya"`
+	TentangSaya string `json:"tentang_saya" form:"tentang_saya"`
 	Pengalaman  string `json:"pengalaman" form:"pengalaman"`
 	LokasiAsal  string `json:"lokasi_asal" form:"lokasi_asal"`
-	MetodeBljr  string `json:"lokasiasal" form:"metode_belajar"`
+	MetodeBljr  string `json:"metode_belajar" form:"metode_belajar"`
 	Tarif       int    `json:"tarif" form:"tarif"`
 	Pelajaran   string `json:"pelajaran" form:"pelajaran"`
 	Pendidikan  string `json:"pendidikan" form:"pendidikan"`

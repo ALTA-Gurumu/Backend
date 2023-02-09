@@ -38,7 +38,12 @@ func (gc *guruControl) Delete() echo.HandlerFunc {
 func (gc *guruControl) Profile() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		str := c.Param("guru_id")
-		guruID, _ := strconv.Atoi(str)
+		guruID, err := strconv.Atoi(str)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "Id guru salah",
+			})
+		}
 
 		res, err := gc.srv.Profile(uint(guruID))
 		if err != nil {

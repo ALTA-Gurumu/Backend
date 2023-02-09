@@ -5,8 +5,10 @@ import (
 	"Gurumu/helper"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/go-playground/validator"
+	"google.golang.org/api/calendar/v3"
 )
 
 type reservasiService struct {
@@ -68,4 +70,50 @@ func (rs *reservasiService) Mysession(token interface{}, role, reservasiStatus s
 	}
 	return res, nil
 
+}
+
+// CallbackMid implements reservasi.ReservasiService
+func (rs *reservasiService) CallbackMid(kode string) error {
+	statusBayar := "Terbayar"
+
+	err := rs.qry.UpdateDataByTrfID(kode, reservasi.Core{
+
+		StatusPembayaran: statusBayar,
+	})
+
+	if err != nil {
+		msg := ""
+		if strings.Contains(err.Error(), "not found") {
+			msg = "data tidak ditemukan"
+		} else {
+			msg = "internal server error"
+		}
+		return errors.New(msg)
+	}
+
+	helper.CreateEvent(
+		&calendar.Event{
+			Summary:     "Test Event",
+			Location:    "Somewhere",
+			Description: "This is a test event.",
+			Start: &calendar.EventDateTime{
+				DateTime: time.Now().Add(time.Hour * 2).Format(time.RFC3339),
+				TimeZone: "Asia/Jakarta",
+			},
+			End: &calendar.EventDateTime{
+				DateTime: time.Now().Add(time.Hour * 4).Format(time.RFC3339),
+				TimeZone: "Asia/Jakarta",
+			},
+			Attendees: []*calendar.EventAttendee{
+				&calendar.EventAttendee{Email: "ariadi.ahmadd@gmail.com"},
+			},
+			Reminders: &calendar.EventReminders{
+				UseDefault: true,
+				// Overrides: []*calendar.EventReminder{
+				// 	{Method: "email", Minutes: 10},
+				// },
+			},
+		})
+
+	return nil
 }

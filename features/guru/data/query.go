@@ -47,8 +47,12 @@ func (gq *guruQuery) GetByID(id uint) (interface{}, error) {
 	// if tx.Error != nil {
 	// 	return nil, tx.Error
 	// }
+	if err := gq.db.Where("id = ?", id).First(&res).Error; err != nil {
+		log.Println("Get by Id query error", err.Error())
+		return guru.Core{}, err
+	}
 	if err := gq.db.Preload("Jadwal").Where("id = ?", id).Find(&res).Error; err != nil {
-		log.Println("Get By ID query error", err.Error())
+		log.Println("check data user query error", err.Error())
 		return nil, err
 	}
 	resJadwal := Jadwal{}

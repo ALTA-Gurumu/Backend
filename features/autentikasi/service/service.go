@@ -4,6 +4,7 @@ import (
 	"Gurumu/features/autentikasi"
 	"Gurumu/helper"
 	"errors"
+	"fmt"
 	"log"
 	"strings"
 
@@ -23,10 +24,11 @@ func New(ad autentikasi.AutentikasiData) autentikasi.AutentikasiService {
 }
 func (aud *autentikasiUseCase) Login(email, password string) (string, autentikasi.Core, error) {
 	res, err := aud.qry.Login(email)
+	fmt.Println("ini :", err)
 	if err != nil {
 		msg := ""
 		if strings.Contains(err.Error(), "not found") {
-			msg = "data tidak ditemukan"
+			msg = "data not found"
 		} else {
 			msg = "terdapat masalah pada server"
 		}

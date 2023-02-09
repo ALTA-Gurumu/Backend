@@ -57,29 +57,6 @@ func (_m *ReservasiData) Mysession(userID uint, role string, reservasiStatus str
 	return r0, r1
 }
 
-// Mysession provides a mock function with given fields: userID, role, reservasiStatus
-func (_m *ReservasiData) Mysession(userID uint, role string, reservasiStatus string) ([]reservasi.Core, error) {
-	ret := _m.Called(userID, role, reservasiStatus)
-
-	var r0 []reservasi.Core
-	if rf, ok := ret.Get(0).(func(uint, string, string) []reservasi.Core); ok {
-		r0 = rf(userID, role, reservasiStatus)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]reservasi.Core)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(uint, string, string) error); ok {
-		r1 = rf(userID, role, reservasiStatus)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 type mockConstructorTestingTNewReservasiData interface {
 	mock.TestingT
 	Cleanup(func())

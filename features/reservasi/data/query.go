@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -20,7 +21,7 @@ func New(db *gorm.DB) reservasi.ReservasiData {
 	}
 }
 
-func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core, checkPaymentStatus func(kodeTransaksi string) (string, error)) (reservasi.Core, error) {
+func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core) (reservasi.Core, error) {
 	data := CoreToData(newReservasi)
 	data.SiswaID = siswaID
 
@@ -37,7 +38,7 @@ func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core, checkPay
 		return reservasi.Core{}, err
 	}
 	data.TotalTarif = detailGuru.Tarif
-	kodePembayaran := "Gurumu -" + fmt.Sprint(data.SiswaID) + fmt.Sprint(data.GuruID)
+	kodePembayaran := "Gurumu -" + fmt.Sprint(data.SiswaID, data.GuruID, time.Now().Minute())
 
 	midtransResp := helper.CreateReservasiTransaction(kodePembayaran, data.TotalTarif, data.MetodePembayaran)
 
@@ -64,21 +65,11 @@ func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core, checkPay
 
 	// fmt.Println(tautanGmet)
 	// data.TautanGmet = tautanGmet
+
 	err = rd.db.Create(&data).Error
 	if err != nil {
 		log.Println("add reservasi query error")
 		return reservasi.Core{}, err
-	}
-
-	if checkPaymentStatus != nil {
-		statusResp, _ := checkPaymentStatus(data.KodeTransaksi)
-
-		// Store the updated status to the database
-		data.StatusPembayaran = statusResp
-		if statusResp == "Sukses" {
-			data.Status = "ongoing"
-		}
-		rd.db.Save(&data)
 	}
 
 	res := ToCore(data)
@@ -146,7 +137,6 @@ func (rd *reservasiData) Mysession(userID uint, role, reservasiStatus string) ([
 	return []reservasi.Core{}, nil
 }
 
-// GetDataByTrfID implements reservasi.ReservasiData
 func (rd *reservasiData) UpdateDataByTrfID(kode string, updateRes reservasi.Core) error {
 
 	cnv := CoreToData(updateRes)
@@ -159,5 +149,46 @@ func (rd *reservasiData) UpdateDataByTrfID(kode string, updateRes reservasi.Core
 		return errors.New("terjadi kesalahan pada server karena data user atau product tidak ditemukan")
 	}
 
+	return nil
+}
+func (tq *reservasiData) NotificationTransactionStatus(kodeTransaksi, statusTransaksi string) error {
+	reservasi := Reservasi{}
+
+	err := tq.db.First(&reservasi, "status_pembayaran = ?", kodeTransaksi).Error
+	if err != nil {
+		log.Println("transaction not found: ", err.Error())
+		return err
+	}
+
+	if statusTransaksi == "capture" {
+		if statusTransaksi == "challenge" {
+			reservasi.StatusPembayaran = "challenge"
+		} else if statusTransaksi == "accept" {
+			reservasi.StatusPembayaran = "success"
+		}
+	} else if statusTransaksi == "settlement" {
+		reservasi.StatusPembayaran = "success"
+	} else if statusTransaksi == "cancel" || statusTransaksi == "expire" {
+		reservasi.StatusPembayaran = "failure"
+	} else if statusTransaksi == "pending" {
+		reservasi.StatusPembayaran = "waiting payment"
+	} else {
+		reservasi.StatusPembayaran = statusTransaksi
+	}
+
+	rowsAffected := tq.db.Save(&reservasi)
+	if rowsAffected.RowsAffected <= 0 {
+		log.Println("error update status pembayaran")
+		return errors.New("error update status pembayaran")
+	}
+
+	if reservasi.StatusPembayaran == "success" {
+		reservasi.Status = "ongoing"
+		aff := tq.db.Save(&reservasi)
+		if aff.RowsAffected <= 0 {
+			log.Println("error update status reservasi")
+			return errors.New("error update status reservasi")
+		}
+	}
 	return nil
 }

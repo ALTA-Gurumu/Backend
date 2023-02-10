@@ -4,6 +4,7 @@ import (
 	"Gurumu/features/reservasi"
 	"Gurumu/helper"
 	"errors"
+	"log"
 	"strings"
 	"time"
 
@@ -22,29 +23,9 @@ func New(rd reservasi.ReservasiData) reservasi.ReservasiService {
 		vld: validator.New(),
 	}
 }
-func (rs *reservasiService) CheckPaymentStatus(kodeTransaksi string) (string, error) {
-	var loopCheck bool
-	paymentStatus := ""
-	for !loopCheck {
-		res, err := helper.CheckStatusPayment(kodeTransaksi)
-
-		if err != nil {
-
-			return paymentStatus, err
-		}
-
-		if res.TransactionStatus == "settlement" {
-			paymentStatus = "Sukses"
-			loopCheck = true
-		}
-		time.Sleep(5 * time.Minute)
-	}
-
-	return paymentStatus, nil
-}
 func (rs *reservasiService) Add(token interface{}, newReservasi reservasi.Core) (reservasi.Core, error) {
 	siswaID := helper.ExtractToken(token)
-	res, err := rs.qry.Add(uint(siswaID), newReservasi, rs.CheckPaymentStatus)
+	res, err := rs.qry.Add(uint(siswaID), newReservasi)
 
 	// //contoh panggil fungsi
 	// helper.CreateEvent(
@@ -134,5 +115,20 @@ func (rs *reservasiService) CallbackMid(kode string) error {
 			},
 		})
 
+	return nil
+}
+func (rs *reservasiService) NotificationTransactionStatus(kodeTransaksi string) error {
+
+	paymentStatus, err := helper.CheckStatusPayment(kodeTransaksi)
+	if err != nil {
+		log.Println("error check transaction status: ", err.Error())
+		return errors.New("error check transaction status")
+	}
+
+	err = rs.qry.NotificationTransactionStatus(kodeTransaksi, paymentStatus.TransactionStatus)
+	if err != nil {
+		log.Println("error get notificationtransactionstatus data in service: ", err.Error())
+		return errors.New("error get notificationtransactionstatus data in service")
+	}
 	return nil
 }

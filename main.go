@@ -96,6 +96,7 @@ func main() {
 
 	e.GET("/reservasi/callbackmid/:kode", reservasiHdl.CallbackMid())
 	e.GET("/callback", reservasiHdl.Callback())
+	e.POST("/paymentnotifications", reservasiHdl.NotificationTransactionStatus(), middleware.JWT([]byte(config.JWT_KEY)))
 
 	if err := e.Start(":8000"); err != nil {
 		log.Println(err.Error())

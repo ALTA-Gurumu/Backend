@@ -4,6 +4,7 @@ import (
 	"Gurumu/features/reservasi"
 	"Gurumu/helper"
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -90,5 +91,27 @@ func (rh *reservasiHandler) CallbackMid() echo.HandlerFunc {
 		}
 
 		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses deliver status bayar"))
+	}
+}
+
+func (rh *reservasiHandler) NotificationTransactionStatus() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var notificationPayload map[string]interface{}
+		err := json.NewDecoder(c.Request().Body).Decode(&notificationPayload)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		transactionId, exists := notificationPayload["order_id"].(string)
+		if !exists {
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		err = rh.srv.NotificationTransactionStatus(transactionId)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+
+		return c.JSON(c.Response().Write([]byte("ok")))
 	}
 }

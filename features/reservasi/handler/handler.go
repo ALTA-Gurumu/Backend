@@ -48,15 +48,15 @@ func (rh *reservasiHandler) Callback() echo.HandlerFunc {
 			log.Fatalf("Unable to parse client secret file to config: %v", err)
 		}
 
-		code := c.Param("code")
+		code := c.QueryParam("code")
 		// state := c.Param("state")
-
 		token, err := config.Exchange(context.Background(), code)
 		if err != nil {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
 
 		helper.SaveToken("features/reservasi/credentials/token.json", token)
+
 		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses kembalikan token"))
 	}
 }
@@ -76,5 +76,19 @@ func (rh *reservasiHandler) Mysession() echo.HandlerFunc {
 			return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses menampilkan sesi siswa", ToListSesikuSiswaResponse(res)))
 		}
 		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses menampilkan sesi guru", ToListSesikuGuruResponse(res)))
+	}
+}
+
+// CallbackMid implements reservasi.ReservasiHandler
+func (rh *reservasiHandler) CallbackMid() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		str := c.Param("kode")
+		err := rh.srv.CallbackMid(str)
+
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, "format inputan salah")
+		}
+
+		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses deliver status bayar"))
 	}
 }

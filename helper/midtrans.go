@@ -113,9 +113,13 @@ func CreateReservasiTransaction(kodePembayaran string, totalTarif int, metodePem
 }
 
 // get status of transaction that already recorded on midtrans (already `charge`-ed)
-func CheckStatusPayment(kodePembayaran string) *coreapi.TransactionStatusResponse {
+func CheckStatusPayment(kodePembayaran string) (*coreapi.TransactionStatusResponse, error) {
 	c := MidtransCoreAPIClient()
 
-	res, _ := c.CheckTransaction(kodePembayaran)
-	return res
+	res, err := c.CheckTransaction(kodePembayaran)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }

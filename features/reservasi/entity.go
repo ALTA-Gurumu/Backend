@@ -1,6 +1,8 @@
 package reservasi
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/labstack/echo/v4"
+)
 
 type Core struct {
 	ID               uint
@@ -37,9 +39,10 @@ type ReservasiHandler interface {
 type ReservasiService interface {
 	Add(token interface{}, newReservasi Core) (Core, error)
 	Mysession(token interface{}, role, reservasiStatus string) ([]Core, error)
+	CheckPaymentStatus(kodeTransaksi string) (string, error)
 }
 
 type ReservasiData interface {
-	Add(siswaID uint, newReservasi Core) (Core, error)
+	Add(siswaID uint, newReservasi Core, CheckPaymentStatus func(kodeTransaksi string) (string, error)) (Core, error)
 	Mysession(userID uint, role, reservasiStatus string) ([]Core, error)
 }

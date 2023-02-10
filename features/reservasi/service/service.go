@@ -20,10 +20,23 @@ func New(rd reservasi.ReservasiData) reservasi.ReservasiService {
 		vld: validator.New(),
 	}
 }
+func (rs *reservasiService) CheckPaymentStatus(kodeTransaksi string) (string, error) {
+	res, err := helper.CheckStatusPayment(kodeTransaksi)
+	paymentStatus := ""
+	if err != nil {
 
+		return paymentStatus, err
+	}
+	if res.TransactionStatus == "settlement" {
+		paymentStatus = "Sukses"
+
+	}
+
+	return paymentStatus, nil
+}
 func (rs *reservasiService) Add(token interface{}, newReservasi reservasi.Core) (reservasi.Core, error) {
 	siswaID := helper.ExtractToken(token)
-	res, err := rs.qry.Add(uint(siswaID), newReservasi)
+	res, err := rs.qry.Add(uint(siswaID), newReservasi, rs.CheckPaymentStatus)
 
 	// //contoh panggil fungsi
 	// helper.CreateEvent(

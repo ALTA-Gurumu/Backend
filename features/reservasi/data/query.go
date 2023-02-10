@@ -20,7 +20,7 @@ func New(db *gorm.DB) reservasi.ReservasiData {
 	}
 }
 
-func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core) (reservasi.Core, error) {
+func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core, checkPaymentStatus func(kodeTransaksi string) (string, error)) (reservasi.Core, error) {
 	data := CoreToData(newReservasi)
 	data.SiswaID = siswaID
 
@@ -56,8 +56,6 @@ func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core) (reserva
 		return reservasi.Core{}, errors.New("gagal menambahkan pembayaran")
 	}
 
-	data.Status = "Belum melakukan Pembayaran"
-
 	// tautanGmet, err := helper.Calendar(detailGuru.Email, newReservasi.Tanggal, newReservasi.AlamatSiswa)
 	// if err != nil {
 	// 	fmt.Println("gagal menambahkan ke kalender")
@@ -72,13 +70,23 @@ func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core) (reserva
 		return reservasi.Core{}, err
 	}
 
+	if checkPaymentStatus != nil {
+		statusResp, _ := checkPaymentStatus(data.KodeTransaksi)
+
+		// Store the updated status to the database
+		data.StatusPembayaran = statusResp
+		if statusResp == "Sukses" {
+			data.Status = "ongoing"
+		}
+		rd.db.Save(&data)
+	}
+
 	res := ToCore(data)
 	res.NamaGuru = detailGuru.Nama
 	res.Pelajaran = detailGuru.Pelajaran
 	res.TotalTarif = detailGuru.Tarif
 	res.AlamatSiswa = newReservasi.AlamatSiswa
 	res.TeleponSiswa = newReservasi.TeleponSiswa
-
 	return res, nil
 
 }

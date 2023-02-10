@@ -5,6 +5,7 @@ import (
 	"Gurumu/helper"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/go-playground/validator"
 )
@@ -21,15 +22,21 @@ func New(rd reservasi.ReservasiData) reservasi.ReservasiService {
 	}
 }
 func (rs *reservasiService) CheckPaymentStatus(kodeTransaksi string) (string, error) {
-	res, err := helper.CheckStatusPayment(kodeTransaksi)
+	var loopCheck bool
 	paymentStatus := ""
-	if err != nil {
+	for !loopCheck {
+		res, err := helper.CheckStatusPayment(kodeTransaksi)
 
-		return paymentStatus, err
-	}
-	if res.TransactionStatus == "settlement" {
-		paymentStatus = "Sukses"
+		if err != nil {
 
+			return paymentStatus, err
+		}
+
+		if res.TransactionStatus == "settlement" {
+			paymentStatus = "Sukses"
+			loopCheck = true
+		}
+		time.Sleep(5 * time.Minute)
 	}
 
 	return paymentStatus, nil

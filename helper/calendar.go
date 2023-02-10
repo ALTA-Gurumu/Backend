@@ -11,6 +11,7 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/calendar/v3"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 )
 
@@ -65,22 +66,48 @@ func SaveToken(path string, token *oauth2.Token) {
 
 func Calendar(email, date, address string) (string, error) {
 	event := &calendar.Event{
-		Summary:     "Gurumu -  ",
-		Location:    address,
-		Description: "Gurumu - ",
-		Start: &calendar.EventDateTime{
-			Date: date,
-
-			TimeZone: "Asia/Jakarta",
-		},
-		End: &calendar.EventDateTime{
-			Date:     date,
-			TimeZone: "Asia/Jakarta",
-		},
-
-		Attendees: []*calendar.EventAttendee{
-			{Email: "ariadi.ahmadd@gmail.com"},
-		},
+		AnyoneCanAddSelf:        false,
+		Attachments:             []*calendar.EventAttachment{},
+		Attendees:               []*calendar.EventAttendee{{Email: "ariadi.ahmadd@gmail.com"}},
+		AttendeesOmitted:        false,
+		ColorId:                 "",
+		ConferenceData:          &calendar.ConferenceData{},
+		Created:                 "",
+		Creator:                 &calendar.EventCreator{},
+		Description:             "Gurumu - ",
+		End:                     &calendar.EventDateTime{Date: date, TimeZone: "Asia/Jakarta"},
+		EndTimeUnspecified:      false,
+		Etag:                    "",
+		EventType:               "",
+		ExtendedProperties:      &calendar.EventExtendedProperties{},
+		Gadget:                  &calendar.EventGadget{},
+		GuestsCanInviteOthers:   new(bool),
+		GuestsCanModify:         false,
+		GuestsCanSeeOtherGuests: new(bool),
+		HangoutLink:             "",
+		HtmlLink:                "",
+		ICalUID:                 "",
+		Id:                      "",
+		Kind:                    "",
+		Location:                address,
+		Locked:                  false,
+		Organizer:               &calendar.EventOrganizer{},
+		OriginalStartTime:       &calendar.EventDateTime{},
+		PrivateCopy:             false,
+		Recurrence:              []string{},
+		RecurringEventId:        "",
+		Reminders:               &calendar.EventReminders{},
+		Sequence:                0,
+		Source:                  &calendar.EventSource{},
+		Start:                   &calendar.EventDateTime{Date: date, TimeZone: "Asia/Jakarta"},
+		Status:                  "",
+		Summary:                 "Gurumu -  ",
+		Transparency:            "",
+		Updated:                 date,
+		Visibility:              "",
+		ServerResponse:          googleapi.ServerResponse{},
+		ForceSendFields:         []string{},
+		NullFields:              []string{},
 	}
 
 	ctx := context.Background()

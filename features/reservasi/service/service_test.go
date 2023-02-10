@@ -95,3 +95,82 @@ func TestAdd(t *testing.T) {
 		data.AssertExpectations(t)
 	})
 }
+
+func TestMysession(t *testing.T) {
+	data := mocks.NewReservasiData(t)
+
+	expectedData := []reservasi.Core{
+		{
+			ID:         1,
+			NamaGuru:   "Bejo",
+			Tanggal:    "2023-03-19",
+			Jam:        "07.00 PM",
+			TautanGmet: "gmeet.jljlaffa",
+			Status:     "Selesai",
+		}, {
+			ID:         2,
+			NamaGuru:   "Dono",
+			Tanggal:    "2023-03-20",
+			Jam:        "06.00 PM",
+			TautanGmet: "gmeet.jljlaffa",
+			Status:     "Selesai",
+		},
+	}
+
+	role := "siswa"
+	reservasiStatus := "selesai"
+	userId := uint(2)
+
+	t.Run("success get mysession", func(t *testing.T) {
+		data.On("Mysession", userId, role, reservasiStatus).Return(expectedData, nil).Once()
+
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(2)
+
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+
+		res, err := srv.Mysession(pToken, role, reservasiStatus)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res)
+		data.AssertExpectations(t)
+
+	})
+
+	t.Run("data tidak ditemukan", func(t *testing.T) {
+		data.On("Mysession", userId, role, reservasiStatus).Return([]reservasi.Core{}, errors.New("not found")).Once()
+
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(2)
+
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+
+		res, err := srv.Mysession(pToken, role, reservasiStatus)
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		assert.ErrorContains(t, err, "tidak ditemukan")
+		data.AssertExpectations(t)
+
+	})
+
+	t.Run("internal server error", func(t *testing.T) {
+		data.On("Mysession", userId, role, reservasiStatus).Return([]reservasi.Core{}, errors.New("server problem")).Once()
+
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(2)
+
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+
+		res, err := srv.Mysession(pToken, role, reservasiStatus)
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		assert.ErrorContains(t, err, "server")
+		data.AssertExpectations(t)
+
+	})
+}

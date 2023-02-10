@@ -71,7 +71,7 @@ func Calendar(email, date, address string) (string, error) {
 		Attendees:               []*calendar.EventAttendee{{Email: "ariadi.ahmadd@gmail.com"}},
 		AttendeesOmitted:        false,
 		ColorId:                 "",
-		ConferenceData:          &calendar.ConferenceData{},
+		ConferenceData:          &calendar.ConferenceData{ConferenceId: "meetingjerryaudi123"},
 		Created:                 "",
 		Creator:                 &calendar.EventCreator{},
 		Description:             "Gurumu - ",
@@ -178,12 +178,12 @@ func CreateEvent(event *calendar.Event) {
 	// }
 
 	calendarId := "primary"
-	event, err = srv.Events.Insert(calendarId, event).Do()
+	event, err = srv.Events.Insert(calendarId, event).SendUpdates("all").ConferenceDataVersion(1).Do()
 	if err != nil {
 		log.Fatalf("Unable to create event. %v\n", err)
 	}
 	fmt.Printf("Event created: %s\n", event.HtmlLink)
-
+	fmt.Println(event.ConferenceData.EntryPoints)
 }
 
 // func CreateEvent(event *calendar.Event) {

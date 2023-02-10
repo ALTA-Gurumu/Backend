@@ -106,11 +106,20 @@ func (rs *reservasiService) CallbackMid(kode string) error {
 
 	helper.CreateEvent(
 		&calendar.Event{
-			Summary:     "Test Event",
-			Location:    "Somewhere",
-			Description: "This is a test event.",
+			Summary:     "Konsultasi gurumu",
+			Location:    "",
+			Description: "matematika.",
+			ConferenceData: &calendar.ConferenceData{
+				CreateRequest: &calendar.CreateConferenceRequest{
+					RequestId: "sfsfs",
+					ConferenceSolutionKey: &calendar.ConferenceSolutionKey{
+						Type: "hangoutsMeet"},
+					Status: &calendar.ConferenceRequestStatus{
+						StatusCode: "success"},
+				}},
+
 			Start: &calendar.EventDateTime{
-				DateTime: time.Now().Add(time.Hour * 2).Format(time.RFC3339),
+				DateTime: time.Now().Add(time.Hour * 1).Format(time.RFC3339),
 				TimeZone: "Asia/Jakarta",
 			},
 			End: &calendar.EventDateTime{
@@ -118,7 +127,7 @@ func (rs *reservasiService) CallbackMid(kode string) error {
 				TimeZone: "Asia/Jakarta",
 			},
 			Attendees: []*calendar.EventAttendee{
-				&calendar.EventAttendee{Email: "ariadi.ahmadd@gmail.com"},
+				{Email: "jerryyoung2911@gmail.com"},
 			},
 			Reminders: &calendar.EventReminders{
 				UseDefault: true,

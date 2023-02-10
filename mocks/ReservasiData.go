@@ -13,20 +13,20 @@ type ReservasiData struct {
 	mock.Mock
 }
 
-// Add provides a mock function with given fields: siswaID, newReservasi
-func (_m *ReservasiData) Add(siswaID uint, newReservasi reservasi.Core) (reservasi.Core, error) {
-	ret := _m.Called(siswaID, newReservasi)
+// Add provides a mock function with given fields: siswaID, newReservasi, CheckPaymentStatus
+func (_m *ReservasiData) Add(siswaID uint, newReservasi reservasi.Core, CheckPaymentStatus func(string) (string, error)) (reservasi.Core, error) {
+	ret := _m.Called(siswaID, newReservasi, CheckPaymentStatus)
 
 	var r0 reservasi.Core
-	if rf, ok := ret.Get(0).(func(uint, reservasi.Core) reservasi.Core); ok {
-		r0 = rf(siswaID, newReservasi)
+	if rf, ok := ret.Get(0).(func(uint, reservasi.Core, func(string) (string, error)) reservasi.Core); ok {
+		r0 = rf(siswaID, newReservasi, CheckPaymentStatus)
 	} else {
 		r0 = ret.Get(0).(reservasi.Core)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(uint, reservasi.Core) error); ok {
-		r1 = rf(siswaID, newReservasi)
+	if rf, ok := ret.Get(1).(func(uint, reservasi.Core, func(string) (string, error)) error); ok {
+		r1 = rf(siswaID, newReservasi, CheckPaymentStatus)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -55,6 +55,20 @@ func (_m *ReservasiData) Mysession(userID uint, role string, reservasiStatus str
 	}
 
 	return r0, r1
+}
+
+// UpdateDataByTrfID provides a mock function with given fields: kode, updateRes
+func (_m *ReservasiData) UpdateDataByTrfID(kode string, updateRes reservasi.Core) error {
+	ret := _m.Called(kode, updateRes)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, reservasi.Core) error); ok {
+		r0 = rf(kode, updateRes)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 type mockConstructorTestingTNewReservasiData interface {

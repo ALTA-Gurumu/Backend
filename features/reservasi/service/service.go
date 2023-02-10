@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/go-playground/validator"
 	"google.golang.org/api/calendar/v3"
@@ -22,23 +23,6 @@ func New(rd reservasi.ReservasiData) reservasi.ReservasiService {
 		vld: validator.New(),
 	}
 }
-<<<<<<< HEAD
-=======
-func (rs *reservasiService) CheckPaymentStatus(kodeTransaksi string) (string, error) {
-	res, err := helper.CheckStatusPayment(kodeTransaksi)
-	paymentStatus := ""
-	if err != nil {
-
-		return paymentStatus, err
-	}
-	if res.TransactionStatus == "settlement" {
-		paymentStatus = "Sukses"
-
-	}
-
-	return paymentStatus, nil
-}
->>>>>>> parent of a2e1aa7... fix  :  transansiotn success checking
 func (rs *reservasiService) Add(token interface{}, newReservasi reservasi.Core) (reservasi.Core, error) {
 	siswaID := helper.ExtractToken(token)
 	res, err := rs.qry.Add(uint(siswaID), newReservasi)

@@ -156,7 +156,7 @@ func TestProfile(t *testing.T) {
 		res, err := srv.Profile(guruID)
 		assert.NotNil(t, err)
 		assert.Empty(t, res)
-		assert.ErrorContains(t, err, "ditemukan")
+		assert.ErrorContains(t, err, "not found")
 		data.AssertExpectations(t)
 	})
 

@@ -34,15 +34,18 @@ type ReservasiHandler interface {
 	Add() echo.HandlerFunc
 	Callback() echo.HandlerFunc
 	Mysession() echo.HandlerFunc
+	CallbackMid() echo.HandlerFunc
 }
 
 type ReservasiService interface {
 	Add(token interface{}, newReservasi Core) (Core, error)
 	Mysession(token interface{}, role, reservasiStatus string) ([]Core, error)
 	CheckPaymentStatus(kodeTransaksi string) (string, error)
+	CallbackMid(kode string) error
 }
 
 type ReservasiData interface {
 	Add(siswaID uint, newReservasi Core, CheckPaymentStatus func(kodeTransaksi string) (string, error)) (Core, error)
 	Mysession(userID uint, role, reservasiStatus string) ([]Core, error)
+	UpdateDataByTrfID(kode string, updateRes Core) error
 }

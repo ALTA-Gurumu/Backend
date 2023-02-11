@@ -98,7 +98,7 @@ func (gq *guruQuery) GetBeranda(loc string, subj string, limit int, offset int) 
 
 	var guruData []GuruRatingBeranda
 	var allGuru int64
-	query := "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, gurus.tarif, COALESCE(AVG(ulasans.penilaian), 0) AS avg_rating FROM gurus LEFT JOIN ulasans ON gurus.id = ulasans.guru_id WHERE gurus.verifikasi = 1 DESC LIMIT ? OFFSET ?"
+	query := "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, gurus.tarif, COALESCE(AVG(ulasans.penilaian), 0) AS avg_rating FROM gurus LEFT JOIN ulasans ON gurus.id = ulasans.guru_id WHERE gurus.verifikasi = 1"
 
 	var rows *sql.Rows
 	var err error
@@ -107,12 +107,7 @@ func (gq *guruQuery) GetBeranda(loc string, subj string, limit int, offset int) 
 		query = query + " WHERE gurus.lokasi_asal = ?"
 		query = query + " GROUP BY gurus.id"
 
-		err = gq.db.Raw(query, limit, offset, loc).Count(&allGuru).Error
-		if err != nil {
-			return 0, nil, err
-		}
-
-		rows, err = gq.db.Raw(query, limit, offset, loc).Rows()
+		rows, err = gq.db.Raw(query, loc).Rows()
 		if err != nil {
 			return 0, nil, err
 		}
@@ -121,12 +116,7 @@ func (gq *guruQuery) GetBeranda(loc string, subj string, limit int, offset int) 
 		query = query + " WHERE gurus.pelajaran = ? AND gurus.lokasi_asal = ? "
 		query = query + " GROUP BY gurus.id"
 
-		err = gq.db.Raw(query, limit, offset, subj, loc).Count(&allGuru).Error
-		if err != nil {
-			return 0, nil, err
-		}
-
-		rows, err = gq.db.Raw(query, limit, offset, subj, loc).Rows()
+		rows, err = gq.db.Raw(query, subj, loc).Rows()
 		if err != nil {
 			return 0, nil, err
 		}
@@ -134,23 +124,14 @@ func (gq *guruQuery) GetBeranda(loc string, subj string, limit int, offset int) 
 		query = query + " WHERE gurus.pelajaran = ?"
 		query = query + " GROUP BY gurus.id"
 
-		err = gq.db.Raw(query, limit, offset, subj).Count(&allGuru).Error
-		if err != nil {
-			return 0, nil, err
-		}
-
-		rows, err = gq.db.Raw(query, limit, offset, subj).Rows()
+		rows, err = gq.db.Raw(query, subj).Rows()
 		if err != nil {
 			return 0, nil, err
 		}
 	} else if subj == "" && loc == "" {
 		query = query + " GROUP BY gurus.id"
 
-		err = gq.db.Raw(query, limit, offset).Count(&allGuru).Error
-		if err != nil {
-			return 0, nil, err
-		}
-		rows, err = gq.db.Raw(query, limit, offset).Rows()
+		rows, err = gq.db.Raw(query).Rows()
 		if err != nil {
 			return 0, nil, err
 		}

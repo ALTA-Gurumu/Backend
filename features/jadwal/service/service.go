@@ -28,6 +28,13 @@ func (js *jadwalService) Add(token interface{}, newJadwal jadwal.Core) (jadwal.C
 		return jadwal.Core{}, errors.New("pengguna tidak ditemukan")
 	}
 
+	err1 := js.vld.Struct(newJadwal)
+	if err1 != nil {
+		msg := helper.ValidationErrorHandle(err1)
+		log.Println("msg", msg)
+		return jadwal.Core{}, errors.New(msg)
+	}
+
 	res, err := js.qry.Add(uint(GuruID), newJadwal)
 	if err != nil {
 		msg := ""

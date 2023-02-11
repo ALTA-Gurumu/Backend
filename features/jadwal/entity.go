@@ -5,8 +5,8 @@ import "github.com/labstack/echo/v4"
 type Core struct {
 	ID      uint
 	GuruID  uint
-	Tanggal string
-	Jam     string
+	Tanggal string `validate:"required"`
+	Jam     string `validate:"required"`
 	Status  string
 }
 

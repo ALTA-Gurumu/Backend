@@ -33,6 +33,10 @@ func PrintErrorResponse(msg string) (int, interface{}) {
 		code = http.StatusInternalServerError
 	case strings.Contains(msg, "format"):
 		code = http.StatusBadRequest
+	case strings.Contains(msg, "kurang"):
+		code = http.StatusBadRequest
+	case strings.Contains(msg, "kosong"):
+		code = http.StatusBadRequest
 	case strings.Contains(msg, "not found"):
 		code = http.StatusNotFound
 	case strings.Contains(msg, "conflict"):

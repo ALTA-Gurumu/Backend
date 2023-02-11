@@ -3,6 +3,8 @@ package helper
 import (
 	"errors"
 	"fmt"
+	"net/mail"
+	"reflect"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -17,13 +19,28 @@ func ValidateRegisterRequest(nama string, email string, password string) error {
 	if password == "" {
 		return errors.New("password tidak boleh kosomg")
 	}
-	// if !IsValidEmail(email) {
-	// 	return errors.New("Invalid email address")
-	// }
-	// if !IsStrongPassword(password) {
-	// 	return errors.New("Password is not strong enough")
-	// }
 	return nil
+}
+
+func IsGoodName(nama string) bool {
+	return len(nama) >= 6
+}
+
+func IsStrongPassword(password string) bool {
+	return len(password) >= 6
+}
+
+func ValidEmail(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
+}
+
+func IsStructEmpty(s interface{}) bool {
+	v := reflect.ValueOf(s)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	return v.NumField() == 0
 }
 
 func ValidationErrorHandle(err error) string {

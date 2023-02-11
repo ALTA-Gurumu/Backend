@@ -10,7 +10,7 @@ import (
 	"mime/multipart"
 	"strings"
 
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 )
 
 type guruUseCase struct {
@@ -18,10 +18,10 @@ type guruUseCase struct {
 	vld *validator.Validate
 }
 
-func New(gd guru.GuruData) guru.GuruService {
+func New(gd guru.GuruData, vld *validator.Validate) guru.GuruService {
 	return &guruUseCase{
 		qry: gd,
-		vld: validator.New(),
+		vld: vld,
 	}
 }
 

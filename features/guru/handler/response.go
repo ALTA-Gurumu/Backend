@@ -32,8 +32,8 @@ type GuruByIDResp struct {
 	Pendidikan  string
 	Avatar      string
 	Ijazah      string
-	Latitude    string
-	Longitude   string
+	Latitude    float64
+	Longitude   float64
 	Jadwal      []data.JadwalNG
 }
 
@@ -63,7 +63,7 @@ type ProfileHomeResp struct {
 	ID          uint    `json:"guru_id"`
 	Nama        string  `json:"nama"`
 	LokasiAsal  string  `json:"alamat"`
-	TentangSaya string  `json:"judul"`
+	TentangSaya string  `json:"judul,omitempty"`
 	Pelajaran   string  `json:"pelajaran"`
 	Avatar      string  `json:"avatar"`
 	Tarif       int     `json:"tarif"`

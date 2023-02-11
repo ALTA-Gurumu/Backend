@@ -99,15 +99,37 @@ func (gc *guruControl) Update() echo.HandlerFunc {
 // ProfileBeranda implements guru.GuruHandler
 func (gc *guruControl) ProfileBeranda() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		str := c.QueryParam("page")
+		page, _ := strconv.Atoi(str)
+
 		loc := c.QueryParam("lokasi")
 		subj := c.QueryParam("pelajaran")
-		res, err := gc.srv.ProfileBeranda(loc, subj)
 
+		paginate, res, err := gc.srv.ProfileBeranda(loc, subj, page)
 		if err != nil {
-			log.Println("no content found ", err.Error())
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
 
-		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "sukses melihat content", GetProfileHomeResponse(res)))
+		guruListResp := []ProfileHomeResp{}
+		if err := copier.Copy(&guruListResp, &res); err != nil {
+			log.Println("guru beranda list:", err)
+			return c.JSON(helper.PrintErrorResponse("failed to unmarshall request"))
+		}
+
+		pagination := helper.PaginationResponse{
+			Page:        paginate["page"].(int),
+			Limit:       paginate["limit"].(int),
+			Offset:      paginate["offset"].(int),
+			TotalRecord: paginate["totalRecord"].(int),
+			TotalPage:   paginate["totalPage"].(int),
+		}
+
+		response := helper.WithPagination{
+			Pagination: pagination,
+			Data:       guruListResp,
+			Message:    "berhasil tampilkan guru beranda",
+		}
+
+		return c.JSON(200, response)
 	}
 }

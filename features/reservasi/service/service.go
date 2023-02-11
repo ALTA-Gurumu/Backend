@@ -114,7 +114,8 @@ func (rs *reservasiService) CallbackMid(kode string) error {
 				TimeZone: "Asia/Jakarta",
 			},
 			Attendees: []*calendar.EventAttendee{
-				{Email: "jerryyoung2911@gmail.com"},
+				{Email: "herdiladania11@gmail.com"},
+				{Email: "sucinascaisar@gmail.com"},
 			},
 			Reminders: &calendar.EventReminders{
 				UseDefault: true,

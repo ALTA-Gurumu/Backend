@@ -52,27 +52,36 @@ func (_m *GuruService) Profile(id uint) (interface{}, error) {
 	return r0, r1
 }
 
-// ProfileBeranda provides a mock function with given fields: loc, subj
-func (_m *GuruService) ProfileBeranda(loc string, subj string) ([]guru.Core, error) {
-	ret := _m.Called(loc, subj)
+// ProfileBeranda provides a mock function with given fields: loc, subj, page
+func (_m *GuruService) ProfileBeranda(loc string, subj string, page int) (map[string]interface{}, []guru.Core, error) {
+	ret := _m.Called(loc, subj, page)
 
-	var r0 []guru.Core
-	if rf, ok := ret.Get(0).(func(string, string) []guru.Core); ok {
-		r0 = rf(loc, subj)
+	var r0 map[string]interface{}
+	if rf, ok := ret.Get(0).(func(string, string, int) map[string]interface{}); ok {
+		r0 = rf(loc, subj, page)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]guru.Core)
+			r0 = ret.Get(0).(map[string]interface{})
 		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string, string) error); ok {
-		r1 = rf(loc, subj)
+	var r1 []guru.Core
+	if rf, ok := ret.Get(1).(func(string, string, int) []guru.Core); ok {
+		r1 = rf(loc, subj, page)
 	} else {
-		r1 = ret.Error(1)
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).([]guru.Core)
+		}
 	}
 
-	return r0, r1
+	var r2 error
+	if rf, ok := ret.Get(2).(func(string, string, int) error); ok {
+		r2 = rf(loc, subj, page)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // Register provides a mock function with given fields: newGuru

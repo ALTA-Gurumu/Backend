@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"mime/multipart"
 	"strings"
 
@@ -136,12 +137,28 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 }
 
 // ProfileBeranda implements guru.GuruService
-func (guc *guruUseCase) ProfileBeranda(loc string, subj string) ([]guru.Core, error) {
-	res, err := guc.qry.GetBeranda(loc, subj)
+func (guc *guruUseCase) ProfileBeranda(loc string, subj string, page int) (map[string]interface{}, []guru.Core, error) {
+	if page < 1 {
+		page = 1
+	}
+	limit := 4
+
+	offset := (page - 1) * limit
+
+	totalRecord, res, err := guc.qry.GetBeranda(loc, subj, limit, offset)
 	if err != nil {
-		log.Println("no result or server error")
-		return []guru.Core{}, errors.New("no result or server error")
+		log.Println(err)
+		return nil, nil, errors.New("internal server error")
 	}
 
-	return res, nil
+	totalPage := int(math.Ceil(float64(totalRecord) / float64(limit)))
+
+	pagination := make(map[string]interface{})
+	pagination["page"] = page
+	pagination["limit"] = limit
+	pagination["offset"] = offset
+	pagination["totalRecord"] = totalRecord
+	pagination["totalPage"] = totalPage
+
+	return pagination, res, nil
 }

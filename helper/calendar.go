@@ -146,7 +146,7 @@ func Calendar(email, date, address string) (string, error) {
 func CreateEvent(event *calendar.Event) {
 	// Baca token JSON
 	ctx := context.Background()
-	b, err := os.ReadFile("helper/credentials.json")
+	b, err := os.ReadFile("credentials.json")
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
 	}
@@ -183,7 +183,7 @@ func CreateEvent(event *calendar.Event) {
 		log.Fatalf("Unable to create event. %v\n", err)
 	}
 	fmt.Printf("Event created: %s\n", event.HtmlLink)
-	fmt.Println(event.ConferenceData.EntryPoints)
+	fmt.Println(event.ConferenceData.ConferenceId)
 }
 
 // func CreateEvent(event *calendar.Event) {

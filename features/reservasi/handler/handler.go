@@ -43,7 +43,7 @@ func (rh *reservasiHandler) Add() echo.HandlerFunc {
 
 func (rh *reservasiHandler) Callback() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		b, _ := os.ReadFile("features/reservasi/credentials/credentials.json")
+		b, _ := os.ReadFile("credentials.json")
 		config, err := google.ConfigFromJSON(b, calendar.CalendarEventsScope)
 		if err != nil {
 			log.Fatalf("Unable to parse client secret file to config: %v", err)

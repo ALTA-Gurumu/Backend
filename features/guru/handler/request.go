@@ -16,23 +16,23 @@ type RegisterRequest struct {
 }
 
 type UpdateRequest struct {
-	Nama        string `json:"nama" form:"nama"`
-	Email       string `json:"email" form:"email"`
-	Password    string `json:"password" form:"password"`
-	Telepon     string `json:"telepon" form:"telepon"`
-	LinkedIn    string `json:"linkedin" form:"linkedin"`
-	Gelar       string `json:"gelar" form:"gelar"`
-	TentangSaya string `json:"tentang_saya" form:"tentang_saya"`
-	Pengalaman  string `json:"pengalaman" form:"pengalaman"`
-	LokasiAsal  string `json:"lokasi_asal" form:"lokasi_asal"`
-	MetodeBljr  string `json:"metode_belajar" form:"metode_belajar"`
-	Tarif       int    `json:"tarif" form:"tarif"`
-	Pelajaran   string `json:"pelajaran" form:"pelajaran"`
-	Pendidikan  string `json:"pendidikan" form:"pendidikan"`
-	Avatar      string `json:"avatar" form:"avatar"`
-	Ijazah      string `json:"ijazah" form:"ijazah"`
-	Latitude    string `json:"latitude" form:"latitude"`
-	Longitude   string `json:"longitude" form:"longitude"`
+	Nama        string  `json:"nama" form:"nama"`
+	Email       string  `json:"email" form:"email"`
+	Password    string  `json:"password" form:"password"`
+	Telepon     string  `json:"telepon" form:"telepon"`
+	LinkedIn    string  `json:"linkedin" form:"linkedin"`
+	Gelar       string  `json:"gelar" form:"gelar"`
+	TentangSaya string  `json:"tentang_saya" form:"tentang_saya"`
+	Pengalaman  string  `json:"pengalaman" form:"pengalaman"`
+	LokasiAsal  string  `json:"lokasi_asal" form:"lokasi_asal"`
+	MetodeBljr  string  `json:"metode_belajar" form:"metode_belajar"`
+	Tarif       int     `json:"tarif" form:"tarif"`
+	Pelajaran   string  `json:"pelajaran" form:"pelajaran"`
+	Pendidikan  string  `json:"pendidikan" form:"pendidikan"`
+	Avatar      string  `json:"avatar" form:"avatar"`
+	Ijazah      string  `json:"ijazah" form:"ijazah"`
+	Latitude    float64 `json:"latitude" form:"latitude"`
+	Longitude   float64 `json:"longitude" form:"longitude"`
 }
 
 func ReqToCore(data interface{}) *guru.Core {

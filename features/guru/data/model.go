@@ -26,8 +26,8 @@ type Guru struct {
 	Ijazah      string
 	Role        string
 	Verifikasi  bool
-	Latitude    string
-	Longitude   string
+	Latitude    float64       `gorm:"type:decimal(10,8)"`
+	Longitude   float64       `gorm:"type:decimal(10,8)"`
 	Jadwal      []data.Jadwal `gorm:"foreignKey:GuruID;references:ID"`
 }
 

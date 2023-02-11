@@ -154,7 +154,7 @@ func (rd *reservasiData) UpdateDataByTrfID(kode string, updateRes reservasi.Core
 func (tq *reservasiData) NotificationTransactionStatus(kodeTransaksi, statusTransaksi string) error {
 	reservasi := Reservasi{}
 
-	err := tq.db.First(&reservasi, "status_pembayaran = ?", kodeTransaksi).Error
+	err := tq.db.First(&reservasi, " kode_transaksi = ?", kodeTransaksi).Error
 	if err != nil {
 		log.Println("transaction not found: ", err.Error())
 		return err

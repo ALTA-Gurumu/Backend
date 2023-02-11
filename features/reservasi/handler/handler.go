@@ -102,16 +102,16 @@ func (rh *reservasiHandler) NotificationTransactionStatus() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, err)
 		}
 
-		transactionId, exists := notificationPayload["order_id"].(string)
+		kodeTransaksi, exists := notificationPayload["transaction_id"].(string)
 		if !exists {
 			return c.JSON(http.StatusBadRequest, err)
 		}
 
-		err = rh.srv.NotificationTransactionStatus(transactionId)
+		err = rh.srv.NotificationTransactionStatus(kodeTransaksi)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
 		}
 
-		return c.JSON(c.Response().Write([]byte("ok")))
+		return c.JSON(c.Response().Write([]byte("notifikasi midtrans sukses")))
 	}
 }

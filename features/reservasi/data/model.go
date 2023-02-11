@@ -48,6 +48,7 @@ type Jadwal struct {
 
 type SesiSiswa struct {
 	ID         uint
+	GuruID     uint
 	NamaGuru   string
 	Tanggal    string
 	Jam        string
@@ -115,6 +116,7 @@ func ToCoreSesikuGuru(data SesiGuru) reservasi.Core {
 func ToCoreSesikuSiswa(data SesiSiswa) reservasi.Core {
 	return reservasi.Core{
 		ID:         data.ID,
+		GuruID:     data.GuruID,
 		NamaGuru:   data.NamaGuru,
 		Tanggal:    data.Tanggal,
 		Jam:        data.Jam,

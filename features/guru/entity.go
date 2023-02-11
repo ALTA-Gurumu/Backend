@@ -51,7 +51,7 @@ type GuruService interface {
 type GuruData interface {
 	Register(newGuru Core) (Core, error)
 	GetByID(id uint) (interface{}, error)
-	GetBeranda(loc string, subj string, limit int, offset int) ([]Core, error)
+	GetBeranda(loc string, subj string, limit int, offset int) (int, []Core, error)
 	Update(id uint, updateData Core) error
 	Delete(id uint) error
 	Verifikasi(cekdata Core) bool

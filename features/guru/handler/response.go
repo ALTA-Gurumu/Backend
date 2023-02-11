@@ -32,8 +32,8 @@ type GuruByIDResp struct {
 	Pendidikan  string
 	Avatar      string
 	Ijazah      string
-	Latitude    string
-	Longitude   string
+	Latitude    float64
+	Longitude   float64
 	Jadwal      []data.JadwalNG
 }
 

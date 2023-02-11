@@ -94,10 +94,11 @@ func (gq *guruQuery) GetByID(id uint) (interface{}, error) {
 	return result, nil
 }
 
-func (gq *guruQuery) GetBeranda(loc string, subj string) ([]guru.Core, error) {
+func (gq *guruQuery) GetBeranda(loc string, subj string, limit int, offset int) (int, []guru.Core, error) {
 
 	var guruData []GuruRatingBeranda
-	query := "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, gurus.tarif, COALESCE(AVG(ulasans.penilaian), 0) AS avg_rating FROM gurus LEFT JOIN ulasans ON gurus.id = ulasans.guru_id WHERE gurus.verifikasi = 1"
+	var allGuru int64
+	query := "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, gurus.tarif, COALESCE(AVG(ulasans.penilaian), 0) AS avg_rating FROM gurus LEFT JOIN ulasans ON gurus.id = ulasans.guru_id WHERE gurus.verifikasi = 1 DESC LIMIT ? OFFSET ?"
 
 	var rows *sql.Rows
 	var err error
@@ -106,32 +107,52 @@ func (gq *guruQuery) GetBeranda(loc string, subj string) ([]guru.Core, error) {
 		query = query + " WHERE gurus.lokasi_asal = ?"
 		query = query + " GROUP BY gurus.id"
 
-		rows, err = gq.db.Raw(query, loc).Rows()
+		err = gq.db.Raw(query, limit, offset, loc).Count(&allGuru).Error
 		if err != nil {
-			return nil, err
+			return 0, nil, err
 		}
+
+		rows, err = gq.db.Raw(query, limit, offset, loc).Rows()
+		if err != nil {
+			return 0, nil, err
+		}
+
 	} else if subj != "" && loc != "" {
 		query = query + " WHERE gurus.pelajaran = ? AND gurus.lokasi_asal = ? "
 		query = query + " GROUP BY gurus.id"
 
-		rows, err = gq.db.Raw(query, subj, loc).Rows()
+		err = gq.db.Raw(query, limit, offset, subj, loc).Count(&allGuru).Error
 		if err != nil {
-			return nil, err
+			return 0, nil, err
+		}
+
+		rows, err = gq.db.Raw(query, limit, offset, subj, loc).Rows()
+		if err != nil {
+			return 0, nil, err
 		}
 	} else if subj != "" && loc == "" {
 		query = query + " WHERE gurus.pelajaran = ?"
 		query = query + " GROUP BY gurus.id"
 
-		rows, err = gq.db.Raw(query, subj).Rows()
+		err = gq.db.Raw(query, limit, offset, subj).Count(&allGuru).Error
 		if err != nil {
-			return nil, err
+			return 0, nil, err
+		}
+
+		rows, err = gq.db.Raw(query, limit, offset, subj).Rows()
+		if err != nil {
+			return 0, nil, err
 		}
 	} else if subj == "" && loc == "" {
 		query = query + " GROUP BY gurus.id"
 
-		rows, err = gq.db.Raw(query).Rows()
+		err = gq.db.Raw(query, limit, offset).Count(&allGuru).Error
 		if err != nil {
-			return nil, err
+			return 0, nil, err
+		}
+		rows, err = gq.db.Raw(query, limit, offset).Rows()
+		if err != nil {
+			return 0, nil, err
 		}
 	}
 
@@ -142,13 +163,13 @@ func (gq *guruQuery) GetBeranda(loc string, subj string) ([]guru.Core, error) {
 		var avgRating float64
 		err = rows.Scan(&guru.ID, &guru.Nama, &guru.LokasiAsal, &guru.TentangSaya, &guru.Pelajaran, &guru.Avatar, &guru.Tarif, &avgRating)
 		if err != nil {
-			return nil, err
+			return 0, nil, err
 		}
 		guru.Penilaian = float32(avgRating)
 		guruData = append(guruData, guru)
 	}
 
-	return ListRatingToCore(guruData), nil
+	return int(allGuru), ListRatingToCore(guruData), nil
 }
 
 func (gq *guruQuery) Verifikasi(cekData guru.Core) bool {

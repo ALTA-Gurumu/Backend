@@ -104,3 +104,17 @@ func ValidationErrorHandle(err error) string {
 
 	return msg
 }
+
+type PaginationResponse struct {
+	Page        int `json:"page"`
+	Limit       int `json:"limit"`
+	Offset      int `json:"offset"`
+	TotalRecord int `json:"total_rercord"`
+	TotalPage   int `json:"total_page"`
+}
+
+type WithPagination struct {
+	Pagination PaginationResponse `json:"pagination"`
+	Data       interface{}        `json:"data"`
+	Message    string             `json:"message"`
+}

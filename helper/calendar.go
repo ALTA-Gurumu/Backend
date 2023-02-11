@@ -11,7 +11,6 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/calendar/v3"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 )
 
@@ -64,84 +63,11 @@ func SaveToken(path string, token *oauth2.Token) {
 	json.NewEncoder(f).Encode(token)
 }
 
-func Calendar(email, date, address string) (string, error) {
-	event := &calendar.Event{
-		AnyoneCanAddSelf:        false,
-		Attachments:             []*calendar.EventAttachment{},
-		Attendees:               []*calendar.EventAttendee{{Email: "ariadi.ahmadd@gmail.com"}},
-		AttendeesOmitted:        false,
-		ColorId:                 "",
-		ConferenceData:          &calendar.ConferenceData{ConferenceId: "meetingjerryaudi123"},
-		Created:                 "",
-		Creator:                 &calendar.EventCreator{},
-		Description:             "Gurumu - ",
-		End:                     &calendar.EventDateTime{Date: date, TimeZone: "Asia/Jakarta"},
-		EndTimeUnspecified:      false,
-		Etag:                    "",
-		EventType:               "",
-		ExtendedProperties:      &calendar.EventExtendedProperties{},
-		Gadget:                  &calendar.EventGadget{},
-		GuestsCanInviteOthers:   new(bool),
-		GuestsCanModify:         false,
-		GuestsCanSeeOtherGuests: new(bool),
-		HangoutLink:             "",
-		HtmlLink:                "",
-		ICalUID:                 "",
-		Id:                      "",
-		Kind:                    "",
-		Location:                address,
-		Locked:                  false,
-		Organizer:               &calendar.EventOrganizer{},
-		OriginalStartTime:       &calendar.EventDateTime{},
-		PrivateCopy:             false,
-		Recurrence:              []string{},
-		RecurringEventId:        "",
-		Reminders:               &calendar.EventReminders{},
-		Sequence:                0,
-		Source:                  &calendar.EventSource{},
-		Start:                   &calendar.EventDateTime{Date: date, TimeZone: "Asia/Jakarta"},
-		Status:                  "",
-		Summary:                 "Gurumu -  ",
-		Transparency:            "",
-		Updated:                 date,
-		Visibility:              "",
-		ServerResponse:          googleapi.ServerResponse{},
-		ForceSendFields:         []string{},
-		NullFields:              []string{},
-	}
-
-	ctx := context.Background()
-	b, err := os.ReadFile("helper/credentials.json")
-	if err != nil {
-		log.Fatalf("Unable to read client secret file: %v", err)
-	}
-
-	// client_id := os.Getenv("GOOGLE_OAUTH_CLIENT_ID1")
-	// project := os.Getenv("GOOGLE_PROJECT_ID1")
-	// secret := os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET1")
-	// b := `{"installed":{"client_id":"` + client_id + `","project_id":"` + project + `","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"` + secret + `","redirect_uris":["http://localhost"]}}`
-	// bt := []byte(b)
-
-	config, err := google.ConfigFromJSON(b, calendar.CalendarScope)
-	if err != nil {
-		log.Fatalf("Unablae to parse client secret file to config: %v", err)
-	}
-	client := GetClient(config)
-
-	srv, err := calendar.NewService(ctx, option.WithHTTPClient(client))
-	if err != nil {
-		log.Fatalf("Unable to retrieve Calendar client: %v", err)
-	}
-
-	calendarId := "primary"
-	event_notification := srv.Events.Insert(calendarId, event).SendUpdates("all")
-	event, err = event_notification.Do()
-	if err != nil {
-		log.Fatalf("Unable to create event: %v", err)
-	}
-
-	return event.HtmlLink, nil
-}
+// client_id := os.Getenv("GOOGLE_OAUTH_CLIENT_ID1")
+// project := os.Getenv("GOOGLE_PROJECT_ID1")
+// secret := os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET1")
+// b := `{"installed":{"client_id":"` + client_id + `","project_id":"` + project + `","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"` + secret + `","redirect_uris":["http://localhost"]}}`
+// bt := []byte(b)
 
 func CreateEvent(event *calendar.Event) {
 	// Baca token JSON
@@ -163,20 +89,6 @@ func CreateEvent(event *calendar.Event) {
 		log.Fatalf("Unable to retrieve Calendar client: %v", err)
 	}
 
-	// event := &calendar.Event{
-	// 	Summary:     "Test Event",
-	// 	Location:    "Somewhere",
-	// 	Description: "This is a test event.",
-	// 	Start: &calendar.EventDateTime{
-	// 		DateTime: time.Now().Format(time.RFC3339),
-	// 		TimeZone: "Asia/Jakarta",
-	// 	},
-	// 	End: &calendar.EventDateTime{
-	// 		DateTime: time.Now().Add(time.Hour * 2).Format(time.RFC3339),
-	// 		TimeZone: "Asia/Jakarta",
-	// 	},
-	// }
-
 	calendarId := "primary"
 	event, err = srv.Events.Insert(calendarId, event).SendUpdates("all").ConferenceDataVersion(1).Do()
 	if err != nil {
@@ -185,89 +97,3 @@ func CreateEvent(event *calendar.Event) {
 	fmt.Printf("Event created: %s\n", event.HtmlLink)
 	fmt.Println(event.ConferenceData.ConferenceId)
 }
-
-// func CreateEvent(event *calendar.Event) {
-// 	// Baca token JSON
-// 	ctx := context.Background()
-// 	b, err := os.ReadFile("credentials.json")
-// 	if err != nil {
-// 		log.Fatalf("Unable to read client secret file: %v", err)
-// 	}
-
-// 	// If modifying these scopes, delete your previously saved token.json.
-// 	config, err := google.ConfigFromJSON(b, calendar.CalendarEventsScope, calendar.CalendarScope, calendar.CalendarReadonlyScope)
-// 	if err != nil {
-// 		log.Fatalf("Unable to parse client secret file to config: %v", err)
-// 	}
-// 	client := getClient(config)
-
-// 	srv, err := calendar.NewService(ctx, option.WithHTTPClient(client))
-// 	if err != nil {
-// 		log.Fatalf("Unable to retrieve Calendar client: %v", err)
-// 	}
-
-// 	// event := &calendar.Event{
-// 	// 	Summary:     "Test Event",
-// 	// 	Location:    "Somewhere",
-// 	// 	Description: "This is a test event.",
-// 	// 	Start: &calendar.EventDateTime{
-// 	// 		DateTime: time.Now().Format(time.RFC3339),
-// 	// 		TimeZone: "Asia/Jakarta",
-// 	// 	},
-// 	// 	End: &calendar.EventDateTime{
-// 	// 		DateTime: time.Now().Add(time.Hour * 2).Format(time.RFC3339),
-// 	// 		TimeZone: "Asia/Jakarta",
-// 	// 	},
-// 	// }
-
-// 	calendarId := "primary"
-// 	event, err = srv.Events.Insert(calendarId, event).Do()
-// 	if err != nil {
-// 		log.Fatalf("Unable to create event. %v\n", err)
-// 	}
-// 	fmt.Printf("Event created: %s\n", event.HtmlLink)
-
-// }
-
-// func CreateEvent(event *calendar.Event) {
-// 	// Baca token JSON
-// 	ctx := context.Background()
-// 	b, err := os.ReadFile("credentials.json")
-// 	if err != nil {
-// 		log.Fatalf("Unable to read client secret file: %v", err)
-// 	}
-
-// 	// If modifying these scopes, delete your previously saved token.json.
-// 	config, err := google.ConfigFromJSON(b, calendar.CalendarEventsScope, calendar.CalendarScope, calendar.CalendarReadonlyScope)
-// 	if err != nil {
-// 		log.Fatalf("Unable to parse client secret file to config: %v", err)
-// 	}
-// 	client := getClient(config)
-
-// 	srv, err := calendar.NewService(ctx, option.WithHTTPClient(client))
-// 	if err != nil {
-// 		log.Fatalf("Unable to retrieve Calendar client: %v", err)
-// 	}
-
-// 	// event := &calendar.Event{
-// 	// 	Summary:     "Test Event",
-// 	// 	Location:    "Somewhere",
-// 	// 	Description: "This is a test event.",
-// 	// 	Start: &calendar.EventDateTime{
-// 	// 		DateTime: time.Now().Format(time.RFC3339),
-// 	// 		TimeZone: "Asia/Jakarta",
-// 	// 	},
-// 	// 	End: &calendar.EventDateTime{
-// 	// 		DateTime: time.Now().Add(time.Hour * 2).Format(time.RFC3339),
-// 	// 		TimeZone: "Asia/Jakarta",
-// 	// 	},
-// 	// }
-
-// 	calendarId := "primary"
-// 	event, err = srv.Events.Insert(calendarId, event).Do()
-// 	if err != nil {
-// 		log.Fatalf("Unable to create event. %v\n", err)
-// 	}
-// 	fmt.Printf("Event created: %s\n", event.HtmlLink)
-
-// }

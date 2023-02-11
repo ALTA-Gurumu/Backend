@@ -131,8 +131,8 @@ func TestProfile(t *testing.T) {
 		Pendidikan:  "Teknik Geofisika",
 		Avatar:      "try123ok.s3.aws.amazon.com/avatar.jpg",
 		Ijazah:      "try123ok.s3.aws.amazon.com/certificate.jpg",
-		Latitude:    "-7.1234",
-		Longitude:   "120.2345",
+		Latitude:    -7.1234,
+		Longitude:   120.2345,
 		Jadwal:      nil,
 	}
 
@@ -198,24 +198,30 @@ func TestProfilBeranda(t *testing.T) {
 		},
 	}
 
+	listRes := expectedData
+	listRes[1].ID = uint(2)
+
 	t.Run("success get profile beranda", func(t *testing.T) {
-		data.On("GetBeranda", "Mojokerto", "Fisika").Return(expectedData, nil).Once()
+		data.On("GetBeranda", "Mojokerto", "Fisika", 4, 0).Return(2, expectedData, nil).Once()
 
 		srv := New(data)
 
-		res, err := srv.ProfileBeranda("Mojokerto", "Fisika")
+		pagination, res, err := srv.ProfileBeranda("Mojokerto", "Fisika", 1)
 		assert.Nil(t, err)
 		assert.NotEmpty(t, res)
+		assert.Equal(t, listRes[0].ID, res[0].ID)
+		assert.NotNil(t, pagination)
 		data.AssertExpectations(t)
 	})
 
 	t.Run("error", func(t *testing.T) {
-		data.On("GetBeranda", "Mojokerto", "Fisika").Return([]guru.Core{}, errors.New("not found")).Once()
+		data.On("GetBeranda", "Mojokerto", "Fisika", 4, 0).Return(0, nil, errors.New("not found")).Once()
 
 		srv := New(data)
 
-		res, err := srv.ProfileBeranda("Mojokerto", "Fisika")
+		pagination, res, err := srv.ProfileBeranda("Mojokerto", "Fisika", 1)
 		assert.NotNil(t, err)
+		assert.Nil(t, pagination)
 		assert.Empty(t, res)
 		data.AssertExpectations(t)
 	})
@@ -240,8 +246,8 @@ func TestUpdate(t *testing.T) {
 		Pendidikan:  "Teknik Geofisika",
 		Avatar:      "try123ok.s3.aws.amazon.com/avatar.jpg",
 		Ijazah:      "try123ok.s3.aws.amazon.com/certificate.jpg",
-		Latitude:    "-7.12334",
-		Longitude:   "120.9384",
+		Latitude:    -7.12334,
+		Longitude:   120.9384,
 	}
 
 	guruID := uint(1)

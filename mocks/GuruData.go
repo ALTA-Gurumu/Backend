@@ -27,27 +27,34 @@ func (_m *GuruData) Delete(id uint) error {
 	return r0
 }
 
-// GetBeranda provides a mock function with given fields: loc, subj
-func (_m *GuruData) GetBeranda(loc string, subj string) ([]guru.Core, error) {
-	ret := _m.Called(loc, subj)
+// GetBeranda provides a mock function with given fields: loc, subj, limit, offset
+func (_m *GuruData) GetBeranda(loc string, subj string, limit int, offset int) (int, []guru.Core, error) {
+	ret := _m.Called(loc, subj, limit, offset)
 
-	var r0 []guru.Core
-	if rf, ok := ret.Get(0).(func(string, string) []guru.Core); ok {
-		r0 = rf(loc, subj)
+	var r0 int
+	if rf, ok := ret.Get(0).(func(string, string, int, int) int); ok {
+		r0 = rf(loc, subj, limit, offset)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]guru.Core)
+		r0 = ret.Get(0).(int)
+	}
+
+	var r1 []guru.Core
+	if rf, ok := ret.Get(1).(func(string, string, int, int) []guru.Core); ok {
+		r1 = rf(loc, subj, limit, offset)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).([]guru.Core)
 		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string, string) error); ok {
-		r1 = rf(loc, subj)
+	var r2 error
+	if rf, ok := ret.Get(2).(func(string, string, int, int) error); ok {
+		r2 = rf(loc, subj, limit, offset)
 	} else {
-		r1 = ret.Error(1)
+		r2 = ret.Error(2)
 	}
 
-	return r0, r1
+	return r0, r1, r2
 }
 
 // GetByID provides a mock function with given fields: id

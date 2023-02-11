@@ -1,11 +1,8 @@
 package helper
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
-
-	"github.com/go-playground/validator"
 )
 
 func PrintSuccessReponse(code int, message string, data ...interface{}) (int, interface{}) {
@@ -26,37 +23,43 @@ func PrintSuccessReponse(code int, message string, data ...interface{}) (int, in
 
 func PrintErrorResponse(msg string) (int, interface{}) {
 	resp := map[string]interface{}{}
-	code := -1
+	code := http.StatusInternalServerError
 	if msg != "" {
 		resp["message"] = msg
 	}
 
-	if strings.Contains(msg, "server") {
+	switch true {
+	case strings.Contains(msg, "server"):
 		code = http.StatusInternalServerError
-	} else if strings.Contains(msg, "format") {
+	case strings.Contains(msg, "format"):
 		code = http.StatusBadRequest
-	} else if strings.Contains(msg, "not found") {
+	case strings.Contains(msg, "kurang"):
+		code = http.StatusBadRequest
+	case strings.Contains(msg, "kosong"):
+		code = http.StatusBadRequest
+	case strings.Contains(msg, "not found"):
 		code = http.StatusNotFound
-	} else if strings.Contains(msg, "conflict") {
+	case strings.Contains(msg, "conflict"):
 		code = http.StatusConflict
-	} else if strings.Contains(msg, "duplicated") {
+	case strings.Contains(msg, "duplicated"):
 		code = http.StatusConflict
-	} else if strings.Contains(msg, "input invalid") {
+	case strings.Contains(msg, "syntax"):
+		code = http.StatusNotFound
+		resp["message"] = "not found"
+	case strings.Contains(msg, "input invalid"):
 		code = http.StatusBadRequest
-	} else if strings.Contains(msg, "required") {
+	case strings.Contains(msg, "input value"):
 		code = http.StatusBadRequest
-	} else if strings.Contains(msg, "input value") {
+	case strings.Contains(msg, "validation"):
 		code = http.StatusBadRequest
-	} else if strings.Contains(msg, "validation") {
-		code = http.StatusBadRequest
-	} else if strings.Contains(msg, "unmarshal") {
+	case strings.Contains(msg, "unmarshal"):
 		resp["message"] = "failed to unmarshal json"
 		code = http.StatusBadRequest
-	} else if strings.Contains(msg, "upload") {
+	case strings.Contains(msg, "upload"):
 		code = http.StatusInternalServerError
-	} else if strings.Contains(msg, "denied") {
+	case strings.Contains(msg, "denied"):
 		code = http.StatusUnauthorized
-	} else if strings.Contains(msg, "jwt") {
+	case strings.Contains(msg, "jwt"):
 		msg = "access is denied due to invalid credential"
 		code = http.StatusUnauthorized
 	}
@@ -71,45 +74,11 @@ func ErrorResponse(msg string) interface{} {
 	return resp
 }
 
-func ValidationErrorHandle(err error) string {
-	messages := []string{}
-
-	castedObject, ok := err.(validator.ValidationErrors)
-	if ok {
-		for _, v := range castedObject {
-			switch v.Tag() {
-			case "required":
-				messages = append(messages, fmt.Sprintf("%s is required", v.Field()))
-			case "min":
-				messages = append(messages, fmt.Sprintf("%s value must be greater than %s character", v.Field(), v.Param()))
-			case "max":
-				messages = append(messages, fmt.Sprintf("%s value must be lower than %s character", v.Field(), v.Param()))
-			case "lte":
-				messages = append(messages, fmt.Sprintf("%s value must be below %s", v.Field(), v.Param()))
-			case "gte":
-				messages = append(messages, fmt.Sprintf("%s value must be above %s", v.Field(), v.Param()))
-			case "numeric":
-				messages = append(messages, fmt.Sprintf("%s value must be numeic", v.Field()))
-			case "url":
-				messages = append(messages, fmt.Sprintf("%s value must be am url", v.Field()))
-			case "email":
-				messages = append(messages, fmt.Sprintf("%s value must be an email", v.Field()))
-			case "password":
-				messages = append(messages, fmt.Sprintf("%s value must be filled", v.Field()))
-			}
-		}
-	}
-
-	msg := strings.Join(messages, ", ")
-
-	return msg
-}
-
 type PaginationResponse struct {
 	Page        int `json:"page"`
 	Limit       int `json:"limit"`
 	Offset      int `json:"offset"`
-	TotalRecord int `json:"total_rercord"`
+	TotalRecord int `json:"total_record"`
 	TotalPage   int `json:"total_page"`
 }
 

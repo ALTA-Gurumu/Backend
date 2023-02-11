@@ -10,7 +10,7 @@ import (
 	"mime/multipart"
 	"strings"
 
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 )
 
 type guruUseCase struct {
@@ -18,10 +18,10 @@ type guruUseCase struct {
 	vld *validator.Validate
 }
 
-func New(gd guru.GuruData) guru.GuruService {
+func New(gd guru.GuruData, vld *validator.Validate) guru.GuruService {
 	return &guruUseCase{
 		qry: gd,
-		vld: validator.New(),
+		vld: vld,
 	}
 }
 
@@ -30,12 +30,30 @@ func (guc *guruUseCase) Register(newGuru guru.Core) (guru.Core, error) {
 	hashed, err := helper.GeneratePassword(newGuru.Password)
 	if err != nil {
 		log.Println("bcrypt error ", err.Error())
-		return guru.Core{}, errors.New("password process error")
+		return guru.Core{}, errors.New("password bcrypt process error")
 	}
 
 	err = helper.ValidateRegisterRequest(newGuru.Nama, newGuru.Email, newGuru.Password)
 	if err != nil {
-		msg := "input invalid"
+		msg := "format input tidak lengkap dan/atau kosong"
+		return guru.Core{}, errors.New(msg)
+	}
+
+	emailCheck := helper.ValidEmail(newGuru.Email)
+	if !emailCheck {
+		msg := "format email salah"
+		return guru.Core{}, errors.New(msg)
+	}
+
+	pwdCheck := helper.IsStrongPassword(newGuru.Password)
+	if !pwdCheck {
+		msg := "password kurang kuat, minimal 6 karakter"
+		return guru.Core{}, errors.New(msg)
+	}
+
+	namaCheck := helper.IsGoodName(newGuru.Nama)
+	if !namaCheck {
+		msg := "nama kurang, minimal 6 karakter"
 		return guru.Core{}, errors.New(msg)
 	}
 
@@ -103,10 +121,25 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 	if userID <= 0 {
 		return fmt.Errorf("token tidak valid")
 	}
+	fmt.Println(updateData)
+
+	structCheck := helper.IsStructEmpty(updateData)
+	if !structCheck {
+		return fmt.Errorf("updateData tidak bisa kosong")
+	}
 
 	if err := guc.vld.Struct(&updateData); err != nil {
 		log.Println(err)
 		return fmt.Errorf("validation error: %s", helper.ValidationErrorHandle(err))
+	}
+
+	if updateData.Password != "" {
+		hashed, err := helper.GeneratePassword(updateData.Password)
+		if err != nil {
+			log.Println("bcrypt error ", err.Error())
+			return errors.New("password bcrypt process error")
+		}
+		updateData.Password = string(hashed)
 	}
 
 	if updateData.Email == "" {
@@ -141,7 +174,7 @@ func (guc *guruUseCase) ProfileBeranda(loc string, subj string, page int) (map[s
 	if page < 1 {
 		page = 1
 	}
-	limit := 4
+	limit := 6
 
 	offset := (page - 1) * limit
 

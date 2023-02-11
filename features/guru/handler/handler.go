@@ -40,8 +40,8 @@ func (gc *guruControl) Profile() echo.HandlerFunc {
 		str := c.Param("guru_id")
 		guruID, err := strconv.Atoi(str)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"message": "Id guru salah",
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"message": "id guru salah",
 			})
 		}
 

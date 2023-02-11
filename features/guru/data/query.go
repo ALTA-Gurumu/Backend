@@ -5,6 +5,7 @@ import (
 	"Gurumu/features/jadwal/data"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 
 	"gorm.io/gorm"
@@ -98,40 +99,45 @@ func (gq *guruQuery) GetBeranda(loc string, subj string, limit int, offset int) 
 
 	var guruData []GuruRatingBeranda
 	var allGuru int64
+
+	tx := gq.db.Raw("SELECT count(id) FROM gurus WHERE verifikasi = 1 AND deleted_at IS NULL").Find(&allGuru)
+	if tx.Error != nil {
+		return 0, nil, tx.Error
+	}
 	query := "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, gurus.tarif, COALESCE(AVG(ulasans.penilaian), 0) AS avg_rating FROM gurus LEFT JOIN ulasans ON gurus.id = ulasans.guru_id WHERE gurus.verifikasi = 1"
 
 	var rows *sql.Rows
 	var err error
-
+	fmt.Println("allGuru", allGuru)
 	if loc != "" && subj == "" {
 		query = query + " WHERE gurus.lokasi_asal = ?"
-		query = query + " GROUP BY gurus.id"
+		query = query + " GROUP BY gurus.id ORDER BY gurus.id DESC LIMIT ? OFFSET ?"
 
-		rows, err = gq.db.Raw(query, loc).Rows()
+		rows, err = gq.db.Raw(query, limit, offset, loc).Rows()
 		if err != nil {
 			return 0, nil, err
 		}
 
 	} else if subj != "" && loc != "" {
 		query = query + " WHERE gurus.pelajaran = ? AND gurus.lokasi_asal = ? "
-		query = query + " GROUP BY gurus.id"
+		query = query + " GROUP BY gurus.id ORDER BY gurus.id DESC LIMIT ? OFFSET ?"
 
-		rows, err = gq.db.Raw(query, subj, loc).Rows()
+		rows, err = gq.db.Raw(query, limit, offset, subj, loc).Rows()
 		if err != nil {
 			return 0, nil, err
 		}
 	} else if subj != "" && loc == "" {
 		query = query + " WHERE gurus.pelajaran = ?"
-		query = query + " GROUP BY gurus.id"
+		query = query + " GROUP BY gurus.id ORDER BY gurus.id DESC LIMIT ? OFFSET ?"
 
-		rows, err = gq.db.Raw(query, subj).Rows()
+		rows, err = gq.db.Raw(query, limit, offset, subj).Rows()
 		if err != nil {
 			return 0, nil, err
 		}
 	} else if subj == "" && loc == "" {
-		query = query + " GROUP BY gurus.id"
+		query = query + " GROUP BY gurus.id ORDER BY gurus.id DESC LIMIT ? OFFSET ?"
 
-		rows, err = gq.db.Raw(query).Rows()
+		rows, err = gq.db.Raw(query, limit, offset).Rows()
 		if err != nil {
 			return 0, nil, err
 		}

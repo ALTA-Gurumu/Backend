@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"testing"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -15,7 +16,7 @@ import (
 
 func TestRegister(t *testing.T) {
 	data := mocks.NewGuruData(t)
-
+	v := validator.New()
 	inputData := guru.Core{
 		Nama:     "Putra",
 		Email:    "putra123@gmail.com",
@@ -30,7 +31,7 @@ func TestRegister(t *testing.T) {
 	t.Run("success register", func(t *testing.T) {
 		data.On("Register", mock.Anything).Return(expectedData, nil).Once()
 
-		srv := New(data)
+		srv := New(data, v)
 		res, err := srv.Register(inputData)
 		assert.Nil(t, err)
 		assert.Equal(t, expectedData.Nama, res.Nama)
@@ -39,7 +40,7 @@ func TestRegister(t *testing.T) {
 
 	t.Run("duplicate", func(t *testing.T) {
 		data.On("Register", mock.Anything).Return(guru.Core{}, errors.New("duplicated")).Once()
-		srv := New(data)
+		srv := New(data, v)
 		res, err := srv.Register(inputData)
 		assert.NotNil(t, err)
 		assert.ErrorContains(t, err, "sudah terdaftar")
@@ -49,7 +50,7 @@ func TestRegister(t *testing.T) {
 
 	t.Run("server problem", func(t *testing.T) {
 		data.On("Register", mock.Anything).Return(guru.Core{}, errors.New("server error")).Once()
-		srv := New(data)
+		srv := New(data, v)
 		res, err := srv.Register(inputData)
 		assert.NotNil(t, err)
 		assert.ErrorContains(t, err, "server")
@@ -60,11 +61,11 @@ func TestRegister(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	data := mocks.NewGuruData(t)
-
+	v := validator.New()
 	t.Run("success delete", func(t *testing.T) {
 		data.On("Delete", uint(1)).Return(nil).Once()
 
-		srv := New(data)
+		srv := New(data, v)
 
 		_, token := helper.GenerateJWT(1)
 		pToken := token.(*jwt.Token)
@@ -76,7 +77,7 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("jwt tidak valid", func(t *testing.T) {
-		srv := New(data)
+		srv := New(data, v)
 
 		_, token := helper.GenerateJWT(1)
 
@@ -88,7 +89,7 @@ func TestDelete(t *testing.T) {
 	t.Run("data tidak ditemukan", func(t *testing.T) {
 		data.On("Delete", uint(4)).Return(errors.New("data not found")).Once()
 
-		srv := New(data)
+		srv := New(data, v)
 
 		_, token := helper.GenerateJWT(4)
 		pToken := token.(*jwt.Token)
@@ -101,7 +102,7 @@ func TestDelete(t *testing.T) {
 
 	t.Run("masalah di server", func(t *testing.T) {
 		data.On("Delete", mock.Anything).Return(errors.New("terdapat masalah pada server")).Once()
-		srv := New(data)
+		srv := New(data, v)
 
 		_, token := helper.GenerateJWT(1)
 		pToken := token.(*jwt.Token)
@@ -115,7 +116,7 @@ func TestDelete(t *testing.T) {
 
 func TestProfile(t *testing.T) {
 	data := mocks.NewGuruData(t)
-
+	v := validator.New()
 	expectedData := guru.Core{
 		Nama:        "Putra",
 		Email:       "putra123@gmail.com",
@@ -140,7 +141,7 @@ func TestProfile(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		data.On("GetByID", guruID).Return(expectedData, nil).Once()
 
-		srv := New(data)
+		srv := New(data, v)
 
 		res, err := srv.Profile(guruID)
 		assert.Nil(t, err)
@@ -151,7 +152,7 @@ func TestProfile(t *testing.T) {
 	t.Run("data tidak ditemukan", func(t *testing.T) {
 		data.On("GetByID", guruID).Return(guru.Core{}, errors.New("data not found")).Once()
 
-		srv := New(data)
+		srv := New(data, v)
 
 		res, err := srv.Profile(guruID)
 		assert.NotNil(t, err)
@@ -163,7 +164,7 @@ func TestProfile(t *testing.T) {
 	t.Run("masalah di server", func(t *testing.T) {
 		data.On("GetByID", guruID).Return(guru.Core{}, errors.New("server problem")).Once()
 
-		srv := New(data)
+		srv := New(data, v)
 
 		res, err := srv.Profile(guruID)
 		assert.NotNil(t, err)
@@ -175,7 +176,7 @@ func TestProfile(t *testing.T) {
 
 func TestProfilBeranda(t *testing.T) {
 	data := mocks.NewGuruData(t)
-
+	v := validator.New()
 	expectedData := []guru.Core{
 		{
 			ID:          1,
@@ -204,7 +205,7 @@ func TestProfilBeranda(t *testing.T) {
 	t.Run("success get profile beranda", func(t *testing.T) {
 		data.On("GetBeranda", "Mojokerto", "Fisika", 4, 0).Return(2, expectedData, nil).Once()
 
-		srv := New(data)
+		srv := New(data, v)
 
 		pagination, res, err := srv.ProfileBeranda("Mojokerto", "Fisika", 1)
 		assert.Nil(t, err)
@@ -217,7 +218,7 @@ func TestProfilBeranda(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
 		data.On("GetBeranda", "Mojokerto", "Fisika", 4, 0).Return(0, nil, errors.New("not found")).Once()
 
-		srv := New(data)
+		srv := New(data, v)
 
 		pagination, res, err := srv.ProfileBeranda("Mojokerto", "Fisika", 1)
 		assert.NotNil(t, err)
@@ -229,7 +230,7 @@ func TestProfilBeranda(t *testing.T) {
 
 func TestUpdate(t *testing.T) {
 	data := mocks.NewGuruData(t)
-
+	v := validator.New()
 	inputData := guru.Core{
 		Nama:        "Putra",
 		Email:       "putra123@gmail.com",
@@ -256,7 +257,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("success update", func(t *testing.T) {
 		data.On("Update", guruID, inputData).Return(nil).Once()
 
-		srv := New(data)
+		srv := New(data, v)
 
 		_, token := helper.GenerateJWT(1)
 		pToken := token.(*jwt.Token)
@@ -270,7 +271,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("gagal update", func(t *testing.T) {
 		data.On("Update", guruID, inputData).Return(errors.New("data tidak ditemukan")).Once()
 
-		srv := New(data)
+		srv := New(data, v)
 
 		_, token := helper.GenerateJWT(1)
 		pToken := token.(*jwt.Token)
@@ -285,7 +286,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("gagal update", func(t *testing.T) {
 		data.On("Update", guruID, inputData).Return(errors.New("masalah pada server")).Once()
 
-		srv := New(data)
+		srv := New(data, v)
 
 		_, token := helper.GenerateJWT(1)
 		pToken := token.(*jwt.Token)
@@ -298,7 +299,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("token tidak valid", func(t *testing.T) {
-		srv := New(data)
+		srv := New(data, v)
 
 		_, token := helper.GenerateJWT(1)
 

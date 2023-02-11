@@ -28,6 +28,7 @@ import (
 	"Gurumu/migration"
 	"log"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -37,6 +38,7 @@ func main() {
 	cfg := config.InitConfig()
 	db := config.InitDB(*cfg)
 	migration.Migrate(db)
+	v := validator.New()
 
 	middleware.ErrJWTMissing.Code = 401
 	middleware.ErrJWTMissing.Message = "Unauthorized"
@@ -46,7 +48,7 @@ func main() {
 	autentikasiHdl := _autentikasiHandler.New(autentikasiSrv)
 
 	guruData := _guruData.New(db)
-	guruSrv := _guruService.New(guruData)
+	guruSrv := _guruService.New(guruData, v)
 	guruHdl := _guruHandler.New(guruSrv)
 
 	jadwalData := _jadwalData.New(db)

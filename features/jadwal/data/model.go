@@ -6,30 +6,9 @@ import (
 	"gorm.io/gorm"
 )
 
-type Guru struct {
-	gorm.Model
-	Email     string
-	Password  string
-	Nama      string
-	Telepon   string
-	Deskripsi string
-	Ijazah    string
-	Pelajaran string
-	Alamat    string
-	Avatar    string
-	Role      string
-	Jadwals   []Jadwal `gorm:"foreignKey:GuruID;references:ID"`
-}
 type Jadwal struct {
 	gorm.Model
 	GuruID  uint
-	Tanggal string
-	Jam     string
-	Status  string
-}
-
-type JadwalNG struct {
-	ID      uint
 	Tanggal string
 	Jam     string
 	Status  string

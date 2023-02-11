@@ -26,8 +26,8 @@ type Core struct {
 	Ijazah      string
 	Role        string
 	Verifikasi  bool
-	Latitude    string
-	Longitude   string
+	Latitude    float64
+	Longitude   float64
 	Jadwal      []data.JadwalNG
 	Penilaian   float32
 }
@@ -43,7 +43,7 @@ type GuruHandler interface {
 type GuruService interface {
 	Register(newGuru Core) (Core, error)
 	Profile(id uint) (interface{}, error)
-	ProfileBeranda(loc string, subj string) ([]Core, error)
+	ProfileBeranda(loc string, subj string, page int) (map[string]interface{}, []Core, error)
 	Update(token interface{}, updateData Core, avatar *multipart.FileHeader, ijazah *multipart.FileHeader) error
 	Delete(token interface{}) error
 }
@@ -51,7 +51,7 @@ type GuruService interface {
 type GuruData interface {
 	Register(newGuru Core) (Core, error)
 	GetByID(id uint) (interface{}, error)
-	GetBeranda(loc string, subj string) ([]Core, error)
+	GetBeranda(loc string, subj string, limit int, offset int) ([]Core, error)
 	Update(id uint, updateData Core) error
 	Delete(id uint) error
 	Verifikasi(cekdata Core) bool

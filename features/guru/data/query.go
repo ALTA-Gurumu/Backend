@@ -87,7 +87,7 @@ func (gq *guruQuery) GetByID(id uint) (interface{}, error) {
 			return nil, err
 		}
 
-		jadwal := data.JadwalNG{
+		jadwal := data.GuruJadwal{
 			ID:      v.ID,
 			Tanggal: v.Tanggal,
 			Jam:     v.Jam,

@@ -28,7 +28,7 @@ type Core struct {
 	Verifikasi  bool
 	Latitude    string
 	Longitude   string
-	Jadwal      []data.JadwalNG
+	Jadwal      []data.GuruJadwal
 	Penilaian   float32
 }
 

@@ -34,7 +34,7 @@ type GuruByIDResp struct {
 	Ijazah      string
 	Latitude    string
 	Longitude   string
-	Jadwal      []data.JadwalNG
+	Jadwal      []data.GuruJadwal
 }
 
 func GuruByID(data guru.Core) GuruByIDResp {

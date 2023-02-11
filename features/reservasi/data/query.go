@@ -83,58 +83,58 @@ func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core) (reserva
 }
 
 func (rd *reservasiData) Mysession(userID uint, role, reservasiStatus string) ([]reservasi.Core, error) {
-	var sesiSiswa = []SesiSiswa{}
-	var sesiGuru = []SesiGuru{}
+	var (
+		sesiSiswa []SesiSiswa
+		sesiGuru  []SesiGuru
+		query     string
+	)
 
-	if role == "siswa" {
-		query := "SELECT r.id, g.nama, j.tanggal, j.jam , r.tautan_gmet, r.status FROM reservasis r JOIN gurus g ON r.guru_id = g.id JOIN jadwals j ON r.jadwal_id = j.id WHERE r.siswa_id = ? "
-		if reservasiStatus == "selesai" {
-			query += "AND r.status = ?"
+	switch role {
+	case "siswa":
+		query = "SELECT r.id, r.guru_id, g.nama AS nama_guru, j.tanggal, j.jam , r.tautan_gmet, r.status FROM reservasis r JOIN gurus g ON r.guru_id = g.id JOIN jadwals j ON r.jadwal_id = j.id WHERE r.siswa_id = ? "
 
-			err := rd.db.Raw(query, userID, reservasiStatus).Find(&sesiSiswa).Error
-			if err != nil {
-				log.Println("get sesi siswa query error")
-				return []reservasi.Core{}, err
-			}
-
-			return ToListSesikuSiswa(sesiSiswa), nil
-
-		} else if reservasiStatus == "ongoing" {
-			query += "AND r.status = ?"
-
-			err := rd.db.Raw(query, userID, reservasiStatus).Find(&sesiSiswa).Error
+		switch reservasiStatus {
+		case "selesai":
+			query += "AND r.status = 'selesai'"
+			err := rd.db.Raw(query, userID).Find(&sesiSiswa).Error
 			if err != nil {
 				return []reservasi.Core{}, err
 			}
 			return ToListSesikuSiswa(sesiSiswa), nil
-		}
-
-	} else if role == "guru" {
-		query := "SELECT r.id, s.nama, j.tanggal, j.jam , r.tautan_gmet, r.status FROM reservasis r JOIN siswas s ON r.guru_id = s.id JOIN jadwals j ON r.jadwal_id = j.id WHERE r.guru_id = ? "
-		if reservasiStatus == "selesai" {
-			query += "AND r.status = ?"
-
-			err := rd.db.Raw(query, userID, reservasiStatus).Find(&sesiGuru).Error
+		case "ongoing":
+			query += "AND r.status = 'ongoing'"
+			err := rd.db.Raw(query, userID).Find(&sesiSiswa).Error
 			if err != nil {
-				log.Println("get sesi guru query error")
 				return []reservasi.Core{}, err
 			}
+			return ToListSesikuSiswa(sesiSiswa), nil
+		default:
+			return []reservasi.Core{}, nil
+		}
+	case "guru":
+		query = "SELECT r.id, s.nama AS nama_siswa, j.tanggal, j.jam , r.tautan_gmet, r.status FROM reservasis r JOIN siswas s ON r.siswa_id = s.id JOIN jadwals j ON r.jadwal_id = j.id WHERE r.guru_id = ? "
 
-			return ToListSesikuGuru(sesiGuru), nil
-
-		} else if reservasiStatus == "ongoing" {
-			query += "AND r.status = ?"
-
-			err := rd.db.Raw(query, userID, reservasiStatus).Find(&sesiGuru).Error
+		switch reservasiStatus {
+		case "selesai":
+			query += "AND r.status = 'selesai'"
+			err := rd.db.Raw(query, userID).Find(&sesiGuru).Error
 			if err != nil {
 				return []reservasi.Core{}, err
 			}
 			return ToListSesikuGuru(sesiGuru), nil
-
+		case "ongoing":
+			query += "AND r.status = 'ongoing'"
+			err := rd.db.Raw(query, userID).Find(&sesiGuru).Error
+			if err != nil {
+				return []reservasi.Core{}, err
+			}
+			return ToListSesikuGuru(sesiGuru), nil
+		default:
+			return []reservasi.Core{}, nil
 		}
-
+	default:
+		return []reservasi.Core{}, nil
 	}
-	return []reservasi.Core{}, nil
 }
 
 func (rd *reservasiData) UpdateDataByTrfID(kode string, updateRes reservasi.Core) error {

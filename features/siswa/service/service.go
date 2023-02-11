@@ -79,6 +79,15 @@ func (suc *siswaUseCase) Update(token interface{}, updateData siswa.Core, avatar
 		return errors.New("id tidak valid")
 	}
 
+	if updateData.Password != "" {
+		hashed, err := helper.GeneratePassword(updateData.Password)
+		if err != nil {
+			log.Println("bcrypt error ", err.Error())
+			return errors.New("password bcrypt process error")
+		}
+		updateData.Password = string(hashed)
+	}
+
 	if updateData.Email == "" {
 		res, _ := suc.qry.Profile(uint(id))
 

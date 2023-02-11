@@ -121,6 +121,7 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 	if userID <= 0 {
 		return fmt.Errorf("token tidak valid")
 	}
+	fmt.Println(updateData)
 
 	structCheck := helper.IsStructEmpty(updateData)
 	if !structCheck {
@@ -130,6 +131,15 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 	if err := guc.vld.Struct(&updateData); err != nil {
 		log.Println(err)
 		return fmt.Errorf("validation error: %s", helper.ValidationErrorHandle(err))
+	}
+
+	if updateData.Password != "" {
+		hashed, err := helper.GeneratePassword(updateData.Password)
+		if err != nil {
+			log.Println("bcrypt error ", err.Error())
+			return errors.New("password bcrypt process error")
+		}
+		updateData.Password = string(hashed)
 	}
 
 	if updateData.Email == "" {

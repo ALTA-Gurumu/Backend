@@ -40,7 +40,14 @@ func IsStructEmpty(s interface{}) bool {
 	if v.Kind() == reflect.Ptr {
 		v = v.Elem()
 	}
-	return v.NumField() == 0
+
+	for i := 0; i < v.NumField(); i++ {
+		if !reflect.DeepEqual(v.Field(i).Interface(), reflect.Zero(v.Field(i).Type()).Interface()) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func ValidationErrorHandle(err error) string {

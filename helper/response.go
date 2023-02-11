@@ -109,7 +109,7 @@ type PaginationResponse struct {
 	Page        int `json:"page"`
 	Limit       int `json:"limit"`
 	Offset      int `json:"offset"`
-	TotalRecord int `json:"total_rercord"`
+	TotalRecord int `json:"total_record"`
 	TotalPage   int `json:"total_page"`
 }
 

@@ -141,7 +141,7 @@ func (guc *guruUseCase) ProfileBeranda(loc string, subj string, page int) (map[s
 	if page < 1 {
 		page = 1
 	}
-	limit := 4
+	limit := 6
 
 	offset := (page - 1) * limit
 

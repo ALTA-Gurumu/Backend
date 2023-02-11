@@ -30,12 +30,30 @@ func (guc *guruUseCase) Register(newGuru guru.Core) (guru.Core, error) {
 	hashed, err := helper.GeneratePassword(newGuru.Password)
 	if err != nil {
 		log.Println("bcrypt error ", err.Error())
-		return guru.Core{}, errors.New("password process error")
+		return guru.Core{}, errors.New("password bcrypt process error")
 	}
 
 	err = helper.ValidateRegisterRequest(newGuru.Nama, newGuru.Email, newGuru.Password)
 	if err != nil {
-		msg := "input invalid"
+		msg := "format input tidak lengkap dan/atau kosong"
+		return guru.Core{}, errors.New(msg)
+	}
+
+	emailCheck := helper.ValidEmail(newGuru.Email)
+	if !emailCheck {
+		msg := "format email salah"
+		return guru.Core{}, errors.New(msg)
+	}
+
+	pwdCheck := helper.IsStrongPassword(newGuru.Password)
+	if !pwdCheck {
+		msg := "password kurang kuat, minimal 6 karakter"
+		return guru.Core{}, errors.New(msg)
+	}
+
+	namaCheck := helper.IsGoodName(newGuru.Nama)
+	if !namaCheck {
+		msg := "nama kurang, minimal 6 karakter"
 		return guru.Core{}, errors.New(msg)
 	}
 
@@ -102,6 +120,11 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 	userID := helper.ExtractToken(token)
 	if userID <= 0 {
 		return fmt.Errorf("token tidak valid")
+	}
+
+	structCheck := helper.IsStructEmpty(updateData)
+	if !structCheck {
+		return fmt.Errorf("updateData tidak bisa kosong")
 	}
 
 	if err := guc.vld.Struct(&updateData); err != nil {

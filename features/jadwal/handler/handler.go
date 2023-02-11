@@ -29,7 +29,7 @@ func (jh *jadwalHandler) Add() echo.HandlerFunc {
 		res, err := jh.srv.Add(c.Get("user"), *ToCore(inputData))
 		if err != nil {
 			log.Println("error running add jadwal service")
-			return c.JSON(http.StatusInternalServerError, helper.ErrorResponse("internal server error"))
+			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
 
 		return c.JSON(http.StatusCreated, map[string]interface{}{

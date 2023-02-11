@@ -9,9 +9,9 @@ import (
 
 type Core struct {
 	ID          uint
-	Nama        string `validate:"min=5"`
-	Email       string `validate:"required,email"`
-	Password    string `validate:"min=5"`
+	Nama        string
+	Email       string
+	Password    string
 	Telepon     string
 	LinkedIn    string
 	Gelar       string

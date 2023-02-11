@@ -77,7 +77,7 @@ func TestLogin(t *testing.T) {
 	})
 
 	t.Run("password salah", func(t *testing.T) {
-		data.On("Login", inputDataSiswa.Email).Return(expectedSiswa, nil)
+		data.On("Login", inputDataSiswa.Email).Return(expectedSiswa, nil).Once()
 
 		srv := New(data)
 		token, res, err := srv.Login(inputDataSiswa.Email, "be1423")

@@ -74,9 +74,9 @@ func (rh *reservasiHandler) Mysession() echo.HandlerFunc {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
 		if role == "siswa" {
-			return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses menampilkan sesi siswa", ToListSesikuSiswaResponse(res)))
+			return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "sukses menampilkan sesi siswa", ToListSesikuSiswaResponse(res)))
 		}
-		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses menampilkan sesi guru", ToListSesikuGuruResponse(res)))
+		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "sukses menampilkan sesi guru", ToListSesikuGuruResponse(res)))
 	}
 }
 

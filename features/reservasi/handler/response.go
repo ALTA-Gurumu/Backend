@@ -31,6 +31,7 @@ type GetSesikuGuruResponse struct {
 
 type GetSesikuSiswaResponse struct {
 	ID         uint   `json:"reservasi_id" form:"reservasi_id"`
+	GuruID     uint   `json:"guru_id" form:"guru_id"`
 	NamaGuru   string `json:"nama_guru" form:"nama_guru"`
 	Tanggal    string `json:"tanggal" form:"tanggal"`
 	Jam        string `json:"jam" form:"jam"`
@@ -71,6 +72,7 @@ func ToSesikuGuruResponse(data reservasi.Core) GetSesikuGuruResponse {
 func ToSesikuSiswaResponse(data reservasi.Core) GetSesikuSiswaResponse {
 	return GetSesikuSiswaResponse{
 		ID:         data.ID,
+		GuruID:     data.GuruID,
 		NamaGuru:   data.NamaGuru,
 		Tanggal:    data.Tanggal,
 		Jam:        data.Jam,

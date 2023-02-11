@@ -18,13 +18,13 @@ func TestRegister(t *testing.T) {
 	data := mocks.NewGuruData(t)
 	v := validator.New()
 	inputData := guru.Core{
-		Nama:     "Putra",
+		Nama:     "Putraa",
 		Email:    "putra123@gmail.com",
 		Password: "putra123",
 	}
 
 	expectedData := guru.Core{
-		Nama:  "Putra",
+		Nama:  "Putraa",
 		Email: "putra123@gmail.com",
 	}
 
@@ -203,7 +203,7 @@ func TestProfilBeranda(t *testing.T) {
 	listRes[1].ID = uint(2)
 
 	t.Run("success get profile beranda", func(t *testing.T) {
-		data.On("GetBeranda", "Mojokerto", "Fisika", 4, 0).Return(2, expectedData, nil).Once()
+		data.On("GetBeranda", "Mojokerto", "Fisika", 6, 0).Return(2, expectedData, nil).Once()
 
 		srv := New(data, v)
 
@@ -216,7 +216,7 @@ func TestProfilBeranda(t *testing.T) {
 	})
 
 	t.Run("error", func(t *testing.T) {
-		data.On("GetBeranda", "Mojokerto", "Fisika", 4, 0).Return(0, nil, errors.New("not found")).Once()
+		data.On("GetBeranda", "Mojokerto", "Fisika", 6, 0).Return(0, nil, errors.New("not found")).Once()
 
 		srv := New(data, v)
 
@@ -231,10 +231,11 @@ func TestProfilBeranda(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	data := mocks.NewGuruData(t)
 	v := validator.New()
+
+	srv := New(data, v)
 	inputData := guru.Core{
 		Nama:        "Putra",
 		Email:       "putra123@gmail.com",
-		Password:    "putra123",
 		Telepon:     "08111",
 		LinkedIn:    "ekacahyaputra",
 		Gelar:       "S.T",
@@ -257,8 +258,6 @@ func TestUpdate(t *testing.T) {
 	t.Run("success update", func(t *testing.T) {
 		data.On("Update", guruID, inputData).Return(nil).Once()
 
-		srv := New(data, v)
-
 		_, token := helper.GenerateJWT(1)
 		pToken := token.(*jwt.Token)
 		pToken.Valid = true
@@ -270,8 +269,6 @@ func TestUpdate(t *testing.T) {
 
 	t.Run("gagal update", func(t *testing.T) {
 		data.On("Update", guruID, inputData).Return(errors.New("data tidak ditemukan")).Once()
-
-		srv := New(data, v)
 
 		_, token := helper.GenerateJWT(1)
 		pToken := token.(*jwt.Token)
@@ -285,9 +282,6 @@ func TestUpdate(t *testing.T) {
 
 	t.Run("gagal update", func(t *testing.T) {
 		data.On("Update", guruID, inputData).Return(errors.New("masalah pada server")).Once()
-
-		srv := New(data, v)
-
 		_, token := helper.GenerateJWT(1)
 		pToken := token.(*jwt.Token)
 		pToken.Valid = true
@@ -299,8 +293,6 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("token tidak valid", func(t *testing.T) {
-		srv := New(data, v)
-
 		_, token := helper.GenerateJWT(1)
 
 		err := srv.Update(token, inputData, avatar, ijazah)

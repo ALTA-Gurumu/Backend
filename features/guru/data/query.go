@@ -42,11 +42,6 @@ func (gq *guruQuery) Register(newGuru guru.Core) (guru.Core, error) {
 // Profile implements guru.GuruData
 func (gq *guruQuery) GetByID(id uint) (interface{}, error) {
 	res := Guru{}
-	// query := "SELECT gurus.id, gurus.nama, gurus.email, gurus.telepon, gurus.linked_in, gurus.gelar, gurus.tentang_saya, gurus.pengalaman, gurus.lokasi_asal, gurus.offline, gurus.online, gurus.tarif, gurus.pelajaran, gurus.pendidikan, gurus.avatar, gurus.ijazah, gurus.latitude, gurus.longitude FROM gurus	WHERE gurus.deleted_at IS NULL AND gurus.id = ?"
-	// tx := gq.db.Raw(query, id).First(&res)
-	// if tx.Error != nil {
-	// 	return nil, tx.Error
-	// }
 	if err := gq.db.Where("id = ?", id).First(&res).Error; err != nil {
 		log.Println("Get by Id query error", err.Error())
 		return guru.Core{}, err
@@ -101,22 +96,6 @@ func (gq *guruQuery) GetByID(id uint) (interface{}, error) {
 
 func (gq *guruQuery) GetBeranda(loc string, subj string) ([]guru.Core, error) {
 
-	// var queryString string
-	// var args []interface{}
-
-	// if loc != "" && subj != "" {
-	// 	queryString = "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, AVG(ulasans.penilaian) AS avg_rating FROM gurus JOIN ulasans ON gurus.id = ulasans.guru_id WHERE gurus.lokasi_asal = ? AND gurus.pelajaran = ? GROUP BY gurus.id"
-	// 	args = []interface{}{loc, subj}
-	// } else if loc != "" {
-	// 	queryString = "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, AVG(ulasans.penilaian) AS avg_rating FROM gurus JOIN ulasans ON gurus.id = ulasans.guru_id WHERE gurus.lokasi_asal = ? GROUP BY gurus.id"
-	// 	args = []interface{}{loc}
-	// } else if subj != "" {
-	// 	queryString = "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, AVG(ulasans.penilaian) AS avg_rating FROM gurus JOIN ulasans ON gurus.id = ulasans.guru_id WHERE gurus.pelajaran = ? GROUP BY gurus.id"
-	// 	args = []interface{}{subj}
-	// } else {
-	// 	queryString = "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, AVG(ulasans.penilaian) AS avg_rating FROM gurus JOIN ulasans ON gurus.id = ulasans.guru_id GROUP BY gurus.id"
-	// 	args = []interface{}{}
-	// }
 	var guruData []GuruRatingBeranda
 	query := "SELECT gurus.id, gurus.nama, gurus.lokasi_asal, gurus.tentang_saya, gurus.pelajaran, gurus.avatar, gurus.tarif, COALESCE(AVG(ulasans.penilaian), 0) AS avg_rating FROM gurus LEFT JOIN ulasans ON gurus.id = ulasans.guru_id WHERE gurus.verifikasi = 1"
 

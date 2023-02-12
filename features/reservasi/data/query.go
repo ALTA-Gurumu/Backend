@@ -8,6 +8,7 @@ import (
 	"log"
 	"time"
 
+	"google.golang.org/api/calendar/v3"
 	"gorm.io/gorm"
 )
 
@@ -57,15 +58,7 @@ func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core) (reserva
 		return reservasi.Core{}, errors.New("gagal menambahkan pembayaran")
 	}
 
-	// tautanGmet, err := helper.Calendar(detailGuru.Email, newReservasi.Tanggal, newReservasi.AlamatSiswa)
-	// if err != nil {
-	// 	fmt.Println("gagal menambahkan ke kalender")
-	// 	return reservasi.Core{}, errors.New("gagal menambahkan ke kalender")
-	// }
-
-	// fmt.Println(tautanGmet)
-	// data.TautanGmet = tautanGmet
-
+	data.StatusPembayaran = midtransResp.TransactionStatus
 	err = rd.db.Create(&data).Error
 	if err != nil {
 		log.Println("add reservasi query error")
@@ -170,10 +163,10 @@ func (rd *reservasiData) UpdateDataByTrfID(kode string, updateRes reservasi.Core
 
 	return nil
 }
-func (tq *reservasiData) NotificationTransactionStatus(kodeTransaksi, statusTransaksi string) error {
-	reservasi := Reservasi{}
+func (rd *reservasiData) NotificationTransactionStatus(kodeTransaksi, statusTransaksi string) error {
+	reservasiData := Reservasi{}
 
-	err := tq.db.First(&reservasi, " kode_transaksi = ?", kodeTransaksi).Error
+	err := rd.db.First(&reservasiData, " kode_transaksi = ?", kodeTransaksi).Error
 	if err != nil {
 		log.Println("transaction not found: ", err.Error())
 		return err
@@ -181,32 +174,102 @@ func (tq *reservasiData) NotificationTransactionStatus(kodeTransaksi, statusTran
 
 	if statusTransaksi == "capture" {
 		if statusTransaksi == "challenge" {
-			reservasi.StatusPembayaran = "challenge"
+			reservasiData.StatusPembayaran = "challenge"
 		} else if statusTransaksi == "accept" {
-			reservasi.StatusPembayaran = "success"
+			reservasiData.StatusPembayaran = "success"
 		}
 	} else if statusTransaksi == "settlement" {
-		reservasi.StatusPembayaran = "success"
+		reservasiData.StatusPembayaran = "success"
 	} else if statusTransaksi == "cancel" || statusTransaksi == "expire" {
-		reservasi.StatusPembayaran = "failure"
+		reservasiData.StatusPembayaran = "failure"
 	} else if statusTransaksi == "pending" {
-		reservasi.StatusPembayaran = "waiting payment"
+		reservasiData.StatusPembayaran = "waiting payment"
 	} else {
-		reservasi.StatusPembayaran = statusTransaksi
+		reservasiData.StatusPembayaran = statusTransaksi
 	}
 
-	rowsAffected := tq.db.Save(&reservasi)
+	rowsAffected := rd.db.Save(&reservasiData)
 	if rowsAffected.RowsAffected <= 0 {
 		log.Println("error update status pembayaran")
 		return errors.New("error update status pembayaran")
 	}
 
-	if reservasi.StatusPembayaran == "success" {
-		reservasi.Status = "ongoing"
-		aff := tq.db.Save(&reservasi)
+	if reservasiData.StatusPembayaran == "success" {
+		reservasiData.Status = "ongoing"
+		aff := rd.db.Save(&reservasiData)
 		if aff.RowsAffected <= 0 {
 			log.Println("error update status reservasi")
 			return errors.New("error update status reservasi")
+		}
+
+		detailGuru := Guru{}
+		err = rd.db.Where("id = ?", reservasiData.GuruID).First(&detailGuru).Error
+		if err != nil {
+			log.Println("Get detail guru query error")
+			return errors.New("error get detail guru query")
+		}
+
+		detailSiswa := Siswa{}
+		err = rd.db.Where("id = ?", reservasiData.SiswaID).First(&detailSiswa).Error
+		if err != nil {
+			log.Println("Get detail siswa query error")
+			return errors.New("error get detail siswa query")
+		}
+
+		detailJadwal := Jadwal{}
+		err = rd.db.Where("id = ?", reservasiData.JadwalID).First(&detailJadwal).Error
+		if err != nil {
+			log.Println("Get detail jadwal query error")
+			return errors.New("error get jadwal guru query")
+		}
+
+		layout := "2006-01-02 15:04:05"
+		value := detailJadwal.Tanggal + " " + detailJadwal.Jam + ":00"
+		dateTime, err := time.Parse(layout, value)
+		if err != nil {
+			return errors.New("failed convert datetime")
+		}
+		fmt.Println(detailGuru.Email, detailSiswa.Email)
+		tautanGmeet := helper.CreateEvent(
+			&calendar.Event{
+				Summary:     "Gurumu - Kelas " + detailGuru.Pelajaran + "anda",
+				Location:    "",
+				Description: "Kelas akan berlangsung pada " + detailJadwal.Tanggal + " pada " + detailJadwal.Jam + ". Harap datang tepat waktu dan pastikan untuk bergabung dengan panggilan video tepat waktu.",
+				ConferenceData: &calendar.ConferenceData{
+					CreateRequest: &calendar.CreateConferenceRequest{
+						RequestId: "sfsfs",
+						ConferenceSolutionKey: &calendar.ConferenceSolutionKey{
+							Type: "hangoutsMeet"},
+						Status: &calendar.ConferenceRequestStatus{
+							StatusCode: "success"},
+					}},
+
+				Start: &calendar.EventDateTime{
+					DateTime: dateTime.Format(time.RFC3339),
+					TimeZone: "Asia/Jakarta",
+				},
+				End: &calendar.EventDateTime{
+					DateTime: dateTime.Add(time.Hour * 1).Format(time.RFC3339),
+					TimeZone: "Asia/Jakarta",
+				},
+
+				Attendees: []*calendar.EventAttendee{
+					{Email: detailGuru.Email},
+					{Email: detailSiswa.Email},
+				},
+				Reminders: &calendar.EventReminders{
+					UseDefault: true,
+					// Overrides: []*calendar.EventReminder{
+					// 	{Method: "email", Minutes: 10},
+					// },
+				},
+			})
+
+		reservasiData.TautanGmet = tautanGmeet
+		aff = rd.db.Save(&reservasiData)
+		if aff.RowsAffected <= 0 {
+			log.Println("error update tautan gmeet reservasi")
+			return errors.New("error update tautan gmeet reservasi")
 		}
 	}
 	return nil

@@ -1,13 +1,13 @@
 package handler
 
 import (
+	"Gurumu/config"
 	"Gurumu/features/reservasi"
 	"Gurumu/helper"
 	"context"
 	"encoding/json"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2/google"
@@ -43,20 +43,23 @@ func (rh *reservasiHandler) Add() echo.HandlerFunc {
 
 func (rh *reservasiHandler) Callback() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		b, _ := os.ReadFile("credentials.json")
-		config, err := google.ConfigFromJSON(b, calendar.CalendarEventsScope)
+		client_id := config.GOOGLE_OAUTH_CLIENT_ID1
+		project := config.GOOGLE_PROJECT_ID1
+		secret := config.GOOGLE_OAUTH_CLIENT_SECRET1
+
+		b := `{"web":{"client_id":"` + client_id + `","project_id":"` + project + `","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"` + secret + `","redirect_uris":["http://localhost:8000/callback"]}}`
+		bt := []byte(b)
+		config, err := google.ConfigFromJSON(bt, calendar.CalendarEventsScope)
 		if err != nil {
 			log.Fatalf("Unable to parse client secret file to config: %v", err)
 		}
 
 		code := c.QueryParam("code")
-		// state := c.Param("state")
 		token, err := config.Exchange(context.Background(), code)
 		if err != nil {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
-
-		helper.SaveToken("features/reservasi/credentials/token.json", token)
+		helper.SaveToken("helper/temporary/token.json", token)
 
 		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses kembalikan token"))
 	}
@@ -77,20 +80,6 @@ func (rh *reservasiHandler) Mysession() echo.HandlerFunc {
 			return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "sukses menampilkan sesi siswa", ToListSesikuSiswaResponse(res)))
 		}
 		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "sukses menampilkan sesi guru", ToListSesikuGuruResponse(res)))
-	}
-}
-
-// CallbackMid implements reservasi.ReservasiHandler
-func (rh *reservasiHandler) CallbackMid() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		str := c.Param("kode")
-		err := rh.srv.CallbackMid(str)
-
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, "format inputan salah")
-		}
-
-		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses deliver status bayar"))
 	}
 }
 

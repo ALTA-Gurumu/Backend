@@ -38,6 +38,17 @@ type Guru struct {
 	Avatar    string
 	Role      string
 }
+
+type Siswa struct {
+	gorm.Model
+	Email    string
+	Password string
+	Nama     string
+	Telepon  string
+	Alamat   string
+	Avatar   string
+	Role     string
+}
 type Jadwal struct {
 	gorm.Model
 	GuruID  uint

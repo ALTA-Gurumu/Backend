@@ -81,3 +81,18 @@ func (rs *reservasiService) NotificationTransactionStatus(kodeTransaksi string) 
 	}
 	return nil
 }
+
+func (rs *reservasiService) UpdateStatus(token interface{}, reservasiID uint) error {
+
+	userID := helper.ExtractToken(token)
+	if userID <= 0 {
+		return fmt.Errorf("token tidak valid")
+	}
+
+	err := rs.qry.UpdateStatus(uint(userID), reservasiID)
+	if err != nil {
+		log.Println("error update reservasi status in service: ", err.Error())
+		return errors.New("error update reservasi status service")
+	}
+	return nil
+}

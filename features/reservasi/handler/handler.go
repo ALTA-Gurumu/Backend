@@ -104,3 +104,21 @@ func (rh *reservasiHandler) NotificationTransactionStatus() echo.HandlerFunc {
 		return c.JSON(c.Response().Write([]byte("notifikasi midtrans sukses")))
 	}
 }
+
+func (rh *reservasiHandler) UpdateStatus() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		token := c.Get("user")
+		reservasiID := UpadateStatusRequest{}
+
+		if err := c.Bind(&reservasiID); err != nil {
+			return c.JSON(http.StatusBadRequest, "format inputan salah")
+		}
+
+		err := rh.srv.UpdateStatus(token, reservasiID.ReservasiID)
+
+		if err != nil {
+			return c.JSON(helper.PrintErrorResponse(err.Error()))
+		}
+		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "status berhasil diupdate"))
+	}
+}

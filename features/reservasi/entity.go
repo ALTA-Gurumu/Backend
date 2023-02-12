@@ -35,12 +35,14 @@ type ReservasiHandler interface {
 	Mysession() echo.HandlerFunc
 	NotificationTransactionStatus() echo.HandlerFunc
 	Callback() echo.HandlerFunc
+	UpdateStatus() echo.HandlerFunc
 }
 
 type ReservasiService interface {
 	Add(token interface{}, newReservasi Core) (Core, error)
 	Mysession(token interface{}, role, reservasiStatus string) ([]Core, error)
 	NotificationTransactionStatus(kodeTransaksi string) error
+	UpdateStatus(token interface{}, reservasiID uint) error
 }
 
 type ReservasiData interface {
@@ -48,4 +50,5 @@ type ReservasiData interface {
 	Mysession(userID uint, role, reservasiStatus string) ([]Core, error)
 	UpdateDataByTrfID(kode string, updateRes Core) error
 	NotificationTransactionStatus(kodeTransaksi, transStatus string) error
+	UpdateStatus(userID, reservasiID uint) error
 }

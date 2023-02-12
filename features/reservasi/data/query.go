@@ -274,3 +274,22 @@ func (rd *reservasiData) NotificationTransactionStatus(kodeTransaksi, statusTran
 	}
 	return nil
 }
+
+func (rd *reservasiData) UpdateStatus(userID uint, reservasiID uint) error {
+	reservasiData := Reservasi{}
+
+	err := rd.db.First(&reservasiData, " id = ?", reservasiID).Error
+	if err != nil {
+		log.Println("resevasi not found: ", err.Error())
+		return err
+	}
+
+	reservasiData.Status = "selesai"
+	aff := rd.db.Save(&reservasiData)
+	if aff.RowsAffected <= 0 {
+		log.Println("error update status reservasi")
+		return errors.New("error status  reservasi")
+	}
+	return nil
+
+}

@@ -10,7 +10,7 @@ servers:
   - description: Gurumu service API
     url: https://devmyproject.site
 tags:
-  - name: Autentifikasi
+  - name: Autentikasi
   - name: Guru
   - name: Siswa
   - name: Reservasi
@@ -19,7 +19,7 @@ paths:
   /login:
     post:
       tags:
-        - Autentifikasi
+        - Autentikasi
       summary: untuk login ke akun
       requestBody:
         content:
@@ -37,28 +37,34 @@ paths:
         '200':
           description: login sukses
           content:
-            application.json:
+            application/json:
               schema:
                 type: object
                 properties:
                   data:
                     type: object
                     properties:
-                          nama:
-                            type: string
-                          email:
-                            type: string 
-                          role:
-                            type: string
-                          token:
-                            type: string
+                      id:
+                        type: integer
+                      nama:
+                        type: string
+                      email:
+                        type: string 
+                      role:
+                        type: string
+                      verifikasi:
+                        type: boolean
+                      token:
+                        type: string
                   message:
                     type: string
                 example:
                   data:
+                    id: 1
                     nama: Namaku
                     email: Emailku@gmail.com
                     role: guru
+                    verifikasi: false
                     token: 12344567890qwertyuiop
                   message: login sukses
                       
@@ -133,18 +139,36 @@ paths:
                         type: string
                       email:
                         type: string
-                      alamat:
+                      password:
                         type: string
-                      telefon:
-                        type: integer
-                      deskripsi:
-                        type: integer
-                      ijazah:
+                      telepon:
                         type: string
+                      linkedin:
+                        type: string
+                      gelar:
+                        type: string
+                      tentang_saya:
+                        type: string  
+                      pengalaman:
+                        type: string
+                      lokasi_asal:
+                        type: string
+                      metode_belajar:
+                        type: string
+                      tarif:
+                        type: integer
                       pelajaran:
+                        type: string
+                      pendidikan:
                         type: string
                       avatar:
                         type: string
+                      ijazah:
+                        type: string
+                      latitude:
+                        type: number
+                      longitude:
+                        type: number
       responses:
         '200':
           description: sukses mengganti profil guru
@@ -184,6 +208,22 @@ paths:
             - Guru
         summary: untuk menampilkan daftar profil guru di beranda
         description: untuk menampilkan daftar profil guru di beranda
+        parameters:
+        - in: query
+          name: lokasi
+          required: false
+          schema: 
+            type: string
+        - in: query
+          name: pelajaran
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+              type: integer
         responses:
           '200':
             description: sukses menampilkan daftar profil guru
@@ -192,6 +232,19 @@ paths:
                 schema:
                   type: object
                   properties:
+                    pagination:
+                      type: object
+                      properties:
+                          page:
+                              type: integer
+                          limit:
+                              type: integer
+                          offset:
+                              type: integer
+                          total_record:
+                              type: integer
+                          total_page:
+                              type: integer
                     data:
                       type: array
                       items:
@@ -211,7 +264,16 @@ paths:
                               type: string
                             avatar:
                               type: string 
+                            tarif:  
+                              type: integer
                 example:
+                    pagination:
+                        halaman: 1
+                        limit: 10
+                        offset: 0
+                        total_record: 40
+                        total_page: 4
+  
                     data:
                       - guru_id: 2
                         nama: Anika
@@ -219,7 +281,8 @@ paths:
                         penilaian: 4.8
                         judul: Hi, the name is Bond. Anika Bond. I teach English for everyone
                         pelajaran: Bahasa Inggris
-                        avatar: anicantik.jpg
+                        avatar: anicantik.
+                        tarif: 200000
                       - guru_id: 2
                         nama: Greta
                         alamat: jl. gagak
@@ -227,6 +290,7 @@ paths:
                         judul: I teach math for everyone
                         pelajaran: Matematika
                         avatar: greta.jpg
+                        tarif: 500000
                     message:
                       example: sukses menampilkan daftar profil guru
           '400':
@@ -238,17 +302,9 @@ paths:
     get:
       tags:
         - Reservasi
-      summary: untuk menampilkan semua riwayat sesi 
-      description: untuk menampilkan semua riwayat sesi
+      summary: untuk menampilkan semua riwayat sesi (2 pov, guru dan siswa)
+      description: untuk menampilkan semua riwayat sesi. Jika guru maka menampilkan list siswa (tanpa siswa_id) dan jika siswa maka tampilkan list guru (dengan guru_id). Menggunakan query param role dan status.
       parameters:
-        - in: query
-          name: role
-          schema: 
-            type: string
-        - in: query
-          name: id
-          schema:
-            type: integer
         - in: query
           name: status
           schema:
@@ -257,7 +313,7 @@ paths:
         - jwt_auth: []
       responses:
         '200':
-          description: sukses menampilkan semua sesi 
+          description: sukses menampilkan semua sesi (pov siswa)
           content:
             application/json:
               schema:
@@ -267,30 +323,26 @@ paths:
                     type: array
                     items:
                       type: object
-                      properties:
-                        reservasi_id:
-                          type: integer
-                        nama_murid:
-                          type: string
-                        pelajaran:
-                          type: string
-                        tanggal:
-                          type: string
-                        avatar_murid:
-                          type: string 
               example:
                   data:
-                    - sesi_id: 1
-                      nama_murid: Ani
+                    - reservasi_id: 1
+                      guru_id: 2
+                      nama_guru: Ani
                       pelajaran: Bahasa Inggris
                       tanggal: 12-01-2023
-                      avatar_murid: anicantik.jpg
-                    - sesi_id: 3
-                      nama_murid: Samsul
+                      jam: 09:30 PM
+                      tautan_gmet : https://meet.google.com/zka-jrhg-kho
+                      status: selesai
+                    - reservasi_id: 3
+                      guru_id: 5
+                      nama_guru: Samsul
                       pelajaran: Bahasa Korea
                       tanggal: 12-02-2023
-                      avatar_murid: samsulronaldo.jpg
-                  message: sukses menampilkan menampilkan semua sesi 
+                      tautan_gmet: https://meet.google.com/zka-jrhg-kho
+                      jam: 10:00 PM
+                      
+                      status: selesai
+                  message: sukses menampilkan menampilkan semua sesi (pov siswa)
         '400':
           $ref: '#/components/responses/Response400'
         '500':
@@ -330,9 +382,33 @@ paths:
                       alamat:
                           type: string
                           example: "Jl. ku tak panjang"
-                      elefon:
+                      telefon:
                           type: string
                           example: 081332494705
+                      jadwal:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              jadwal_id:
+                                type: integer
+                              tanggal:
+                                type: string
+                                format: date
+                              jam: 
+                                type: string
+                              status:
+                                type: string
+                          example:
+                            - jadwal_id: 1
+                              tanggal: "05-02-2023"
+                              jam: "09:30 PM"
+                              status: Tersedia
+                            - jadwal_id: 2
+                              tanggal: "05-02-2023"
+                              jam: "10:30 PM"
+                              status: Tersedia
+                        
                       deskripsi:
                           type: string
                           example: hey, its me your future teacher.
@@ -369,12 +445,24 @@ paths:
                 data:
                   type: object
                   properties:
+                    guru:
+                      type: integer
+                    pesan:
+                      type: string
+                    metode_belajar:
+                      type: string
                     tanggal:
                       type: string
                       format: date
                     jam:
                       type: string
                       example: "01:00 PM"
+                    alamat_siswa:
+                      type: string
+                    telepon_siswa:
+                      type: string
+                    metode_pembayaran:
+                      type: string
       responses:
         '200':
           description: sukses menambahkan jadwal guru
@@ -592,9 +680,9 @@ paths:
                   type: string
                 jam:
                   type: string
-                alamat:
+                alamat_siswa:
                   type: string
-                telepon:
+                telepon_siswa:
                   type: string
                 metode_pembayaran:
                   type: string
@@ -606,12 +694,12 @@ paths:
                     - qris
             example:
               guru_id: 11
-              pesen: Halo saya ingin belajar matematika
+              pesan: Halo saya ingin belajar matematika
               metode_belajar: online
-              tanggal: Senin, 20 januari 2023
-              jam: 09:00 PM
-              alamat: Sukabumi, Jawa Barat
-              telepon: "081245674452"
+              tanggal: 20-03-2023
+              jam: 09:00
+              alamat_siswa: Sukabumi, Jawa Barat
+              telepon_siswa: "081245674452"
               metode_pembayaran: transfer_va_bca
       responses:
         '201':
@@ -650,6 +738,40 @@ paths:
           $ref: '#/components/responses/Response400'
         '500':
           $ref: '#/components/responses/Response500'    
+    put:
+      tags:
+      - "Reservasi"
+      description: untuk update status reservasi guru
+      summary: reservasi guru
+      security:
+        - jwt_auth: []
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reservasi_id:
+                  type: integer
+            example:
+              reservasi_id: 11
+      responses:
+        '201':
+          description: sukses reservasi guru
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                  
+                message: sukses update status reservasi guru
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'   
   /ulasan:
     get:
       tags:
@@ -673,7 +795,7 @@ paths:
                               type: integer
                             nama_siswa:
                               type: string
-                            rating:
+                            penilaian:
                               type: integer
                             ulasan:
                               type: string
@@ -718,12 +840,12 @@ paths:
                   schema:
                       type: object
                       properties:
-                          rating:
+                          penilaian:
                               type: integer
                           ulasan:
                               type: string
                   example:
-                      rating: 4
+                      penilaian: 4
                       ulasan: bagus gurunya
       responses:
         '201':  
@@ -769,7 +891,7 @@ paths:
                             type: integer
                           nama_siswa:
                             type: string
-                          rating:
+                          penilaian:
                             type: integer
                           ulasan:
                             type: string

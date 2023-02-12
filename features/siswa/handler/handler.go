@@ -26,7 +26,9 @@ func (sc *siswaControl) Register() echo.HandlerFunc {
 		input := RegisterRequest{}
 		// input.Role := "siswa"
 		if err := c.Bind(&input); err != nil {
-			return c.JSON(http.StatusBadRequest, "format inputan salah")
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "format inputan salah",
+			})
 		}
 		res, err := sc.srv.Register(*ToCore(input))
 		if err != nil {

@@ -125,7 +125,7 @@ func (guc *guruUseCase) Update(token interface{}, updateData guru.Core, avatar *
 
 	structCheck := helper.IsStructEmpty(updateData)
 	if !structCheck {
-		return fmt.Errorf("updateData tidak bisa kosong")
+		return fmt.Errorf("updateData masa kosong sih")
 	}
 
 	if err := guc.vld.Struct(&updateData); err != nil {

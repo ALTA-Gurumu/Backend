@@ -4,6 +4,7 @@ import (
 	"Gurumu/features/reservasi"
 	"Gurumu/helper"
 	"errors"
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -58,6 +59,18 @@ func (rs *reservasiService) Add(token interface{}, newReservasi reservasi.Core) 
 
 func (rs *reservasiService) Mysession(token interface{}, role, reservasiStatus string) ([]reservasi.Core, error) {
 	userID := helper.ExtractToken(token)
+	if userID <= 0 {
+		return []reservasi.Core{}, fmt.Errorf("token tidak valid")
+	}
+
+	if role != "guru" && role != "siswa" {
+		return []reservasi.Core{}, fmt.Errorf("role/status tidak valid")
+	}
+
+	if reservasiStatus != "selesai" && reservasiStatus != "ongoing" && reservasiStatus != "" {
+		return []reservasi.Core{}, fmt.Errorf("role/status tidak valid")
+	}
+
 	res, err := rs.qry.Mysession(uint(userID), role, reservasiStatus)
 	if err != nil {
 		msg := ""

@@ -35,8 +35,10 @@ func PrintErrorResponse(msg string) (int, interface{}) {
 		code = http.StatusBadRequest
 	case strings.Contains(msg, "kurang"):
 		code = http.StatusBadRequest
-	case strings.Contains(msg, "kosong"):
+	case strings.Contains(msg, "role/status tidak valid"):
 		code = http.StatusBadRequest
+	case strings.Contains(msg, "tidak ditemukan"):
+		code = http.StatusNotFound
 	case strings.Contains(msg, "not found"):
 		code = http.StatusNotFound
 	case strings.Contains(msg, "conflict"):

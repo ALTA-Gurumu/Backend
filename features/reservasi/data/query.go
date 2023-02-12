@@ -96,17 +96,26 @@ func (rd *reservasiData) Mysession(userID uint, role, reservasiStatus string) ([
 		switch reservasiStatus {
 		case "selesai":
 			query += "AND r.status = 'selesai'"
-			err := rd.db.Raw(query, userID).Find(&sesiSiswa).Error
-			if err != nil {
-				return []reservasi.Core{}, err
+			result := rd.db.Raw(query, userID).Find(&sesiSiswa)
+			if result.Error != nil {
+				return []reservasi.Core{}, result.Error
+			}
+
+			if len(sesiSiswa) <= 0 {
+				return []reservasi.Core{}, fmt.Errorf("data not found")
 			}
 			return ToListSesikuSiswa(sesiSiswa), nil
 		case "ongoing":
 			query += "AND r.status = 'ongoing'"
-			err := rd.db.Raw(query, userID).Find(&sesiSiswa).Error
-			if err != nil {
-				return []reservasi.Core{}, err
+			result := rd.db.Raw(query, userID).Find(&sesiSiswa)
+			if result.Error != nil {
+				return []reservasi.Core{}, result.Error
 			}
+
+			if len(sesiSiswa) <= 0 {
+				return []reservasi.Core{}, fmt.Errorf("not found")
+			}
+
 			return ToListSesikuSiswa(sesiSiswa), nil
 		default:
 			return []reservasi.Core{}, nil
@@ -115,18 +124,28 @@ func (rd *reservasiData) Mysession(userID uint, role, reservasiStatus string) ([
 		query = "SELECT r.id, s.nama AS nama_siswa, j.tanggal, j.jam , r.tautan_gmet, r.status FROM reservasis r JOIN siswas s ON r.siswa_id = s.id JOIN jadwals j ON r.jadwal_id = j.id WHERE r.guru_id = ? "
 
 		switch reservasiStatus {
+
 		case "selesai":
 			query += "AND r.status = 'selesai'"
-			err := rd.db.Raw(query, userID).Find(&sesiGuru).Error
-			if err != nil {
-				return []reservasi.Core{}, err
+			result := rd.db.Raw(query, userID).Find(&sesiGuru)
+			if result.Error != nil {
+				return []reservasi.Core{}, result.Error
+			}
+			fmt.Println("asdlfadslf", sesiGuru)
+			if len(sesiGuru) <= 0 {
+				return []reservasi.Core{}, fmt.Errorf("not found")
 			}
 			return ToListSesikuGuru(sesiGuru), nil
+
 		case "ongoing":
 			query += "AND r.status = 'ongoing'"
-			err := rd.db.Raw(query, userID).Find(&sesiGuru).Error
-			if err != nil {
-				return []reservasi.Core{}, err
+			result := rd.db.Raw(query, userID).Find(&sesiGuru)
+			if result.Error != nil {
+				return []reservasi.Core{}, result.Error
+			}
+
+			if len(sesiGuru) <= 0 {
+				return []reservasi.Core{}, fmt.Errorf("not found")
 			}
 			return ToListSesikuGuru(sesiGuru), nil
 		default:

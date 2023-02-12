@@ -57,6 +57,25 @@ func TestRegister(t *testing.T) {
 		assert.Equal(t, res.Nama, "")
 		data.AssertExpectations(t)
 	})
+
+	t.Run("invalid input email", func(t *testing.T) {
+		inputData.Email = "putra123gmail.com"
+		srv := New(data, v)
+		res, err := srv.Register(inputData)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "email")
+		assert.Equal(t, res.Nama, "")
+		data.AssertExpectations(t)
+	})
+
+	t.Run("pwd minimal 6 character", func(t *testing.T) {
+		inputData := guru.Core{Nama: "auz", Email: "audzz@gmail.com", Password: "1234566", Role: "guru"}
+		srv := New(data, v)
+		res, err := srv.Register(inputData)
+		assert.NotNil(t, err)
+		assert.Equal(t, uint(0), res.ID)
+		assert.ErrorContains(t, err, "kurang")
+	})
 }
 
 func TestDelete(t *testing.T) {
@@ -280,7 +299,7 @@ func TestUpdate(t *testing.T) {
 		data.AssertExpectations(t)
 	})
 
-	t.Run("gagal update", func(t *testing.T) {
+	t.Run("internal server error", func(t *testing.T) {
 		data.On("Update", guruID, inputData).Return(errors.New("masalah pada server")).Once()
 		_, token := helper.GenerateJWT(1)
 		pToken := token.(*jwt.Token)
@@ -299,4 +318,28 @@ func TestUpdate(t *testing.T) {
 		assert.NotNil(t, err)
 		assert.ErrorContains(t, err, "tidak valid")
 	})
+	t.Run("avatar and ijazah not provided", func(t *testing.T) {
+		data.On("Update", guruID, inputData).Return(nil).Once()
+
+		_, token := helper.GenerateJWT(1)
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+
+		var avatar, ijazah *multipart.FileHeader
+		err := srv.Update(pToken, inputData, avatar, ijazah)
+		assert.Nil(t, err)
+		data.AssertExpectations(t)
+	})
+
+	t.Run("input data kosong", func(t *testing.T) {
+		var avatar, ijazah *multipart.FileHeader
+		inputDatas := guru.Core{}
+		_, token := helper.GenerateJWT(1)
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+		err := srv.Update(pToken, inputDatas, avatar, ijazah)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "kosong")
+	})
+
 }

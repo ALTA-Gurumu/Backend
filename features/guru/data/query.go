@@ -26,14 +26,14 @@ func (gq *guruQuery) Register(newGuru guru.Core) (guru.Core, error) {
 	gq.db.Raw("SELECT COUNT(*) FROM gurus WHERE deleted_at IS NULL AND email = ?", newGuru.Email).Scan(&existed)
 	if existed >= 1 {
 		log.Println("guru account already exist (duplicated)")
-		return guru.Core{}, errors.New("guru account already exist (duplicated)")
+		return guru.Core{}, errors.New("guru account duplicated")
 	}
 	newGuru.Role = "guru"
 	newGuru.Verifikasi = false
 	cnv := CoreToData(newGuru)
 	if err := gq.db.Create(&cnv).Error; err != nil {
 		log.Println("register query error", err.Error())
-		return guru.Core{}, err
+		return guru.Core{}, errors.New("server error")
 	}
 	newGuru.ID = cnv.ID
 

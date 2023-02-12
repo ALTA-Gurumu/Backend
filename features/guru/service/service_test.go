@@ -17,6 +17,7 @@ import (
 func TestRegister(t *testing.T) {
 	data := mocks.NewGuruData(t)
 	v := validator.New()
+	// up := mocks.NewUploader(t)
 	inputData := guru.Core{
 		Nama:     "Putraa",
 		Email:    "putra123@gmail.com",
@@ -34,6 +35,7 @@ func TestRegister(t *testing.T) {
 		srv := New(data, v)
 		res, err := srv.Register(inputData)
 		assert.Nil(t, err)
+		assert.Equal(t, expectedData.Email, res.Email)
 		assert.Equal(t, expectedData.Nama, res.Nama)
 		data.AssertExpectations(t)
 	})
@@ -58,6 +60,16 @@ func TestRegister(t *testing.T) {
 		data.AssertExpectations(t)
 	})
 
+	t.Run("bcrypt error", func(t *testing.T) {
+		data.On("Register", mock.Anything).Return(guru.Core{}, errors.New("password processed error")).Once()
+		srv := New(data, v)
+		res, err := srv.Register(inputData)
+		assert.NotNil(t, err)
+		assert.Equal(t, uint(0), res.ID)
+		assert.ErrorContains(t, err, "server")
+		data.AssertExpectations(t)
+	})
+
 	t.Run("invalid input email", func(t *testing.T) {
 		inputData.Email = "putra123gmail.com"
 		srv := New(data, v)
@@ -69,12 +81,34 @@ func TestRegister(t *testing.T) {
 	})
 
 	t.Run("pwd minimal 6 character", func(t *testing.T) {
-		inputData := guru.Core{Nama: "auz", Email: "audzz@gmail.com", Password: "1234566", Role: "guru"}
+		inputData := guru.Core{Nama: "auz", Email: "audzz@gmail.com", Password: "123456", Role: "guru"}
 		srv := New(data, v)
 		res, err := srv.Register(inputData)
 		assert.NotNil(t, err)
-		assert.Equal(t, uint(0), res.ID)
 		assert.ErrorContains(t, err, "kurang")
+		assert.Equal(t, res.Nama, "")
+		data.AssertExpectations(t)
+	})
+
+	t.Run("invalid name", func(t *testing.T) {
+		inputData.Nama = "auz"
+		inputData.Email = "auzaa@gmail.com"
+		srv := New(data, v)
+		res, err := srv.Register(inputData)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "kurang")
+		assert.Equal(t, res.Nama, "")
+		data.AssertExpectations(t)
+	})
+
+	t.Run("invalid input password", func(t *testing.T) {
+		inputData.Password = ""
+		srv := New(data, v)
+		res, err := srv.Register(inputData)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "kosong")
+		assert.Equal(t, res.Nama, "")
+		data.AssertExpectations(t)
 	})
 }
 
@@ -250,7 +284,6 @@ func TestProfilBeranda(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	data := mocks.NewGuruData(t)
 	v := validator.New()
-
 	srv := New(data, v)
 	inputData := guru.Core{
 		Nama:        "Putra",
@@ -265,23 +298,23 @@ func TestUpdate(t *testing.T) {
 		Tarif:       75000,
 		Pelajaran:   "Fisika",
 		Pendidikan:  "Teknik Geofisika",
-		Avatar:      "try123ok.s3.aws.amazon.com/avatar.jpg",
-		Ijazah:      "try123ok.s3.aws.amazon.com/certificate.jpg",
+		Avatar:      "",
+		Ijazah:      "",
 		Latitude:    -7.12334,
 		Longitude:   120.9384,
 	}
-
 	guruID := uint(1)
 
 	var avatar, ijazah *multipart.FileHeader
 	t.Run("success update", func(t *testing.T) {
-		data.On("Update", guruID, inputData).Return(nil).Once()
+
+		data.On("Update", uint(1), inputData).Return(nil).Once()
 
 		_, token := helper.GenerateJWT(1)
 		pToken := token.(*jwt.Token)
 		pToken.Valid = true
 
-		err := srv.Update(pToken, inputData, avatar, ijazah)
+		err := srv.Update(pToken, inputData, &multipart.FileHeader{Filename: "avatar.jpg"}, &multipart.FileHeader{Filename: "certificate.jpg"})
 		assert.Nil(t, err)
 		data.AssertExpectations(t)
 	})

@@ -44,22 +44,6 @@ func (_m *ReservasiHandler) Callback() echo.HandlerFunc {
 	return r0
 }
 
-// CallbackMid provides a mock function with given fields:
-func (_m *ReservasiHandler) CallbackMid() echo.HandlerFunc {
-	ret := _m.Called()
-
-	var r0 echo.HandlerFunc
-	if rf, ok := ret.Get(0).(func() echo.HandlerFunc); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(echo.HandlerFunc)
-		}
-	}
-
-	return r0
-}
-
 // Mysession provides a mock function with given fields:
 func (_m *ReservasiHandler) Mysession() echo.HandlerFunc {
 	ret := _m.Called()

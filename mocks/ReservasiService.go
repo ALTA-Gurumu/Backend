@@ -34,20 +34,6 @@ func (_m *ReservasiService) Add(token interface{}, newReservasi reservasi.Core) 
 	return r0, r1
 }
 
-// CallbackMid provides a mock function with given fields: kode
-func (_m *ReservasiService) CallbackMid(kode string) error {
-	ret := _m.Called(kode)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(kode)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // Mysession provides a mock function with given fields: token, role, reservasiStatus
 func (_m *ReservasiService) Mysession(token interface{}, role string, reservasiStatus string) ([]reservasi.Core, error) {
 	ret := _m.Called(token, role, reservasiStatus)

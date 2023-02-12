@@ -22,6 +22,23 @@ func ValidateRegisterRequest(nama string, email string, password string) error {
 	return nil
 }
 
+func ValidatitonReservasiRequest(metodeBelajar, tanggal, jam, metodePembayaran string) error {
+	if metodeBelajar == "" {
+		return errors.New("metode belajar tidak boleh kosomg")
+	}
+	if tanggal == "" {
+		return errors.New("tanggal tidak boleh kosomg")
+	}
+	if jam == "" {
+		return errors.New("jam tidak boleh kosomg")
+	}
+	if metodePembayaran == "" {
+		return errors.New("mode pembayaran tidak boleh kosomg")
+	}
+	return nil
+
+}
+
 func IsGoodName(nama string) bool {
 	return len(nama) >= 6
 }

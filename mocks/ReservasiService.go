@@ -71,6 +71,20 @@ func (_m *ReservasiService) NotificationTransactionStatus(kodeTransaksi string) 
 	return r0
 }
 
+// UpdateStatus provides a mock function with given fields: token, reservasiID
+func (_m *ReservasiService) UpdateStatus(token interface{}, reservasiID uint) error {
+	ret := _m.Called(token, reservasiID)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(interface{}, uint) error); ok {
+		r0 = rf(token, reservasiID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 type mockConstructorTestingTNewReservasiService interface {
 	mock.TestingT
 	Cleanup(func())

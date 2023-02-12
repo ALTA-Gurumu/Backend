@@ -85,6 +85,20 @@ func (_m *ReservasiData) UpdateDataByTrfID(kode string, updateRes reservasi.Core
 	return r0
 }
 
+// UpdateStatus provides a mock function with given fields: userID, reservasiID
+func (_m *ReservasiData) UpdateStatus(userID uint, reservasiID uint) error {
+	ret := _m.Called(userID, reservasiID)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(uint, uint) error); ok {
+		r0 = rf(userID, reservasiID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 type mockConstructorTestingTNewReservasiData interface {
 	mock.TestingT
 	Cleanup(func())

@@ -94,6 +94,7 @@ func main() {
 	e.GET("/ulasan/:guruid", ulasanHdl.GetById())
 
 	e.POST("/reservasi", reservasiHdl.Add(), middleware.JWT([]byte(config.JWT_KEY)))
+	e.PUT("/reservasi", reservasiHdl.UpdateStatus(), middleware.JWT([]byte(config.JWT_KEY)))
 	e.GET("/sesiku", reservasiHdl.Mysession(), middleware.JWT([]byte(config.JWT_KEY)))
 	e.GET("/callback", reservasiHdl.Callback())
 	e.POST("/paymentnotifications", reservasiHdl.NotificationTransactionStatus())

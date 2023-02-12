@@ -15,6 +15,10 @@ type AddReservasiRequest struct {
 	MetodePembayaran string `json:"metode_pembayaran" form:"metode_pembayaran"`
 }
 
+type UpadateStatusRequest struct {
+	ReservasiID uint `json:"reservasi_id" form:"reservasi_id"`
+}
+
 func ToCore(data AddReservasiRequest) *reservasi.Core {
 	return &reservasi.Core{
 		GuruID:           data.GuruID,
@@ -25,5 +29,10 @@ func ToCore(data AddReservasiRequest) *reservasi.Core {
 		AlamatSiswa:      data.AlamatSiswa,
 		TeleponSiswa:     data.TeleponSiswa,
 		MetodePembayaran: data.MetodePembayaran,
+	}
+}
+func ToCoreUpdate(data UpadateStatusRequest) *reservasi.Core {
+	return &reservasi.Core{
+		ID: data.ReservasiID,
 	}
 }

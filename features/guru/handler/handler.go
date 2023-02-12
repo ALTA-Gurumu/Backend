@@ -45,6 +45,12 @@ func (gc *guruControl) Profile() echo.HandlerFunc {
 			})
 		}
 
+		if guruID <= 0 {
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"message": "id guru salah",
+			})
+		}
+
 		res, err := gc.srv.Profile(uint(guruID))
 		if err != nil {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))

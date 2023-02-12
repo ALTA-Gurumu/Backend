@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
@@ -33,11 +34,25 @@ func (uc *ulasanControl) Add() echo.HandlerFunc {
 			})
 		}
 
+		if cnv < 1 {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "ID guru harus lebih besar dari 0, mana ada ID minus",
+			})
+		}
+
 		input := UlasanRegisterRequest{}
 
 		if err := c.Bind(&input); err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
 				"message": "format inputan salah",
+			})
+		}
+
+		validate := validator.New()
+		err = validate.Struct(input)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "input tidak valid",
 			})
 		}
 
@@ -72,6 +87,11 @@ func (uc *ulasanControl) GetById() echo.HandlerFunc {
 			})
 		}
 
+		if cnv < 1 {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "ID guru harus lebih besar dari 1, mana ada ID minus",
+			})
+		}
 		res, err := uc.srv.GetById(uint(cnv))
 		if err != nil {
 			log.Println("handler error")

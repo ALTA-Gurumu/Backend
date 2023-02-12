@@ -32,16 +32,14 @@ type Core struct {
 
 type ReservasiHandler interface {
 	Add() echo.HandlerFunc
-	Callback() echo.HandlerFunc
 	Mysession() echo.HandlerFunc
-	CallbackMid() echo.HandlerFunc
 	NotificationTransactionStatus() echo.HandlerFunc
+	Callback() echo.HandlerFunc
 }
 
 type ReservasiService interface {
 	Add(token interface{}, newReservasi Core) (Core, error)
 	Mysession(token interface{}, role, reservasiStatus string) ([]Core, error)
-	CallbackMid(kode string) error
 	NotificationTransactionStatus(kodeTransaksi string) error
 }
 

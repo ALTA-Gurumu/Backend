@@ -12,22 +12,28 @@ import (
 )
 
 var (
-	JWT_KEY           string = ""
-	KEYID             string = ""
-	ACCESSKEY         string = ""
-	MIDTRANSSERVERKEY string = ""
+	JWT_KEY                     string = ""
+	KEYID                       string = ""
+	ACCESSKEY                   string = ""
+	MIDTRANSSERVERKEY           string = ""
+	GOOGLE_OAUTH_CLIENT_ID1     string = ""
+	GOOGLE_PROJECT_ID1          string = ""
+	GOOGLE_OAUTH_CLIENT_SECRET1 string = ""
 )
 
 type AppConfig struct {
-	DBUser            string
-	DBPass            string
-	DBHost            string
-	DBPort            int
-	DBName            string
-	jwtKey            string
-	keyid             string
-	accesskey         string
-	midtransserverkey string
+	DBUser                      string
+	DBPass                      string
+	DBHost                      string
+	DBPort                      int
+	DBName                      string
+	jwtKey                      string
+	keyid                       string
+	accesskey                   string
+	midtransserverkey           string
+	google_oauth_client_id1     string
+	google_project_id1          string
+	google_oauth_client_secret1 string
 }
 
 func InitConfig() *AppConfig {
@@ -37,7 +43,21 @@ func InitConfig() *AppConfig {
 func ReadEnv() *AppConfig {
 	app := AppConfig{}
 	isRead := true
-
+	if val, found := os.LookupEnv("GOOGLE_OAUTH_CLIENT_ID1"); found {
+		app.google_oauth_client_id1 = val
+		isRead = false
+		GOOGLE_OAUTH_CLIENT_ID1 = val
+	}
+	if val, found := os.LookupEnv("GOOGLE_PROJECT_ID1"); found {
+		app.google_project_id1 = val
+		isRead = false
+		GOOGLE_PROJECT_ID1 = val
+	}
+	if val, found := os.LookupEnv("GOOGLE_OAUTH_CLIENT_SECRET1"); found {
+		app.google_oauth_client_secret1 = val
+		isRead = false
+		GOOGLE_OAUTH_CLIENT_SECRET1 = val
+	}
 	if val, found := os.LookupEnv("MIDTRANSSERVERKEY"); found {
 		app.midtransserverkey = val
 		isRead = false
@@ -102,11 +122,17 @@ func ReadEnv() *AppConfig {
 		app.keyid = os.Getenv("KEYID")
 		app.accesskey = os.Getenv("ACCESSKEY")
 		app.midtransserverkey = os.Getenv("MIDTRANSSERVERKEY")
+		app.google_oauth_client_id1 = os.Getenv("GOOGLE_OAUTH_CLIENT_ID1")
+		app.google_project_id1 = os.Getenv("GOOGLE_PROJECT_ID1")
+		app.google_oauth_client_secret1 = os.Getenv(GOOGLE_OAUTH_CLIENT_SECRET1)
 
 		JWT_KEY = app.jwtKey
 		KEYID = app.keyid
 		ACCESSKEY = app.accesskey
 		MIDTRANSSERVERKEY = app.midtransserverkey
+		GOOGLE_OAUTH_CLIENT_ID1 = app.google_oauth_client_id1
+		GOOGLE_PROJECT_ID1 = app.google_project_id1
+		GOOGLE_OAUTH_CLIENT_SECRET1 = app.google_oauth_client_secret1
 	}
 
 	return &app

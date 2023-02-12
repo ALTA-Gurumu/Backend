@@ -82,12 +82,11 @@ func CreateEvent(event *calendar.Event) string {
 	}
 
 	calendarId := "primary"
-	resEvent, err := srv.Events.Insert(calendarId, setEvent).SendUpdates("all").ConferenceDataVersion(1).Do()
+	event, err = srv.Events.Insert(calendarId, event).SendUpdates("all").ConferenceDataVersion(1).Do()
 
 	if err != nil {
 		log.Fatalf("Unable to create event. %v\n", err)
 	}
 	tautanGmet := "meet.google.com/" + event.ConferenceData.ConferenceId
-
 	return tautanGmet
 }

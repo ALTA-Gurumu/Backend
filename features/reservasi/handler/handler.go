@@ -46,6 +46,7 @@ func (rh *reservasiHandler) Callback() echo.HandlerFunc {
 		client_id := config.GOOGLE_OAUTH_CLIENT_ID1
 		project := config.GOOGLE_PROJECT_ID1
 		secret := config.GOOGLE_OAUTH_CLIENT_SECRET1
+
 		b := `{"web":{"client_id":"` + client_id + `","project_id":"` + project + `","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"` + secret + `","redirect_uris":["http://localhost:8000/callback"]}}`
 		bt := []byte(b)
 		config, err := google.ConfigFromJSON(bt, calendar.CalendarEventsScope)
@@ -58,7 +59,7 @@ func (rh *reservasiHandler) Callback() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(helper.PrintErrorResponse(err.Error()))
 		}
-		helper.SaveToken("/helper/temporary/token.json", token)
+		helper.SaveToken("helper/temporary/token.json", token)
 
 		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses kembalikan token"))
 	}

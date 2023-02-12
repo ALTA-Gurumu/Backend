@@ -24,6 +24,11 @@ func New(rd reservasi.ReservasiData) reservasi.ReservasiService {
 }
 func (rs *reservasiService) Add(token interface{}, newReservasi reservasi.Core) (reservasi.Core, error) {
 	siswaID := helper.ExtractToken(token)
+
+	err := helper.ValidatitonReservasiRequest(newReservasi.MetodeBelajar, newReservasi.Tanggal, newReservasi.Jam, newReservasi.MetodePembayaran)
+	if err != nil {
+		return reservasi.Core{}, errors.New("input invalid")
+	}
 	res, err := rs.qry.Add(uint(siswaID), newReservasi)
 	if err != nil {
 		msg := ""

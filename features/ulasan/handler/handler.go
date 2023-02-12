@@ -34,6 +34,12 @@ func (uc *ulasanControl) Add() echo.HandlerFunc {
 			})
 		}
 
+		if cnv < 1 {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "ID guru harus lebih besar dari 0, mana ada ID minus",
+			})
+		}
+
 		input := UlasanRegisterRequest{}
 
 		if err := c.Bind(&input); err != nil {
@@ -81,6 +87,11 @@ func (uc *ulasanControl) GetById() echo.HandlerFunc {
 			})
 		}
 
+		if cnv < 1 {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "ID guru harus lebih besar dari 1, mana ada ID minus",
+			})
+		}
 		res, err := uc.srv.GetById(uint(cnv))
 		if err != nil {
 			log.Println("handler error")

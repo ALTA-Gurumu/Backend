@@ -76,14 +76,14 @@ func CreateEvent(event *calendar.Event) string {
 		log.Fatalf("Unable to parse client secret file to config: %v", err)
 	}
 	client := GetClient(config)
-
 	srv, err := calendar.NewService(ctx, option.WithHTTPClient(client))
 	if err != nil {
 		log.Fatalf("Unable to retrieve Calendar client: %v", err)
 	}
 
 	calendarId := "primary"
-	event, err = srv.Events.Insert(calendarId, event).SendUpdates("all").ConferenceDataVersion(1).Do()
+	resEvent, err := srv.Events.Insert(calendarId, setEvent).SendUpdates("all").ConferenceDataVersion(1).Do()
+
 	if err != nil {
 		log.Fatalf("Unable to create event. %v\n", err)
 	}

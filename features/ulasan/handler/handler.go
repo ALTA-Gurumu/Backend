@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
@@ -38,6 +39,14 @@ func (uc *ulasanControl) Add() echo.HandlerFunc {
 		if err := c.Bind(&input); err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
 				"message": "format inputan salah",
+			})
+		}
+
+		validate := validator.New()
+		err = validate.Struct(input)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "input tidak valid",
 			})
 		}
 

@@ -52,7 +52,7 @@ func PrintErrorResponse(msg string) (int, interface{}) {
 		resp["message"] = "not found"
 	case strings.Contains(msg, "input invalid"):
 		code = http.StatusBadRequest
-	case strings.Contains(msg, "input value"):
+	case strings.Contains(msg, "input"):
 		code = http.StatusBadRequest
 	case strings.Contains(msg, "validation"):
 		code = http.StatusBadRequest

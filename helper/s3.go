@@ -10,6 +10,12 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
+type Uploader interface {
+	UploadStudentProfilePhotoS3(file multipart.FileHeader, email string) (string, error)
+	UploadTeacherProfilePhotoS3(file *multipart.FileHeader, email string) (string, error)
+	UploadTeacherCertificateS3(file *multipart.FileHeader, email string) (string, error)
+}
+
 var ObjectURL string = "https://try123ok.s3.ap-southeast-1.amazonaws.com/"
 
 func UploadStudentProfilePhotoS3(file multipart.FileHeader, email string) (string, error) {

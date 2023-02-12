@@ -6,7 +6,6 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -72,13 +71,7 @@ func (sc *siswaControl) Update() echo.HandlerFunc {
 
 		err2 := sc.srv.Update(token, *ToCore(updateData), avatar)
 		if err2 != nil {
-			if strings.Contains(err.Error(), "not found") {
-				log.Println("data not found: ", err.Error())
-				return c.JSON(http.StatusNotFound, helper.ErrorResponse("user not found"))
-			} else {
-				log.Println("error update service: ", err.Error())
-				return c.JSON(http.StatusInternalServerError, helper.ErrorResponse("server problem"))
-			}
+			return c.JSON(helper.PrintErrorResponse(err2.Error()))
 		}
 
 		return c.JSON(helper.PrintSuccessReponse(http.StatusOK, "berhasil mengganti profil siswa"))

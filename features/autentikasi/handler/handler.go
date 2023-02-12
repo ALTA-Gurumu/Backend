@@ -22,7 +22,9 @@ func (ac *autentikasiControll) Login() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		input := LoginRequest{}
 		if err := c.Bind(&input); err != nil {
-			return c.JSON(http.StatusBadRequest, "kesalahan input dari sisi user")
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "kesalahan input dari sisi user",
+			})
 		}
 
 		token, res, err := ac.srv.Login(input.Email, input.Password)

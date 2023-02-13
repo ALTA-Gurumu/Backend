@@ -174,3 +174,67 @@ func TestMysession(t *testing.T) {
 
 	})
 }
+func TestNotificationTransactionStatus(t *testing.T) {
+	data := mocks.NewReservasiData(t)
+	// t.Run("success", func(t *testing.T) {
+
+	// 	transactionID := "6ce34ad3-1e3f-463d-b5a2-d420259ce69d"
+	// 	srv := New(data)
+	// 	data.On("NotificationTransactionStatus", transactionID).Return(nil).Once()
+	// 	err := srv.NotificationTransactionStatus(transactionID)
+	// 	assert.Nil(t, err)
+	// 	data.AssertExpectations(t)
+	// })
+	t.Run("error check transaction status", func(t *testing.T) {
+		srv := New(data)
+
+		err := srv.NotificationTransactionStatus("1234567")
+		assert.NotNil(t, err)
+		assert.Contains(t, err.Error(), "error check")
+		data.AssertExpectations(t)
+	})
+
+}
+
+func TestUpdateStatus(t *testing.T) {
+	data := mocks.NewReservasiData(t)
+
+	reservasiID := uint(1)
+	t.Run("succes update status", func(t *testing.T) {
+		srv := New(data)
+		data.On("UpdateStatus", uint(1), reservasiID).Return(nil).Once()
+		_, token := helper.GenerateJWT(1)
+
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+		err := srv.UpdateStatus(pToken, uint(1))
+		assert.Nil(t, err)
+		data.AssertExpectations(t)
+
+	})
+	t.Run("not found", func(t *testing.T) {
+		srv := New(data)
+		data.On("UpdateStatus", uint(1), reservasiID).Return(errors.New("error update reservasi status service")).Once()
+		_, token := helper.GenerateJWT(1)
+
+		pToken := token.(*jwt.Token)
+		pToken.Valid = true
+		err := srv.UpdateStatus(pToken, uint(1))
+		assert.NotNil(t, err)
+		data.AssertExpectations(t)
+
+	})
+
+	t.Run("jwt tidak valid", func(t *testing.T) {
+		srv := New(data)
+
+		_, token := helper.GenerateJWT(1)
+
+		err := srv.UpdateStatus(token, uint(1))
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "valid")
+
+		data.AssertExpectations(t)
+
+	})
+}

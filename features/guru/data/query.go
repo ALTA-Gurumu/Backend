@@ -110,27 +110,27 @@ func (gq *guruQuery) GetBeranda(loc string, subj string, limit int, offset int) 
 	var err error
 	fmt.Println("allGuru", allGuru)
 	if loc != "" && subj == "" {
-		query = query + " WHERE gurus.lokasi_asal = ?"
+		query = query + " AND gurus.lokasi_asal = ?"
 		query = query + " GROUP BY gurus.id ORDER BY gurus.id DESC LIMIT ? OFFSET ?"
 
-		rows, err = gq.db.Raw(query, limit, offset, loc).Rows()
+		rows, err = gq.db.Raw(query, loc, limit, offset).Rows()
 		if err != nil {
 			return 0, nil, err
 		}
 
 	} else if subj != "" && loc != "" {
-		query = query + " WHERE gurus.pelajaran = ? AND gurus.lokasi_asal = ? "
+		query = query + " AND gurus.pelajaran = ? AND gurus.lokasi_asal = ? "
 		query = query + " GROUP BY gurus.id ORDER BY gurus.id DESC LIMIT ? OFFSET ?"
 
-		rows, err = gq.db.Raw(query, limit, offset, subj, loc).Rows()
+		rows, err = gq.db.Raw(query, subj, loc, limit, offset).Rows()
 		if err != nil {
 			return 0, nil, err
 		}
 	} else if subj != "" && loc == "" {
-		query = query + " WHERE gurus.pelajaran = ?"
+		query = query + " AND gurus.pelajaran = ?"
 		query = query + " GROUP BY gurus.id ORDER BY gurus.id DESC LIMIT ? OFFSET ?"
 
-		rows, err = gq.db.Raw(query, limit, offset, subj).Rows()
+		rows, err = gq.db.Raw(query, subj, limit, offset).Rows()
 		if err != nil {
 			return 0, nil, err
 		}

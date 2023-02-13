@@ -37,7 +37,7 @@ func (aud *autentikasiUseCase) Login(email, password string) (string, autentikas
 
 	if err := helper.CheckPassword(res.Password, password); err != nil {
 		log.Println("login compare", err.Error())
-		return "", autentikasi.Core{}, errors.New("password tidak sesuai " + res.Password)
+		return "", autentikasi.Core{}, errors.New("password tidak sesuai ")
 	}
 
 	token, _ := helper.GenerateJWT(int(res.ID))

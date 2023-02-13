@@ -193,5 +193,9 @@ func (guc *guruUseCase) ProfileBeranda(loc string, subj string, page int) (map[s
 	pagination["totalRecord"] = totalRecord
 	pagination["totalPage"] = totalPage
 
+	if len(res) <= 0 {
+		return pagination, res, errors.New("data not found")
+	}
+
 	return pagination, res, nil
 }

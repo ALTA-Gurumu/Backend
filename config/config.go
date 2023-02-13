@@ -124,7 +124,7 @@ func ReadEnv() *AppConfig {
 		app.midtransserverkey = os.Getenv("MIDTRANSSERVERKEY")
 		app.google_oauth_client_id1 = os.Getenv("GOOGLE_OAUTH_CLIENT_ID1")
 		app.google_project_id1 = os.Getenv("GOOGLE_PROJECT_ID1")
-		app.google_oauth_client_secret1 = os.Getenv(GOOGLE_OAUTH_CLIENT_SECRET1)
+		app.google_oauth_client_secret1 = os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET1")
 
 		JWT_KEY = app.jwtKey
 		KEYID = app.keyid

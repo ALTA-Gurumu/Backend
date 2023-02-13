@@ -39,7 +39,7 @@ func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core) (reserva
 		return reservasi.Core{}, err
 	}
 	data.TotalTarif = detailGuru.Tarif
-	kodePembayaran := "Gurumu -" + fmt.Sprint(data.SiswaID, data.GuruID, time.Now().Minute())
+	kodePembayaran := "GRM/" + fmt.Sprint(data.SiswaID) + fmt.Sprint(data.GuruID) + fmt.Sprint(time.Now().Hour()) + fmt.Sprint(time.Now().Minute())
 
 	midtransResp := helper.CreateReservasiTransaction(kodePembayaran, data.TotalTarif, data.MetodePembayaran)
 
@@ -232,7 +232,7 @@ func (rd *reservasiData) NotificationTransactionStatus(kodeTransaksi, statusTran
 		fmt.Println(detailGuru.Email, detailSiswa.Email)
 		tautanGmeet := helper.CreateEvent(
 			&calendar.Event{
-				Summary:     "Gurumu - Kelas " + detailGuru.Pelajaran + "anda",
+				Summary:     "Gurumu - Kelas " + detailGuru.Pelajaran + " anda",
 				Location:    "",
 				Description: "Kelas akan berlangsung pada " + detailJadwal.Tanggal + " pada " + detailJadwal.Jam + ". Harap datang tepat waktu dan pastikan untuk bergabung dengan panggilan video tepat waktu.",
 				ConferenceData: &calendar.ConferenceData{
@@ -271,6 +271,23 @@ func (rd *reservasiData) NotificationTransactionStatus(kodeTransaksi, statusTran
 			log.Println("error update tautan gmeet reservasi")
 			return errors.New("error update tautan gmeet reservasi")
 		}
+
+		jadwalData := Jadwal{}
+
+		err = rd.db.First(&jadwalData, "id = ?", reservasiData.JadwalID).Error
+		if err != nil {
+			log.Println("jadwal not found")
+			return err
+		}
+		fmt.Println(jadwalData)
+
+		jadwalData.Status = "Telah direservasi"
+		aff = rd.db.Save(&jadwalData)
+		if aff.RowsAffected <= 0 {
+			log.Println("error update status jadwal")
+			return errors.New("error update status jadwal")
+		}
+
 	}
 	return nil
 }

@@ -1,17 +1,12 @@
 package handler
 
 import (
-	"Gurumu/config"
 	"Gurumu/features/reservasi"
 	"Gurumu/helper"
-	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/api/calendar/v3"
 )
 
 type reservasiHandler struct {
@@ -41,29 +36,30 @@ func (rh *reservasiHandler) Add() echo.HandlerFunc {
 	}
 }
 
-func (rh *reservasiHandler) Callback() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		client_id := config.GOOGLE_OAUTH_CLIENT_ID1
-		project := config.GOOGLE_PROJECT_ID1
-		secret := config.GOOGLE_OAUTH_CLIENT_SECRET1
+// func (rh *reservasiHandler) Callback() echo.HandlerFunc {
+// 	return func(c echo.Context) error {
+// 		client_id := config.GOOGLE_OAUTH_CLIENT_ID1
+// 		project := config.GOOGLE_PROJECT_ID1
+// 		secret := config.GOOGLE_OAUTH_CLIENT_SECRET1
 
-		b := `{"web":{"client_id":"` + client_id + `","project_id":"` + project + `","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"` + secret + `","redirect_uris":["https://devmyproject.site/callback"]}}`
-		bt := []byte(b)
-		config, err := google.ConfigFromJSON(bt, calendar.CalendarEventsScope)
-		if err != nil {
-			log.Fatalf("Unable to parse client secret file to config: %v", err)
-		}
+// 		b := `{"web":{"client_id":"` + client_id + `","project_id":"` + project + `","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"` + secret + `","redirect_uris":["https://devmyproject.site/callback"]}}`
+// 		bt := []byte(b)
+// 		config, err := google.ConfigFromJSON(bt, calendar.CalendarEventsScope)
+// 		if err != nil {
+// 			log.Fatalf("Unable to parse client secret file to config: %v", err)
+// 		}
 
-		code := c.QueryParam("code")
-		token, err := config.Exchange(context.Background(), code)
-		if err != nil {
-			return c.JSON(helper.PrintErrorResponse(err.Error()))
-		}
-		helper.SaveToken("helper/temporary/token.json", token)
+// 		code := c.QueryParam("code")
+// 		token, err := config.Exchange(context.Background(), code)
+// 		token.Expiry = time.Date(0001, 01, 01, 00, 00, 00, 00, time.UTC)
+// 		if err != nil {
+// 			return c.JSON(helper.PrintErrorResponse(err.Error()))
+// 		}
+// 		helper.SaveToken("helper/temporary/token.json", token)
 
-		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses kembalikan token"))
-	}
-}
+// 		return c.JSON(helper.PrintSuccessReponse(http.StatusCreated, "sukses kembalikan token"))
+// 	}
+// }
 
 func (rh *reservasiHandler) Mysession() echo.HandlerFunc {
 	return func(c echo.Context) error {

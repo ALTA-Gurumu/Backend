@@ -34,7 +34,7 @@ type ReservasiHandler interface {
 	Add() echo.HandlerFunc
 	Mysession() echo.HandlerFunc
 	NotificationTransactionStatus() echo.HandlerFunc
-	Callback() echo.HandlerFunc
+	// Callback() echo.HandlerFunc
 	UpdateStatus() echo.HandlerFunc
 }
 

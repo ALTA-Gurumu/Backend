@@ -8,7 +8,6 @@ import (
 	"log"
 	"time"
 
-	"google.golang.org/api/calendar/v3"
 	"gorm.io/gorm"
 )
 
@@ -223,49 +222,49 @@ func (rd *reservasiData) NotificationTransactionStatus(kodeTransaksi, statusTran
 			return errors.New("error get jadwal guru query")
 		}
 
-		layout := "2006-01-02 15:04:05"
-		value := detailJadwal.Tanggal + " " + detailJadwal.Jam + ":00"
-		dateTime, err := time.Parse(layout, value)
-		if err != nil {
-			return errors.New("failed convert datetime")
-		}
-		fmt.Println(detailGuru.Email, detailSiswa.Email)
-		tautanGmeet := helper.CreateEvent(
-			&calendar.Event{
-				Summary:     "Gurumu - Kelas " + detailGuru.Pelajaran + " anda",
-				Location:    "",
-				Description: "Kelas akan berlangsung pada " + detailJadwal.Tanggal + " pada " + detailJadwal.Jam + ". Harap datang tepat waktu dan pastikan untuk bergabung dengan panggilan video tepat waktu.",
-				ConferenceData: &calendar.ConferenceData{
-					CreateRequest: &calendar.CreateConferenceRequest{
-						RequestId: "sfsfs",
-						ConferenceSolutionKey: &calendar.ConferenceSolutionKey{
-							Type: "hangoutsMeet"},
-						Status: &calendar.ConferenceRequestStatus{
-							StatusCode: "success"},
-					}},
+		// 	layout := "2006-01-02 15:04:05"
+		// 	value := detailJadwal.Tanggal + " " + detailJadwal.Jam + ":00"
+		// 	dateTime, err := time.Parse(layout, value)
+		// 	if err != nil {
+		// 		return errors.New("failed convert datetime")
+		// 	}
+		// 	fmt.Println(detailGuru.Email, detailSiswa.Email)
+		// 	tautanGmeet := helper.CreateEvent(
+		// 		&calendar.Event{
+		// 			Summary:     "Gurumu - Kelas " + detailGuru.Pelajaran + " anda",
+		// 			Location:    "",
+		// 			Description: "Kelas akan berlangsung pada " + detailJadwal.Tanggal + " pada " + detailJadwal.Jam + ". Harap datang tepat waktu dan pastikan untuk bergabung dengan panggilan video tepat waktu.",
+		// 			ConferenceData: &calendar.ConferenceData{
+		// 				CreateRequest: &calendar.CreateConferenceRequest{
+		// 					RequestId: "sfsfs",
+		// 					ConferenceSolutionKey: &calendar.ConferenceSolutionKey{
+		// 						Type: "hangoutsMeet"},
+		// 					Status: &calendar.ConferenceRequestStatus{
+		// 						StatusCode: "success"},
+		// 				}},
 
-				Start: &calendar.EventDateTime{
-					DateTime: dateTime.Format(time.RFC3339),
-					TimeZone: "Asia/Jakarta",
-				},
-				End: &calendar.EventDateTime{
-					DateTime: dateTime.Add(time.Hour * 1).Format(time.RFC3339),
-					TimeZone: "Asia/Jakarta",
-				},
+		// 			Start: &calendar.EventDateTime{
+		// 				DateTime: dateTime.Format(time.RFC3339),
+		// 				TimeZone: "Asia/Jakarta",
+		// 			},
+		// 			End: &calendar.EventDateTime{
+		// 				DateTime: dateTime.Add(time.Hour * 1).Format(time.RFC3339),
+		// 				TimeZone: "Asia/Jakarta",
+		// 			},
 
-				Attendees: []*calendar.EventAttendee{
-					{Email: detailGuru.Email},
-					{Email: detailSiswa.Email},
-				},
-				Reminders: &calendar.EventReminders{
-					UseDefault: true,
-					// Overrides: []*calendar.EventReminder{
-					// 	{Method: "email", Minutes: 10},
-					// },
-				},
-			})
+		// 			Attendees: []*calendar.EventAttendee{
+		// 				{Email: detailGuru.Email},
+		// 				{Email: detailSiswa.Email},
+		// 			},
+		// 			Reminders: &calendar.EventReminders{
+		// 				UseDefault: true,
+		// 				// Overrides: []*calendar.EventReminder{
+		// 				// 	{Method: "email", Minutes: 10},
+		// 				// },
+		// 			},
+		// 		})
 
-		reservasiData.TautanGmet = tautanGmeet
+		reservasiData.TautanGmet = "-"
 		aff = rd.db.Save(&reservasiData)
 		if aff.RowsAffected <= 0 {
 			log.Println("error update tautan gmeet reservasi")
@@ -291,7 +290,6 @@ func (rd *reservasiData) NotificationTransactionStatus(kodeTransaksi, statusTran
 	}
 	return nil
 }
-
 func (rd *reservasiData) UpdateStatus(userID uint, reservasiID uint) error {
 	reservasiData := Reservasi{}
 

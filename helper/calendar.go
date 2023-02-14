@@ -73,19 +73,20 @@ func CreateEvent(event *calendar.Event) string {
 
 	config, err := google.ConfigFromJSON(bt, calendar.CalendarEventsScope, calendar.CalendarScope, calendar.CalendarReadonlyScope)
 	if err != nil {
-		log.Fatalf("Unable to parse client secret file to config: %v", err)
+		log.Println("unable to parse client secret file to config: ", err)
+		return err.Error()
 	}
 	client := GetClient(config)
 	srv, err := calendar.NewService(ctx, option.WithHTTPClient(client))
 	if err != nil {
-		log.Fatalf("Unable to retrieve Calendar client: %v", err)
+		log.Println("unable to retrieve calendar client: ", err)
 	}
 
 	calendarId := "primary"
 	event, err = srv.Events.Insert(calendarId, event).SendUpdates("all").ConferenceDataVersion(1).Do()
 
 	if err != nil {
-		log.Fatalf("Unable to create event. %v\n", err)
+		log.Println("unable to create event. ", err)
 	}
 	tautanGmet := "meet.google.com/" + event.ConferenceData.ConferenceId
 	return tautanGmet

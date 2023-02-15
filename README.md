@@ -8,9 +8,9 @@ Capstone Program Immersive Alterra Academy <br/>
 </div>
 
 ## About GuruMu
-GuruMu is an online private-study platform. Where users can order private tutors at any time. 
+GuruMu is an online private-study platform. Where users can learn from the best teachers at any time, anywhere. 
 Currently tutoring center located in more than 5 cities that combines online and offline learning.
-With GuruMu, no more obstacles to be able to learn independently. 
+With GuruMu, no more obstacles to learn independently. 
 GuruMu is available for students from elementary to high school and also serves all curricula in Indonesia.
 
 ## Technology Stack

@@ -22,6 +22,7 @@ func New(db *gorm.DB) reservasi.ReservasiData {
 }
 
 func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core) (reservasi.Core, error) {
+
 	data := CoreToData(newReservasi)
 	data.SiswaID = siswaID
 
@@ -37,6 +38,18 @@ func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core) (reserva
 		log.Println("Get jadwal_id query error")
 		return reservasi.Core{}, err
 	}
+
+	existingReservation := Reservasi{}
+	err = rd.db.Where("siswa_id = ? AND jadwal_id = ?", data.SiswaID, data.JadwalID).First(&existingReservation).Error
+	if err == nil {
+
+		return reservasi.Core{}, errors.New("reservation already exists for the specified siswa and jadwal")
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+
+		log.Println("Get existing reservations query error")
+		return reservasi.Core{}, err
+	}
+
 	data.TotalTarif = detailGuru.Tarif
 	kodePembayaran := "GRM/" + fmt.Sprint(data.SiswaID) + fmt.Sprint(data.GuruID) + fmt.Sprint(time.Now().Hour()) + fmt.Sprint(time.Now().Minute())
 

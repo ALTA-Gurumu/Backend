@@ -31,13 +31,7 @@ func (rs *reservasiService) Add(token interface{}, newReservasi reservasi.Core) 
 	}
 	res, err := rs.qry.Add(uint(siswaID), newReservasi)
 	if err != nil {
-		msg := ""
-		if strings.Contains(err.Error(), "not found") {
-			msg = "data tidak ditemukan"
-		} else {
-			msg = "internal server error"
-		}
-		return reservasi.Core{}, errors.New(msg)
+		return reservasi.Core{}, err
 	}
 	return res, nil
 

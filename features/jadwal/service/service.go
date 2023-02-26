@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 )
 
 type jadwalService struct {
@@ -28,22 +28,16 @@ func (js *jadwalService) Add(token interface{}, newJadwal jadwal.Core) (jadwal.C
 		return jadwal.Core{}, errors.New("pengguna tidak ditemukan")
 	}
 
-	err1 := js.vld.Struct(newJadwal)
-	if err1 != nil {
-		msg := helper.ValidationErrorHandle(err1)
+	err := js.vld.Struct(newJadwal)
+	if err != nil {
+		msg := helper.ValidationErrorHandle(err)
 		log.Println("msg", msg)
 		return jadwal.Core{}, errors.New(msg)
 	}
 
 	res, err := js.qry.Add(uint(GuruID), newJadwal)
 	if err != nil {
-		msg := ""
-		if strings.Contains(err.Error(), "not found") {
-			msg = "data tidak ditemukan"
-		} else {
-			msg = "terjadi kesalahan pada server"
-		}
-		return jadwal.Core{}, errors.New(msg)
+		return jadwal.Core{}, err
 	}
 
 	return res, nil

@@ -21,17 +21,15 @@ func New(db *gorm.DB) jadwal.JadwalData {
 func (jq *jadwalQuery) Add(guruID uint, newJadwal jadwal.Core) (jadwal.Core, error) {
 	data := CoreToData(newJadwal)
 
-	existedJadwal := Jadwal{}
-	err := jq.db.Where("id = ? AND tanggal = ? AND jam = ?", guruID, data.Tanggal, data.Jam).Find(&existedJadwal).Error
-	if err != nil {
-		return jadwal.Core{}, err
-	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return jadwal.Core{}, err
+	existedJadwal := 0
+	jq.db.Raw("SELECT COUNT(*) FROM jadwals WHERE guru_id = ? AND tanggal = ? AND jam = ?", guruID, data.Tanggal, data.Jam).Scan(&existedJadwal)
+	if existedJadwal > 0 {
+		return jadwal.Core{}, errors.New("kesalahan input : jadwal sudah ada")
 	}
 
 	data.GuruID = guruID
 	data.Status = "Tersedia"
-	err = jq.db.Create(&data).Error
+	err := jq.db.Create(&data).Error
 	if err != nil {
 		log.Println("error saat query tambah jadwal")
 		return jadwal.Core{}, err

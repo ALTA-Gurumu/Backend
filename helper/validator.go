@@ -75,7 +75,7 @@ func ValidationErrorHandle(err error) string {
 		for _, v := range castedObject {
 			switch v.Tag() {
 			case "required":
-				message = fmt.Sprintf("%s input value is required", v.Field())
+				message = fmt.Sprintf("%s masih kosong", v.Field())
 			case "min":
 				message = fmt.Sprintf("%s input value must be greater than %s character", v.Field(), v.Param())
 			case "max":

@@ -161,20 +161,6 @@ func (rd *reservasiData) Mysession(userID uint, role, reservasiStatus string) ([
 	}
 }
 
-func (rd *reservasiData) UpdateDataByTrfID(kode string, updateRes reservasi.Core) error {
-
-	cnv := CoreToData(updateRes)
-
-	tx := rd.db.Model(&Reservasi{}).Where("kode_transaksi = ? ", kode).Updates(&cnv)
-	if tx.Error != nil {
-		return tx.Error
-	}
-	if tx.RowsAffected <= 0 {
-		return errors.New("terjadi kesalahan pada server karena data user atau product tidak ditemukan")
-	}
-
-	return nil
-}
 func (rd *reservasiData) NotificationTransactionStatus(kodeTransaksi, statusTransaksi string) error {
 	reservasiData := Reservasi{}
 

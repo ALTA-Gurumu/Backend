@@ -48,7 +48,6 @@ type ReservasiService interface {
 type ReservasiData interface {
 	Add(siswaID uint, newReservasi Core) (Core, error)
 	Mysession(userID uint, role, reservasiStatus string) ([]Core, error)
-	UpdateDataByTrfID(kode string, updateRes Core) error
 	NotificationTransactionStatus(kodeTransaksi, transStatus string) error
 	UpdateStatus(userID, reservasiID uint) error
 }

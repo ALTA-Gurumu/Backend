@@ -43,7 +43,7 @@ func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core) (reserva
 	err = rd.db.Where("siswa_id = ? AND jadwal_id = ?", data.SiswaID, data.JadwalID).First(&existingReservation).Error
 	if err == nil {
 
-		return reservasi.Core{}, errors.New("reservation already exists for the specified siswa and jadwal")
+		return reservasi.Core{}, errors.New("reservasi sudah ditambahkan sebelumnya")
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 
 		log.Println("Get existing reservations query error")
@@ -67,7 +67,7 @@ func (rd *reservasiData) Add(siswaID uint, newReservasi reservasi.Core) (reserva
 		}
 
 	} else {
-		return reservasi.Core{}, errors.New("gagal menambahkan pembayaran")
+		return reservasi.Core{}, errors.New("gagal menambahkan pembayaran, cobalah beberapa saat lagi")
 	}
 
 	data.StatusPembayaran = midtransResp.TransactionStatus
@@ -107,7 +107,7 @@ func (rd *reservasiData) Mysession(userID uint, role, reservasiStatus string) ([
 			}
 
 			if len(sesiSiswa) <= 0 {
-				return []reservasi.Core{}, fmt.Errorf("data not found")
+				return []reservasi.Core{}, errors.New("data not found")
 			}
 			return ToListSesikuSiswa(sesiSiswa), nil
 		case "ongoing":
@@ -118,7 +118,7 @@ func (rd *reservasiData) Mysession(userID uint, role, reservasiStatus string) ([
 			}
 
 			if len(sesiSiswa) <= 0 {
-				return []reservasi.Core{}, fmt.Errorf("not found")
+				return []reservasi.Core{}, errors.New("not found")
 			}
 
 			return ToListSesikuSiswa(sesiSiswa), nil
@@ -136,9 +136,9 @@ func (rd *reservasiData) Mysession(userID uint, role, reservasiStatus string) ([
 			if result.Error != nil {
 				return []reservasi.Core{}, result.Error
 			}
-			fmt.Println("asdlfadslf", sesiGuru)
+
 			if len(sesiGuru) <= 0 {
-				return []reservasi.Core{}, fmt.Errorf("not found")
+				return []reservasi.Core{}, errors.New("tidak ditemukan")
 			}
 			return ToListSesikuGuru(sesiGuru), nil
 
@@ -150,7 +150,7 @@ func (rd *reservasiData) Mysession(userID uint, role, reservasiStatus string) ([
 			}
 
 			if len(sesiGuru) <= 0 {
-				return []reservasi.Core{}, fmt.Errorf("not found")
+				return []reservasi.Core{}, errors.New("tidak ditemukan")
 			}
 			return ToListSesikuGuru(sesiGuru), nil
 		default:
@@ -211,28 +211,28 @@ func (rd *reservasiData) NotificationTransactionStatus(kodeTransaksi, statusTran
 		aff := rd.db.Save(&reservasiData)
 		if aff.RowsAffected <= 0 {
 			log.Println("error update status reservasi")
-			return errors.New("error update status reservasi")
+			return errors.New("gagal update status reservasi")
 		}
 
 		detailGuru := Guru{}
 		err = rd.db.Where("id = ?", reservasiData.GuruID).First(&detailGuru).Error
 		if err != nil {
 			log.Println("Get detail guru query error")
-			return errors.New("error get detail guru query")
+			return errors.New("data guru tidak ditemukan")
 		}
 
 		detailSiswa := Siswa{}
 		err = rd.db.Where("id = ?", reservasiData.SiswaID).First(&detailSiswa).Error
 		if err != nil {
 			log.Println("Get detail siswa query error")
-			return errors.New("error get detail siswa query")
+			return errors.New("data siswa tidak ditemukan")
 		}
 
 		detailJadwal := Jadwal{}
 		err = rd.db.Where("id = ?", reservasiData.JadwalID).First(&detailJadwal).Error
 		if err != nil {
 			log.Println("Get detail jadwal query error")
-			return errors.New("error get jadwal guru query")
+			return errors.New("data jadwal tidak ditemukan")
 		}
 
 		// 	layout := "2006-01-02 15:04:05"
@@ -281,7 +281,7 @@ func (rd *reservasiData) NotificationTransactionStatus(kodeTransaksi, statusTran
 		aff = rd.db.Save(&reservasiData)
 		if aff.RowsAffected <= 0 {
 			log.Println("error update tautan gmeet reservasi")
-			return errors.New("error update tautan gmeet reservasi")
+			return errors.New("gagal update tautan gmeet")
 		}
 
 		jadwalData := Jadwal{}
@@ -297,7 +297,7 @@ func (rd *reservasiData) NotificationTransactionStatus(kodeTransaksi, statusTran
 		aff = rd.db.Save(&jadwalData)
 		if aff.RowsAffected <= 0 {
 			log.Println("error update status jadwal")
-			return errors.New("error update status jadwal")
+			return errors.New("gagal update status jadwal")
 		}
 
 	}
@@ -309,14 +309,14 @@ func (rd *reservasiData) UpdateStatus(userID uint, reservasiID uint) error {
 	err := rd.db.First(&reservasiData, " id = ?", reservasiID).Error
 	if err != nil {
 		log.Println("resevasi not found: ", err.Error())
-		return err
+		return errors.New("data reservasi tidak ditemukan")
 	}
 
 	reservasiData.Status = "selesai"
 	aff := rd.db.Save(&reservasiData)
 	if aff.RowsAffected <= 0 {
 		log.Println("error update status reservasi")
-		return errors.New("error status  reservasi")
+		return errors.New("gagal update status reservasi")
 	}
 	return nil
 

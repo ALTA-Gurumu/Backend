@@ -34,7 +34,6 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            touch message.txt
             echo "Successfully" >> message.txt
             sudo chmod 777 /var/run/docker.sock
             docker stop ${{ secrets.DOCKER_CONTAINER }}
